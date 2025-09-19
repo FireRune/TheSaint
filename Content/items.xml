@@ -1,0 +1,3 @@
+<items gfxroot="gfx/items/" version="1">
+    <active name="The Almanach" description="A library's worth of knowledge" gfx="almanach.png" maxcharges="3" tags="book offensive" quality="2" />
+</items>
