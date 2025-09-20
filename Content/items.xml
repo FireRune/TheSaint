@@ -1,3 +1,5 @@
 <items gfxroot="gfx/items/" version="1">
-    <active name="The Almanach" description="A library's worth of knowledge" gfx="almanach.png" maxcharges="3" tags="book offensive" quality="2" />
+    <active name="Almanach" description="A library's worth of knowledge" gfx="almanach.png" maxcharges="3" tags="book offensive" quality="2" />
+    
+    <passive name="Mending Heart" description="Put it back together!" gfx="mending_heart.png" tags="nolostbr summonable" quality="3" />
 </items>
