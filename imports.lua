@@ -5,6 +5,8 @@ local items = {
     include("Items/Mending_Heart")
 }
 
+--- initialize all items of this mod
+--- @param mod ModReference
 function includes:Init(mod)
     for _, item in ipairs(items) do
         item:Init(mod)

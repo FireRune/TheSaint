@@ -1,5 +1,5 @@
 <AnimatedActor>
-	<Info CreatedBy="Unknown" CreatedOn="20.09.2025 21:51:47" Version="1" Fps="30"/>
+	<Info CreatedBy="Unknown" CreatedOn="20.09.2025 22:19:58" Version="2" Fps="30"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="GiantBook_013_HeartPiece.png" Id="0"/>

@@ -7,8 +7,10 @@ local item = {}
     When no damage was taken on the previous floor, will replace 2 instead.
 ]]
 
+--- animation state flag
 local playMovie = -1
 
+--- when entering a new floor, replace Broken Heart(s) with empty Heart Container(s), then set the animation flag
 local function postNewLevel()
     for i = 0, game:GetNumPlayers() - 1 do
         local player = Isaac.GetPlayer(i)
@@ -24,8 +26,11 @@ local function postNewLevel()
     end
 end
 
+--- giantbook animation
 local mov = Sprite()
 mov:Load("gfx/ui/giantbook/giantbook_mendingheart.anm2", true)
+
+--- play the animation for 'mending' the Broken Heart(s)
 local function postRender()
     if (playMovie == 0) then
         playMovie = 1
@@ -45,6 +50,8 @@ local function postRender()
     end
 end
 
+--- initialize the item's functionality
+--- @param mod ModReference
 function item:Init(mod)
     mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, postNewLevel)
     mod:AddCallback(ModCallbacks.MC_POST_RENDER, postRender)
