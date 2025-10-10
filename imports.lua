@@ -2,7 +2,8 @@ local includes = {}
 
 local items = {
     include("Items/Almanach"),
-    include("Items/Mending_Heart")
+    include("Items/Mending_Heart"),
+    include("Items/Devout_Prayer")
 }
 
 --- initialize all items of this mod
