@@ -2,10 +2,10 @@
 
 local isc = require("TheSaint.lib.isaacscript-common")
 --local json = require("json")
-local utility = include("utility")
-local stats = include("stats")
-local registry = include("ItemRegistry")
-include("EIDRegistry")
+local utility = include("TheSaint/utility")
+local stats = include("TheSaint/stats")
+local registry = include("TheSaint/ItemRegistry")
+include("TheSaint/EIDRegistry")
 
 -- Init
 
@@ -15,7 +15,7 @@ local features = {
 }
 local TheSaint = isc:upgradeMod(TheSaintVanilla, features)
 
-local imports = include("imports")
+local imports = include("TheSaint/imports")
 if (type(imports) == "table") then
     imports:Init(TheSaint)
 end
