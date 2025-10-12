@@ -1,8 +1,10 @@
 local utility = include("utility")
 local registry = include("ItemRegistry")
+local stats = include("stats")
 local game = Game()
 local hud = game:GetHUD()
 local sfx = SFXManager()
+local isc = require("TheSaint.lib.isaacscript-common")
 
 --[[
     "Devout Prayer"<br>
@@ -23,6 +25,16 @@ local sfx = SFXManager()
 ]]
 local Devout_Prayer = {}
 
+--[[
+    local variables with persistent data. for use with the save data manager.<br>
+    -> increases to luck and damage are tracked in "level"<br>
+    -> current kill count for the charge mechanic is stored in "run"
+]]
+local v = {
+    run = {},
+    level = {}
+}
+
 -- flag to check wether any Pocket Item other than 'Devout Prayer' was used
 local otherPocketItemUsed = false
 
@@ -32,14 +44,13 @@ local function chargeDevoutPrayer(pointValue)
     for i = 0, game:GetNumPlayers() - 1 do
         local player = Isaac.GetPlayer(i)
         if player:HasCollectible(registry.COLLECTIBLE_DEVOUT_PRAYER) then
-            local dat = utility:getData(player)
-            local counter = pointValue
-            if (dat["TSaint_EternalHeart"] and (dat["TSaint_EternalHeart"] == true)) then
-                counter = counter * 2
+            if (player:GetEternalHearts() == 1) then
+                pointValue = pointValue * 2
             end
-            dat["TSaint_Kills"] = (dat["TSaint_Kills"] and dat["TSaint_Kills"] + counter) or counter
-            while (dat["TSaint_Kills"] >= 10) do
-                dat["TSaint_Kills"] = dat["TSaint_Kills"] - 10
+            local playerIndex = "DevoutPrayer_Kills_"..isc:getPlayerIndex(player)
+            v.run[playerIndex] = (v.run[playerIndex] and (v.run[playerIndex] + pointValue)) or pointValue
+            while (v.run[playerIndex] >= 10) do
+                v.run[playerIndex] = v.run[playerIndex] - 10
                 for _, slot in ipairs(utility:getSlotsWithCollectible(player, registry.COLLECTIBLE_DEVOUT_PRAYER)) do
                     local currentCharge = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
                     if (player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY) and (currentCharge < 24))
@@ -82,40 +93,40 @@ local function useOtherPocketItem()
 end
 
 --- check wether 'Devout Prayer' should be used when corresponding action is triggered
-local function postUpdate()
-    for i = 0, game:GetNumPlayers() - 1 do
-        local player = Isaac.GetPlayer(i)
-        if ((player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == registry.COLLECTIBLE_DEVOUT_PRAYER)
-        and (Input.IsActionTriggered(ButtonAction.ACTION_ITEM, player.ControllerIndex))) then
-            local charge = player:GetActiveCharge(ActiveSlot.SLOT_PRIMARY)
-            if (charge > 0) and (charge < 12) then
-                player:UseActiveItem(registry.COLLECTIBLE_DEVOUT_PRAYER, UseFlag.USE_OWNED, ActiveSlot.SLOT_PRIMARY)
-            end
-        else
-            if ((player:GetActiveItem(ActiveSlot.SLOT_POCKET) == registry.COLLECTIBLE_DEVOUT_PRAYER)
-            and (Input.IsActionTriggered(ButtonAction.ACTION_PILLCARD, player.ControllerIndex))) then
-                if (not otherPocketItemUsed) then
-                    local charge = player:GetActiveCharge(ActiveSlot.SLOT_POCKET)
-                    if (charge > 0) and (charge < 12) then
-                        player:UseActiveItem(registry.COLLECTIBLE_DEVOUT_PRAYER, UseFlag.USE_OWNED, ActiveSlot.SLOT_POCKET)
-                    end
-                else
-                    otherPocketItemUsed = false
+--- @param player EntityPlayer
+local function postPlayerUpdate(_, player)
+    if ((player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == registry.COLLECTIBLE_DEVOUT_PRAYER)
+    and (Input.IsActionTriggered(ButtonAction.ACTION_ITEM, player.ControllerIndex))) then
+        local charge = player:GetActiveCharge(ActiveSlot.SLOT_PRIMARY)
+        if (charge > 0) and (charge < 12) then
+            player:UseActiveItem(registry.COLLECTIBLE_DEVOUT_PRAYER, UseFlag.USE_OWNED, ActiveSlot.SLOT_PRIMARY)
+        end
+    else
+        if ((player:GetActiveItem(ActiveSlot.SLOT_POCKET) == registry.COLLECTIBLE_DEVOUT_PRAYER)
+        and (Input.IsActionTriggered(ButtonAction.ACTION_PILLCARD, player.ControllerIndex))) then
+            if (not otherPocketItemUsed) then
+                local charge = player:GetActiveCharge(ActiveSlot.SLOT_POCKET)
+                if (charge > 0) and (charge < 12) then
+                    player:UseActiveItem(registry.COLLECTIBLE_DEVOUT_PRAYER, UseFlag.USE_OWNED, ActiveSlot.SLOT_POCKET)
                 end
+            else
+                otherPocketItemUsed = false
             end
         end
     end
 end
 
--- todo: save counters per player
-local counters = {
-    luck = 0,
-    damage = 0,
-    reset = function(self)
-         self.damage = 0
-         self.luck = 0
+--- @param player EntityPlayer
+local function getPlayerCounters(player)
+    local playerIndex = "DevoutPrayer_Counters_"..isc:getPlayerIndex(player)
+    if (not v.level[playerIndex]) then
+        v.level[playerIndex] = {
+            damage = 0,
+            luck = 0
+        }
     end
-}
+    return v.level[playerIndex]
+end
 
 --- Increases the given players Luck by 0.1 per charge spent.<br>
 --- Extra effect: also increases Damage by 0.25 per charge spent.
@@ -123,6 +134,7 @@ local counters = {
 --- @param player EntityPlayer
 --- @param extraEffect boolean
 local function effectAddLuck(chargeValue, player, extraEffect)
+    local counters = getPlayerCounters(player)
     local cacheFlags = CacheFlag.CACHE_LUCK
     counters.luck = counters.luck + chargeValue
     if (extraEffect == true) then
@@ -139,6 +151,8 @@ end
 local function evaluateStats(_, player, flag)
     if (not player:HasCollectible(registry.COLLECTIBLE_DEVOUT_PRAYER)) then return end
 
+    local counters = getPlayerCounters(player)
+
     if (flag & CacheFlag.CACHE_DAMAGE == CacheFlag.CACHE_DAMAGE) then
         player.Damage = player.Damage + (0.25 * counters.damage)
     end
@@ -150,7 +164,7 @@ end
 
 --- reset counters at the start of a new level
 local function postNewLevel_resetCounters()
-    counters:reset()
+    --counters:reset()
     for i = 0, game:GetNumPlayers() - 1 do
         local player = Isaac.GetPlayer(i)
         player:AddCacheFlags((CacheFlag.CACHE_DAMAGE | CacheFlag.CACHE_LUCK))
@@ -209,14 +223,21 @@ local function effectSpawnItem(rng, player, extraEffect)
     end
     local pool = game:GetItemPool()
     local room = game:GetRoom()
-    local c1 = pool:GetCollectible(pool:GetPoolForRoom(room:GetType(), rng:RandomInt(math.maxinteger)), false, rng:RandomInt(math.maxinteger))
+    local collectibles = {
+        [0] = CollectibleType.COLLECTIBLE_NULL,
+        [1] = CollectibleType.COLLECTIBLE_NULL
+    }
+
+    collectibles[0] = pool:GetCollectible(pool:GetPoolForRoom(room:GetType(), rng:RandomInt(math.maxinteger)), false, rng:RandomInt(math.maxinteger))
+    Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, collectibles[0], room:FindFreePickupSpawnPosition(player.Position, 0, true), Vector.Zero, nil):ToPickup().OptionsPickupIndex = optionIndex
 
     -- todo: spawn item from Devil Room pool if Devil Deal has been taken before (must be paid for)
     local poolAngelOrDevil = ItemPoolType.POOL_ANGEL
-    local c2 = pool:GetCollectible(poolAngelOrDevil, false, rng:RandomInt(math.maxinteger))
-
-    Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, c1, room:FindFreePickupSpawnPosition(player.Position, 0, true), Vector.Zero, nil):ToPickup().OptionsPickupIndex = optionIndex
-    Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, c2, room:FindFreePickupSpawnPosition(player.Position, 0, true), Vector.Zero, nil):ToPickup().OptionsPickupIndex = optionIndex
+    if (game.Difficulty == Difficulty.DIFFICULTY_GREED or game.Difficulty == Difficulty.DIFFICULTY_GREEDIER) then
+        poolAngelOrDevil = ItemPoolType.POOL_GREED_ANGEL
+    end
+    collectibles[1] = pool:GetCollectible(poolAngelOrDevil, false, rng:RandomInt(math.maxinteger))
+    Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, collectibles[1], room:FindFreePickupSpawnPosition(player.Position, 0, true), Vector.Zero, nil):ToPickup().OptionsPickupIndex = optionIndex
 end
 
 --- @param collectible CollectibleType
@@ -226,8 +247,7 @@ end
 --- @param slot ActiveSlot
 local function useItem(_, collectible, rng, player, flags, slot)
     local extraEffect = false
-    local dat = utility:getData(player)
-    if (dat["TSaint_EternalHeart"] and dat["TSaint_EternalHeart"] == true) then
+    if (player:GetEternalHearts() == 1) then
         player:AddEternalHearts(-1)
         extraEffect = true
     end
@@ -266,11 +286,12 @@ end
 --- Initialize the item's functionality.
 --- @param mod ModReference
 function Devout_Prayer:Init(mod)
+    mod:saveDataManager("Devout_Prayer", v)
     mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, postEntityKill)
     mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, preSpawnCleanAward)
     mod:AddCallback(ModCallbacks.MC_USE_CARD, useOtherPocketItem)
     mod:AddCallback(ModCallbacks.MC_USE_PILL, useOtherPocketItem)
-    mod:AddCallback(ModCallbacks.MC_POST_UPDATE, postUpdate)
+    mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate, 0)
     mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, registry.COLLECTIBLE_DEVOUT_PRAYER)
     mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, postNewLevel_resetCounters)
     mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats, CacheFlag.CACHE_DAMAGE)

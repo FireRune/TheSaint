@@ -1,15 +1,21 @@
 -- Imports
+
+local isc = require("TheSaint.lib.isaacscript-common")
+--local json = require("json")
 local utility = include("utility")
 local stats = include("stats")
-local imports = include("imports")
 local registry = include("ItemRegistry")
-local json = require("json")
 include("EIDRegistry")
 
 -- Init
 
-TheSaint = RegisterMod(stats.ModName, 1)
+local TheSaintVanilla = RegisterMod(stats.ModName, 1)
+local features = {
+    isc.ISCFeature.SAVE_DATA_MANAGER
+}
+local TheSaint = isc:upgradeMod(TheSaintVanilla, features)
 
+local imports = include("imports")
 if (type(imports) == "table") then
     imports:Init(TheSaint)
 end
@@ -195,7 +201,7 @@ local function postPlayerInitLate(player)
     end
 end
 TheSaint:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, function(_, player)
-    if not isContinue then postPlayerInitLate(player) end
+    if (not isContinue) then postPlayerInitLate(player) end
 end)
 
 TheSaint:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function(_, IsContin)
