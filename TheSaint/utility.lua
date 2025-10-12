@@ -1,17 +1,5 @@
 local utility = {}
 
---- checks wether the given player has the specified card/rune
---- @param player EntityPlayer
---- @param card Card
-function utility:hasCard(player, card)
-    local hasCard = false
-    for i = 0, player:GetMaxPocketItems() - 1 do
-        if (player:GetCard(i) == card) then hasCard = true end
-        break
-    end
-    return hasCard
-end
-
 --- checks wether the given player is able to pick up the specified item
 --- @param player EntityPlayer
 --- @param item EntityPickup
@@ -28,19 +16,6 @@ function utility:canPickUpItem(player, item)
         if ((item.Price == PickupPrice.PRICE_THREE_SOULHEARTS) and (player:GetSoulHearts() < 1)) then return false end
         if (((item.Price == PickupPrice.PRICE_ONE_HEART_AND_TWO_SOULHEARTS) or (item.Price == PickupPrice.PRICE_ONE_HEART_AND_ONE_SOUL_HEART)) and ((player:GetEffectiveMaxHearts() < 2) or (player:GetSoulHearts() < 1))) then return false end
         return true
-    end
-    return nil
-end
-
---- checks wether the given entity has data from this mod and returns that table, otherwise returns nil
---- @param entity Entity
-function utility:getData(entity)
-    if entity and entity.GetData then
-        local data = entity:GetData()
-        if not data.TheSaint then
-            data.TheSaint = {}
-        end
-        return data.TheSaint
     end
     return nil
 end

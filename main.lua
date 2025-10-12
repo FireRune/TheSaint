@@ -1,7 +1,6 @@
 -- Imports
 
 local isc = require("TheSaint.lib.isaacscript-common")
---local json = require("json")
 local utility = include("TheSaint/utility")
 local stats = include("TheSaint/stats")
 local registry = include("TheSaint/ItemRegistry")
@@ -244,6 +243,8 @@ TheSaint:AddCallback(ModCallbacks.MC_EXECUTE_CMD, TheSaint.executeCmd)
         also make sure to retain 'Mending Heart'
 ]]
 
+local playersDamageTaken = {}
+
 --- 'Tainted Saint' took damage that invokes penalties (i.e. decreasing Devil/Angel chance)
 --- @param ent Entity
 --- @param flag DamageFlag
@@ -254,7 +255,8 @@ function TheSaint:onDmgTaken(ent, _, flag)
 		if (pType == taintedChar) then
 			if (flag & DamageFlag.DAMAGE_RED_HEARTS ~= DamageFlag.DAMAGE_RED_HEARTS)
 			and (flag & DamageFlag.DAMAGE_NO_PENALTIES ~= DamageFlag.DAMAGE_NO_PENALTIES) then
-				utility:getData(player)["TSaint_DmgTaken"] = true
+                local playerIndex = "TSaint_DmgTaken_"..isc:getPlayerIndex(player)
+                playersDamageTaken[playerIndex] = true
 			end
 		end
 	end
@@ -273,19 +275,13 @@ end
 --- also, when taking damage that causes penalties, turn all empty containers into Broken Hearts.
 --- @param player EntityPlayer
 function TheSaint:postPlayerUpdate_TSaint_Hearts(player)
-    local dat = utility:getData(player)
+    local playerIndex = "TSaint_DmgTaken_"..isc:getPlayerIndex(player)
     if (player:GetPlayerType() == taintedChar) then
 		-- player took damage that causes penalties, then remove all empty Heart Containers, replace with Broken Hearts
-		if (dat["TSaint_DmgTaken"] == true) then
+		if (playersDamageTaken[playerIndex] == true) then
 			player:AddBrokenHearts(removeEmptyContainers(player))
-			dat["TSaint_DmgTaken"] = false
+			playersDamageTaken[playerIndex] = false
 		end
-        -- alter charge-behaviour of 'Devout Prayer' as T.Saint
-        if (player:GetEternalHearts() > 0) then
-            dat["TSaint_EternalHeart"] = true
-        else
-            dat["TSaint_EternalHeart"] = false
-        end
         -- T.Saint can't utilize Soul/Black Hearts
         local soulHearts = player:GetSoulHearts()
         if (soulHearts > 0) then
@@ -316,7 +312,7 @@ TheSaint:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, TheSaint.prePickupCol
 
 --- chance to replace Soul/Black/Blended Hearts with an Eternal Heart while playing as 'Tainted Saint'
 --- @param heart EntityPickup
-function TheSaint:postPickupInit_TSaint_Hearts(heart)
+function TheSaint:postPickupInitFirst_TSaint_Hearts(heart)
     for i = 0, game:GetNumPlayers() - 1 do
         local player = Isaac.GetPlayer(i)
         if (player:GetPlayerType() == taintedChar) then
@@ -333,7 +329,7 @@ function TheSaint:postPickupInit_TSaint_Hearts(heart)
         end
     end
 end
-TheSaint:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, TheSaint.postPickupInit_TSaint_Hearts, PickupVariant.PICKUP_HEART)
+TheSaint:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, TheSaint.postPickupInitFirst_TSaint_Hearts, PickupVariant.PICKUP_HEART)
 
 --- prevent 'Tainted Saint' from picking up Soul/Black Hearts, as well as Blended Hearts while at full health
 --- @param heart EntityPickup
