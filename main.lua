@@ -1,7 +1,6 @@
 -- Imports
 
 local isc = require("TheSaint.lib.isaacscript-common")
-local utility = include("TheSaint/utility")
 local stats = include("TheSaint/stats")
 local registry = include("TheSaint/ItemRegistry")
 include("TheSaint/EIDRegistry")
@@ -23,7 +22,6 @@ end
 
 local config = Isaac.GetItemConfig()
 local game = Game()
-local rng = RNG()
 local pool = game:GetItemPool()
 local isContinue = true -- to differentiate between a fresh run and a continued run
 local char = Isaac.GetPlayerTypeByName(stats.default.name, false)
@@ -292,23 +290,18 @@ end
 TheSaint:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, TheSaint.postPlayerUpdate_TSaint_Hearts, 0)
 
 --- Heart Containers removed as payment will be replaced with Broken Hearts
+--- @param player EntityPlayer
 --- @param item EntityPickup
---- @param collider Entity
-function TheSaint:prePickupCollision_TSaint_BrokenHearts(item, collider)
-    local player = collider:ToPlayer()
-    if player and (player:GetPlayerType() == taintedChar) then
-        if utility:canPickUpItem(player, item) then
-            if (item.Price == PickupPrice.PRICE_ONE_HEART)
-            or (item.Price == PickupPrice.PRICE_ONE_HEART_AND_TWO_SOULHEARTS)
-			or (item.Price == PickupPrice.PRICE_ONE_HEART_AND_ONE_SOUL_HEART) then
-                player:AddBrokenHearts(1)
-            elseif (item.Price == PickupPrice.PRICE_TWO_HEARTS) then
-                player:AddBrokenHearts(2)
-            end
-        end
+function TheSaint:preGetPedestal_TSaint_BrokenHearts(player, item)
+    if (item.Price == PickupPrice.PRICE_ONE_HEART)
+    or (item.Price == PickupPrice.PRICE_ONE_HEART_AND_TWO_SOULHEARTS)
+    or (item.Price == PickupPrice.PRICE_ONE_HEART_AND_ONE_SOUL_HEART) then
+        player:AddBrokenHearts(1)
+    elseif (item.Price == PickupPrice.PRICE_TWO_HEARTS) then
+        player:AddBrokenHearts(2)
     end
 end
-TheSaint:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, TheSaint.prePickupCollision_TSaint_BrokenHearts, PickupVariant.PICKUP_COLLECTIBLE)
+TheSaint:AddCallbackCustom(isc.ModCallbackCustom.PRE_GET_PEDESTAL, TheSaint.preGetPedestal_TSaint_BrokenHearts, 0, taintedChar)
 
 --- chance to replace Soul/Black/Blended Hearts with an Eternal Heart while playing as 'Tainted Saint'
 --- @param heart EntityPickup
@@ -320,7 +313,7 @@ function TheSaint:postPickupInitFirst_TSaint_Hearts(heart)
             or (heart.SubType == HeartSubType.HEART_BLACK)
             or (heart.SubType == HeartSubType.HEART_HALF_SOUL)
             or (heart.SubType == HeartSubType.HEART_BLENDED) then
-                utility:setSeedRNG(rng)
+                local rng = player:GetDropRNG()
                 if ((rng:RandomInt(20) + 1) == 20) then
                     heart:Morph(heart.Type, heart.Variant, HeartSubType.HEART_ETERNAL, true)
                 end

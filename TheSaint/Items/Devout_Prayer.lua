@@ -1,6 +1,4 @@
-local utility = include("TheSaint/utility")
 local registry = include("TheSaint/ItemRegistry")
-local stats = include("TheSaint/stats")
 local game = Game()
 local hud = game:GetHUD()
 local sfx = SFXManager()
@@ -51,7 +49,7 @@ local function chargeDevoutPrayer(pointValue)
             v.run[playerIndex] = (v.run[playerIndex] and (v.run[playerIndex] + pointValue)) or pointValue
             while (v.run[playerIndex] >= 10) do
                 v.run[playerIndex] = v.run[playerIndex] - 10
-                for _, slot in ipairs(utility:getSlotsWithCollectible(player, registry.COLLECTIBLE_DEVOUT_PRAYER)) do
+                for _, slot in ipairs(isc:getActiveItemSlots(player, registry.COLLECTIBLE_DEVOUT_PRAYER)) do
                     local currentCharge = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
                     if (player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY) and (currentCharge < 24))
                     or (currentCharge < 12) then
@@ -164,7 +162,6 @@ end
 
 --- reset counters at the start of a new level
 local function postNewLevel_resetCounters()
-    --counters:reset()
     for i = 0, game:GetNumPlayers() - 1 do
         local player = Isaac.GetPlayer(i)
         player:AddCacheFlags((CacheFlag.CACHE_DAMAGE | CacheFlag.CACHE_LUCK))
