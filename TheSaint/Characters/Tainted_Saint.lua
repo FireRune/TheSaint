@@ -7,18 +7,6 @@ local Tainted_Saint = {}
 local game = Game()
 local taintedChar = Isaac.GetPlayerTypeByName(stats.tainted.name, true)
 
--- 'Tainted Saint'-mechanics BEGIN
-
---[[
-    TODO: interactions with the following items:
-    - 'Abbadon':
-        on collecting, set health to 1 Heart Container with half a heart (MaxHearts = 2, Hearts = 1)
-        also turn all lost Heart Containers to Broken Hearts
-    - 'Esau Jr.':
-        on first activation set health to 1 Heart container and 2 Broken Hearts (MaxHearts = 2, Hearts = 2, BrokenHearts = 2)
-        also make sure to retain 'Mending Heart'
-]]
-
 local playersDamageTaken = {}
 
 --- 'Tainted Saint' took damage that invokes penalties (i.e. decreasing Devil/Angel chance)
@@ -115,6 +103,8 @@ local function prePickupCollision_TSaint_Hearts(_, heart, collider)
     end
 end
 
+--- When using 'Esau Jr.' for the first time as 'Tainted Saint' in a run,<br>
+--- sets health to 1 full Heart Container + 2 Broken Hearts and re-add 'Devout Prayer'
 --- @param player EntityPlayer
 local function postFirstEsauJr(_, player)
     if (player:GetPlayerType() == taintedChar) then
@@ -126,6 +116,32 @@ local function postFirstEsauJr(_, player)
     end
 end
 
+-- Used to store the current amount of Heart Containers when picking up 'Abaddon'.
+local abaddonHeartsRemoved = 0
+
+--- Store the current amount of Heart Containers when picking up 'Abaddon'.
+--- @param player EntityPlayer
+local function preItemPickup_Abaddon(_, player, _)
+	if (player:GetPlayerType() == taintedChar) then
+		abaddonHeartsRemoved = math.max(0, (player:GetMaxHearts() // 2) - 1)
+	end
+end
+
+--- Picking up 'Abaddon' would turn all Heart Containers into Black Hearts.<br>
+--- For 'Tainted Saint' instead sets health to 1 Heart Containter with half a heart<br>
+--- and replace all other Heart Containers with Broken Hearts.
+--- @param player EntityPlayer
+local function postItemPickup_Abaddon(_, player, _)
+	if (player:GetPlayerType() == taintedChar) then
+		player:AddMaxHearts(2)
+		player:AddHearts(1)
+		if (abaddonHeartsRemoved > 0) then
+			player:AddBrokenHearts(abaddonHeartsRemoved)
+			abaddonHeartsRemoved = 0
+		end
+	end
+end
+
 --- @param mod ModReference
 function Tainted_Saint:Init(mod)
 	mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, onDmgTaken, EntityType.ENTITY_PLAYER)
@@ -134,8 +150,8 @@ function Tainted_Saint:Init(mod)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst_TSaint_Hearts, PickupVariant.PICKUP_HEART)
 	mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, prePickupCollision_TSaint_Hearts, PickupVariant.PICKUP_HEART)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_FIRST_ESAU_JR, postFirstEsauJr)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.PRE_ITEM_PICKUP, preItemPickup_Abaddon, ItemType.ITEM_PASSIVE, CollectibleType.COLLECTIBLE_ABADDON)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_ITEM_PICKUP, postItemPickup_Abaddon, ItemType.ITEM_PASSIVE, CollectibleType.COLLECTIBLE_ABADDON)
 end
-
--- 'Tainted Saint'-mechanics END
 
 return Tainted_Saint
