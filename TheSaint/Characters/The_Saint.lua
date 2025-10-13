@@ -15,7 +15,8 @@ local function postFirstEsauJr(_, player)
     end
 end
 
-function The_Saint:init(mod)
+--- @param mod ModReference
+function The_Saint:Init(mod)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_FIRST_ESAU_JR, postFirstEsauJr)
 end
 

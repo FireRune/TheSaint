@@ -1,6 +1,8 @@
 local imports = {}
 
 local features = {
+    include("TheSaint.Characters.Characters"),
+    include("TheSaint.Characters.The_Saint"),
     include("TheSaint.Characters.Tainted_Saint"),
     include("TheSaint.Items.Almanach"),
     include("TheSaint.Items.Mending_Heart"),
