@@ -218,7 +218,7 @@ end
 TheSaint:AddCallback(ModCallbacks.MC_EXECUTE_CMD, TheSaint.executeCmd)
 
 -- feature initialization
-local imports = include("TheSaint/imports")
+local imports = include("TheSaint.imports")
 if (type(imports) == "table") then
     imports:Init(TheSaint)
 end

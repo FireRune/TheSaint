@@ -1,10 +1,10 @@
 local imports = {}
 
 local features = {
-    include("TheSaint/Characters/Tainted_Saint"),
-    include("TheSaint/Items/Almanach"),
-    include("TheSaint/Items/Mending_Heart"),
-    include("TheSaint/Items/Devout_Prayer")
+    include("TheSaint.Characters.Tainted_Saint"),
+    include("TheSaint.Items.Almanach"),
+    include("TheSaint.Items.Mending_Heart"),
+    include("TheSaint.Items.Devout_Prayer")
 }
 
 --- initialize all features of this mod

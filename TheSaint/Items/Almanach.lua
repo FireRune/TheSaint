@@ -1,4 +1,4 @@
-local registry = include("TheSaint/ItemRegistry")
+local registry = include("TheSaint.ItemRegistry")
 local game = Game()
 local config = Isaac.GetItemConfig()
 local item = {}

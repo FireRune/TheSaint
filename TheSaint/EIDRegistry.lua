@@ -1,4 +1,4 @@
-local registry = include("TheSaint/ItemRegistry")
+local registry = include("TheSaint.ItemRegistry")
 
 if EID then
 	local desc = ""
