@@ -183,7 +183,7 @@ end
 
 --- @param mod ModReference
 function Characters:Init(mod)
-	mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats)
+	mod:AddPriorityCallback(ModCallbacks.MC_EVALUATE_CACHE, CallbackPriority.LATE, evaluateStats)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, function(_, player)
 	    if (not isContinue) then postPlayerInitLate(player) end
 	end)
