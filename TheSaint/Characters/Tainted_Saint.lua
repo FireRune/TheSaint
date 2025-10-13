@@ -1,5 +1,6 @@
 local isc = require("TheSaint.lib.isaacscript-common")
-local stats = include("TheSaint/stats")
+local stats = include("TheSaint.stats")
+local registry = include("TheSaint.ItemRegistry")
 
 local Tainted_Saint = {}
 
@@ -120,7 +121,8 @@ local function postFirstEsauJr(_, player)
         player:AddMaxHearts(2)
         player:AddHearts(2)
         player:AddBrokenHearts(2)
-        -- prevent 'Mending Heart' from being removed
+        -- prevent 'Devout Prayer' from being removed
+        player:SetPocketActiveItem(registry.COLLECTIBLE_DEVOUT_PRAYER, ActiveSlot.SLOT_POCKET, false)
     end
 end
 

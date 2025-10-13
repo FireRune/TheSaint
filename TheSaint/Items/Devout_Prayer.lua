@@ -1,8 +1,7 @@
-local registry = include("TheSaint/ItemRegistry")
+local isc = require("TheSaint.lib.isaacscript-common")
+local registry = include("TheSaint.ItemRegistry")
 local game = Game()
 local hud = game:GetHUD()
-local sfx = SFXManager()
-local isc = require("TheSaint.lib.isaacscript-common")
 
 --[[
     "Devout Prayer"<br>
@@ -55,11 +54,7 @@ local function chargeDevoutPrayer(pointValue)
                     or (currentCharge < 12) then
                         player:SetActiveCharge(currentCharge + 1, slot)
                         hud:FlashChargeBar(player, slot)
-                        if (currentCharge == 11) or (currentCharge == 23) then
-                            sfx:Play(SoundEffect.SOUND_ITEMRECHARGE)
-                        else
-                            sfx:Play(SoundEffect.SOUND_BEEP)
-                        end
+                        isc:playChargeSoundEffect(player, slot)
                     end
                 end
             end

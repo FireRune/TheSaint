@@ -1,4 +1,7 @@
-local registry = include("TheSaint/ItemRegistry")
+local isc = require("TheSaint.lib.isaacscript-common")
+local registry = include("TheSaint.ItemRegistry")
+local stats = include("TheSaint.stats")
+local taintedChar = Isaac.GetPlayerTypeByName(stats.tainted.name, true)
 local game = Game()
 local item = {}
 
@@ -10,11 +13,19 @@ local item = {}
 --- animation state flag
 local playMovie = -1
 
+-- prevent accidental trigger when starting a new run as 'Tainted Saint'
+local blockNewRun = true
+
+local function postGameStartedReordered(_, isContinue)
+    blockNewRun = true
+end
+
 --- when entering a new floor, replace Broken Heart(s) with empty Heart Container(s), then set the animation flag
-local function postNewLevel()
+local function postNewLevelReordered(_, stage, stageType)
     for i = 0, game:GetNumPlayers() - 1 do
         local player = Isaac.GetPlayer(i)
-        if player:HasCollectible(registry.COLLECTIBLE_MENDING_HEART) then
+        if (player:HasCollectible(registry.COLLECTIBLE_MENDING_HEART)
+        or ((player:GetPlayerType() == taintedChar) and (blockNewRun == false))) then
             if (player:GetBrokenHearts() > 0) then
 				local amount = 1
 				if (game:GetStagesWithoutDamage() > 0) then amount = 2 end
@@ -22,6 +33,8 @@ local function postNewLevel()
 				player:AddMaxHearts(2 * amount)
                 playMovie = 0
             end
+        else
+            blockNewRun = false
         end
     end
 end
@@ -53,7 +66,8 @@ end
 --- initialize the item's functionality
 --- @param mod ModReference
 function item:Init(mod)
-    mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, postNewLevel)
+    mod:AddCallbackCustom(isc.ModCallbackCustom.POST_GAME_STARTED_REORDERED, postGameStartedReordered, false)
+    mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_LEVEL_REORDERED, postNewLevelReordered)
     mod:AddCallback(ModCallbacks.MC_POST_RENDER, postRender)
 end
 

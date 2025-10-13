@@ -1,9 +1,9 @@
 -- Imports
 
 local isc = require("TheSaint.lib.isaacscript-common")
-local stats = include("TheSaint/stats")
-local registry = include("TheSaint/ItemRegistry")
-include("TheSaint/EIDRegistry")
+local stats = include("TheSaint.stats")
+local registry = include("TheSaint.ItemRegistry")
+include("TheSaint.EIDRegistry")
 
 -- Init
 
@@ -189,7 +189,6 @@ local function postPlayerInitLate(player)
     if (pType == taintedChar) then
 		itemPool:RemoveCollectible(registry.COLLECTIBLE_MENDING_HEART)
         player:SetPocketActiveItem(registry.COLLECTIBLE_DEVOUT_PRAYER, ActiveSlot.SLOT_POCKET, false)
-		player:AddCollectible(registry.COLLECTIBLE_MENDING_HEART)
     end
 end
 TheSaint:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, function(_, player)
