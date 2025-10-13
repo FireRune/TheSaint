@@ -4,8 +4,7 @@
         bigportraitroot="gfx/ui/stage/">
     <!--
         "The Saint"
-        * All Hearts have a chance to be replaced by Eternal Hearts
-        * The Saint starts with 'The Almanach' as their Active Item.
+        * The Saint starts with 'The Almanach' as their Pocket Active Item.
     -->
     <player name="The Saint"
             skin="character_saint.png"
@@ -18,12 +17,13 @@
     />
     <!--
         "Tainted Saint"
-        * Tainted Saint cannot utilize Soul/Black Hearts; Devil and Angel Rooms don't appear after beating a boss.
-        * All empty Heart Containers will be replaced with Broken Hearts when taking damage or taking a Devil Deal.
+        * Tainted Saint cannot utilize Soul/Black Hearts.
+        * All empty Heart Containers will be replaced with Broken Hearts when taking damage
+        * Paying with Heart Containers wwill turn these into Broken Hearts.
         * Soul/Black Hearts have a chance to be replaced with an Eternal Heart
-        * While having an Eternal Heart: 'Belief' will charge faster (every 5th enemy killed; bosses give 2 charges)
-        * Starts with 'Belief' as their Pocket Active Item.
-        * Birthright: when gaining a Heart Container via Eternal Hearts, grants a Holy Mantle shield
+        * While having an Eternal Heart: 'Devout Prayer' will charge faster (every 5th enemy killed; bosses give 2 charges)
+        * Starts with 'Mending Heart'.
+        * Starts with 'Devout Prayer' as their Pocket Active Item.
     -->
     <player name="The Saint B"
             bSkinParent="The Saint"
