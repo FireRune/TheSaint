@@ -170,20 +170,20 @@ local function postPlayerInitLate(player)
 		if (card ~= 0) then player:SetCard(0, card) end
 	end
 
-    local itemPool = game:GetItemPool()
     local pType = player:GetPlayerType()
     if (pType == char) then
-        player:SetPocketActiveItem(registry.COLLECTIBLE_ALMANACH, ActiveSlot.SLOT_POCKET, false)
+        pool:RemoveCollectible(registry.COLLECTIBLE_ALMANACH)
+        player:AddCollectible(registry.COLLECTIBLE_ALMANACH, config:GetCollectible(registry.COLLECTIBLE_ALMANACH).MaxCharges)
     end
     if (pType == taintedChar) then
-		itemPool:RemoveCollectible(registry.COLLECTIBLE_MENDING_HEART)
+		pool:RemoveCollectible(registry.COLLECTIBLE_MENDING_HEART)
         player:SetPocketActiveItem(registry.COLLECTIBLE_DEVOUT_PRAYER, ActiveSlot.SLOT_POCKET, false)
     end
 end
 
 --- @param mod ModReference
 function Characters:Init(mod)
-	mod:AddPriorityCallback(ModCallbacks.MC_EVALUATE_CACHE, CallbackPriority.LATE, evaluateStats)
+	mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, function(_, player)
 	    if (not isContinue) then postPlayerInitLate(player) end
 	end)
