@@ -34,8 +34,9 @@ local function getEmptyContainers(player)
     return emptyContainers
 end
 
---- when taking damage that causes penalties, turn all empty containers into Broken Hearts.
---- also, remove any Soul Hearts.
+--- When taking damage that causes penalties, turn all empty containers into Broken Hearts.<br>
+--- (with 'Birthright' only 1 Heart Container will turn into a Broken Heart instead.)<br>
+--- Remove any Soul Hearts, that may be applied through items.
 --- @param player EntityPlayer
 local function postPlayerUpdate_TSaint_Hearts(_, player)
     if (player:GetPlayerType() == taintedChar) then
@@ -43,8 +44,13 @@ local function postPlayerUpdate_TSaint_Hearts(_, player)
 		-- player took damage that causes penalties, then remove all empty Heart Containers, replace with Broken Hearts
 		if (playersDamageTaken[playerIndex] == true) then
             local emptyContainers = getEmptyContainers(player)
-            player:AddMaxHearts(emptyContainers * -2)
-			player:AddBrokenHearts(emptyContainers)
+            if (emptyContainers > 0) then
+                if (player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)) then
+                    emptyContainers = 1
+                end
+                player:AddMaxHearts(emptyContainers * -2)
+                player:AddBrokenHearts(emptyContainers)
+            end
 			playersDamageTaken[playerIndex] = false
 		end
         -- T.Saint can't utilize Soul/Black Hearts
