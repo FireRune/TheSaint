@@ -128,13 +128,10 @@ end
 --- @param extraEffect boolean
 local function effectAddLuck(chargeValue, player, extraEffect)
     local counters = getPlayerCounters(player)
-    local cacheFlags = CacheFlag.CACHE_LUCK
     counters.luck = counters.luck + chargeValue
     if (extraEffect == true) then
-        cacheFlags = (cacheFlags | CacheFlag.CACHE_DAMAGE)
         counters.damage = counters.damage + chargeValue
     end
-    player:AddCacheFlags(cacheFlags)
     player:EvaluateItems()
 end
 

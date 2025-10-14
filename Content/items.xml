@@ -1,6 +1,6 @@
 <items gfxroot="gfx/items/" version="1">
     <active name="Almanach" description="A library's worth of knowledge" gfx="almanach.png" maxcharges="3" tags="book offensive" quality="2" />
-    <active name="Devout Prayer" description="Pray in your times of need" gfx="devout_prayer.png" maxcharges="12" initcharge="0" chargetype="special" tags="noeden nocantrip" quality="0" hidden="true" />
+    <active name="Devout Prayer" description="Pray in your times of need" gfx="devout_prayer.png" maxcharges="12" initcharge="0" chargetype="special" cache="damage luck" tags="noeden nocantrip" quality="0" hidden="true" />
     
-    <passive name="Mending Heart" description="Put it back together!" gfx="mending_heart.png" tags="nolostbr summonable" quality="3" />
+    <passive name="Mending Heart" description="Put it back together!" gfx="mending_heart.png" tags="nolostbr summonable" quality="1" />
 </items>
