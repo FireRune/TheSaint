@@ -1,3 +1,4 @@
+local isc = require("TheSaint.lib.isaacscript-common")
 local registry = include("TheSaint.ItemRegistry")
 local game = Game()
 local config = Isaac.GetItemConfig()
@@ -28,37 +29,6 @@ local itemNames = {
     [1] = ""
 }
 
---- for vanilla items: extracts an item's name from the internal placeholder and returns it;
---- otherwise returns the item name
---- @param name string
---- @return string
-local function getShortenedName(name)
-    if (name:sub(1, 1) == "#") and (name:sub(-5) == "_NAME") then
-        if (name == "#4_5_VOLT_NAME") then name = "#4.5_VOLT_NAME" end
-        return name:sub(2, -6):gsub("_", " "):upper()
-    end
-    return name
-end
-
---- returns the name of the item invoked through 'Almanach', with proper casing for display in the 2nd line
---- @param collectible ItemConfigItem
-local function getName(collectible)
-    local name = collectible.Name
-    if (name:sub(1, 1) == "#")
-    and (name:sub(-5) == "_NAME") then
-        name = getShortenedName(name):lower()
-        name = name:sub(1, 1):upper()..name:sub(2)
-        local i = 0
-        while true do
-            i = name:find(" ", i + 1)
-            if (i == nil) then break end
-            name = name:sub(1, i)..name:sub(i + 1, i + 1):upper()..name:sub(i + 2)
-        end
-        name, _ = name:gsub(" Of ", " of "):gsub(" For ", " for "):gsub(" To ", " to "):gsub(" The ", " the ")
-    end
-    return name
-end
-
 --- caches all items with the 'book'-tag
 local function getBooks()
     if (#books > 0) then return end
@@ -69,7 +39,7 @@ local function getBooks()
             if collectible:HasTags(ItemConfig.TAG_BOOK)
             and (collectible.ID ~= registry.COLLECTIBLE_ALMANACH) then
                 counter = counter + 1
-                table.insert(books, counter, {ID = collectible.ID, Name = getName(collectible)})
+                table.insert(books, counter, {ID = collectible.ID, Name = isc:getCollectibleName(collectible.ID)})
             end
         end
     end
@@ -79,8 +49,7 @@ end
 --- @param itemWisp EntityFamiliar
 local function getWispName(_, itemWisp)
     if almanachLemegeton then
-        local collectible = config:GetCollectible(itemWisp.SubType)
-        wispName = getShortenedName(collectible.Name)
+        wispName = isc:getCollectibleName(itemWisp.SubType)
     end
 end
 
