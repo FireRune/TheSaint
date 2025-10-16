@@ -4,7 +4,7 @@
         bigportraitroot="gfx/ui/stage/">
     <!--
         "The Saint"
-        * The Saint starts with 'The Almanach' as their Pocket Active Item.
+        * The Saint starts with 'The Almanach' as their Active Item.
     -->
     <player name="The Saint"
             skin="character_saint.png"
@@ -22,7 +22,7 @@
         * Paying with Heart Containers wwill turn these into Broken Hearts.
         * Soul/Black Hearts have a chance to be replaced with an Eternal Heart
         * While having an Eternal Heart: 'Devout Prayer' will charge faster (every 5th enemy killed; bosses give 2 charges)
-        * Starts with 'Mending Heart'.
+        * Starts with inherent 'Mending Heart'.
         * Starts with 'Devout Prayer' as their Pocket Active Item.
     -->
     <player name="The Saint B"
