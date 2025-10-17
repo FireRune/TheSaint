@@ -6,7 +6,7 @@ if EID then
 	local extraTable = {}
 
 	-- Almanach
-	desc = "Invokes the effects of 2 'book'-items#Can also invoke Books that haven't been unlocked yet"
+	desc = "Invokes the effects of 2 'book'-items (except 'How to jump' and itself)#Can also invoke Books that haven't been unlocked yet"
 	EID:addCollectible(registry.COLLECTIBLE_ALMANACH, desc)
 
 	EID:assignTransformation("collectible", registry.COLLECTIBLE_ALMANACH, EID.TRANSFORMATION["BOOKWORM"])
@@ -15,6 +15,9 @@ if EID then
 	extraTable = {bulletpoint = "VirtuesCollectible"..registry.COLLECTIBLE_ALMANACH}
 	EID:addCondition(registry.COLLECTIBLE_ALMANACH, CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES, desc, nil, nil, extraTable)
 	EID:addCondition(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES, registry.COLLECTIBLE_ALMANACH, desc, nil, nil, extraTable)
+
+	desc = "Book effects doubled"
+	EID:addCarBatteryCondition(registry.COLLECTIBLE_ALMANACH, desc)
 
 	-- Mending Heart
 	desc = "Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#Will replace 2 instead, if no damage was taken on the previous floor"
