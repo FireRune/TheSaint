@@ -19,6 +19,13 @@ if EID then
 	desc = "Book effects doubled"
 	EID:addCarBatteryCondition(registry.COLLECTIBLE_ALMANACH, desc)
 
+	-- Devout Prayer
+	desc = "Charges by killing enemies#Effects depend on charges used (never takes more charges than needed)#{{EternalHeart}} Consumes an Eternal Heart for extra effects#Effects:#\1 1+: +0.1 Luck ({{EternalHeart}} and +0.25 Damage) per charge spent for the floor#3+: Spawns an {{EternalHeart}} Eternal Heart ({{EternalHeart}} and grants a {{HolyMantleSmall}} Holy Mantle shield)#6+: Spawns an {{HolyChest}} Eternal Chest ({{EternalHeart}} and {{AngelChanceSmall}}+10% Angel Room chance)#12: Spawns 2 items (1 from current pool, 1 from Angel pool). Only 1 can be taken ({{EternalHeart}} both can be taken)"
+	EID:addCollectible(registry.COLLECTIBLE_DEVOUT_PRAYER, desc)
+
+	desc = "No effect"
+	EID:addCarBatteryCondition(registry.COLLECTIBLE_DEVOUT_PRAYER, desc)
+
 	-- Mending Heart
 	desc = "Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#Will replace 2 instead, if no damage was taken on the previous floor"
 	EID:addCollectible(registry.COLLECTIBLE_MENDING_HEART, desc)
