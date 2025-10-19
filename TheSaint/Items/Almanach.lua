@@ -1,8 +1,8 @@
 local isc = require("TheSaint.lib.isaacscript-common")
-local registry = include("TheSaint.ItemRegistry")
+local enums = require("TheSaint.Enums")
+
 local game = Game()
 local config = Isaac.GetItemConfig()
-local Almanach = {}
 
 --[[
     - 3 Room Charge
@@ -12,11 +12,12 @@ local Almanach = {}
       unlocked yet.
     - Cannot activate itself
 ]]
+local Almanach = {}
 
 -- table containing all items with the 'book'-tag, except 'How to jump' and 'Almanach'
 local books = {}
 local books_blacklist = {
-    registry.COLLECTIBLE_ALMANACH,
+    enums.CollectibleType.COLLECTIBLE_ALMANACH,
     CollectibleType.COLLECTIBLE_HOW_TO_JUMP
 }
 
@@ -141,7 +142,7 @@ end
 function Almanach:Init(mod)
     mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, getBooks)
     mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, getWispName, FamiliarVariant.ITEM_WISP)
-    mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, registry.COLLECTIBLE_ALMANACH)
+    mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, enums.CollectibleType.COLLECTIBLE_ALMANACH)
     mod:AddCallback(ModCallbacks.MC_USE_ITEM, spawnAlmanachBookWisp)
     mod:AddCallback(ModCallbacks.MC_EXECUTE_CMD, enterCmd)
 end

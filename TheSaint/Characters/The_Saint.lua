@@ -1,10 +1,10 @@
 local isc = require("TheSaint.lib.isaacscript-common")
-local stats = include("TheSaint.stats")
-
-local The_Saint = {}
+local enums = require("TheSaint.Enums")
 
 local game = Game()
-local char = Isaac.GetPlayerTypeByName(stats.default.name, false)
+local char = enums.PlayerType.PLAYER_THE_SAINT
+
+local The_Saint = {}
 
 local v = {
     level = {

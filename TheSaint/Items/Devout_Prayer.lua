@@ -1,5 +1,6 @@
 local isc = require("TheSaint.lib.isaacscript-common")
-local registry = include("TheSaint.ItemRegistry")
+local enums = require("TheSaint.Enums")
+
 local game = Game()
 local hud = game:GetHUD()
 
@@ -40,7 +41,7 @@ local otherPocketItemUsed = false
 local function chargeDevoutPrayer(pointValue)
     for i = 0, game:GetNumPlayers() - 1 do
         local player = Isaac.GetPlayer(i)
-        if player:HasCollectible(registry.COLLECTIBLE_DEVOUT_PRAYER) then
+        if player:HasCollectible(enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER) then
             if (player:GetEternalHearts() == 1) then
                 pointValue = pointValue * 2
             end
@@ -48,7 +49,7 @@ local function chargeDevoutPrayer(pointValue)
             v.run[playerIndex] = (v.run[playerIndex] and (v.run[playerIndex] + pointValue)) or pointValue
             while (v.run[playerIndex] >= 10) do
                 v.run[playerIndex] = v.run[playerIndex] - 10
-                for _, slot in ipairs(isc:getActiveItemSlots(player, registry.COLLECTIBLE_DEVOUT_PRAYER)) do
+                for _, slot in ipairs(isc:getActiveItemSlots(player, enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER)) do
                     local currentCharge = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
                     if (player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY) and (currentCharge < 24))
                     or (currentCharge < 12) then
@@ -88,19 +89,19 @@ end
 --- check wether 'Devout Prayer' should be used when corresponding action is triggered
 --- @param player EntityPlayer
 local function postPlayerUpdate(_, player)
-    if ((player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == registry.COLLECTIBLE_DEVOUT_PRAYER)
+    if ((player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER)
     and (Input.IsActionTriggered(ButtonAction.ACTION_ITEM, player.ControllerIndex))) then
         local charge = player:GetActiveCharge(ActiveSlot.SLOT_PRIMARY)
         if (charge > 0) and (charge < 12) then
-            player:UseActiveItem(registry.COLLECTIBLE_DEVOUT_PRAYER, UseFlag.USE_OWNED, ActiveSlot.SLOT_PRIMARY)
+            player:UseActiveItem(enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER, UseFlag.USE_OWNED, ActiveSlot.SLOT_PRIMARY)
         end
     else
-        if ((player:GetActiveItem(ActiveSlot.SLOT_POCKET) == registry.COLLECTIBLE_DEVOUT_PRAYER)
+        if ((player:GetActiveItem(ActiveSlot.SLOT_POCKET) == enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER)
         and (Input.IsActionTriggered(ButtonAction.ACTION_PILLCARD, player.ControllerIndex))) then
             if (not otherPocketItemUsed) then
                 local charge = player:GetActiveCharge(ActiveSlot.SLOT_POCKET)
                 if (charge > 0) and (charge < 12) then
-                    player:UseActiveItem(registry.COLLECTIBLE_DEVOUT_PRAYER, UseFlag.USE_OWNED, ActiveSlot.SLOT_POCKET)
+                    player:UseActiveItem(enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER, UseFlag.USE_OWNED, ActiveSlot.SLOT_POCKET)
                 end
             else
                 otherPocketItemUsed = false
@@ -139,7 +140,7 @@ end
 --- @param player EntityPlayer
 --- @param flag CacheFlag
 local function evaluateStats(_, player, flag)
-    if (not player:HasCollectible(registry.COLLECTIBLE_DEVOUT_PRAYER)) then return end
+    if (not player:HasCollectible(enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER)) then return end
 
     local counters = getPlayerCounters(player)
 
@@ -288,7 +289,7 @@ function Devout_Prayer:Init(mod)
     mod:AddCallback(ModCallbacks.MC_USE_CARD, useOtherPocketItem)
     mod:AddCallback(ModCallbacks.MC_USE_PILL, useOtherPocketItem)
     mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate, 0)
-    mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, registry.COLLECTIBLE_DEVOUT_PRAYER)
+    mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER)
     mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, postNewLevel_resetCounters)
     mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats, CacheFlag.CACHE_DAMAGE)
     mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats, CacheFlag.CACHE_LUCK)

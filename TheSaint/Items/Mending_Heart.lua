@@ -1,14 +1,14 @@
 local isc = require("TheSaint.lib.isaacscript-common")
-local registry = include("TheSaint.ItemRegistry")
-local stats = include("TheSaint.stats")
-local taintedChar = Isaac.GetPlayerTypeByName(stats.tainted.name, true)
+local enums = require("TheSaint.Enums")
+
+local taintedChar = enums.PlayerType.PLAYER_THE_SAINT_B
 local game = Game()
-local item = {}
 
 --[[
     At the start of each new floor, replaces 1 Broken Heart with an empty Heart Container.
     When no damage was taken on the previous floor, will replace 2 instead.
 ]]
+local Mending_Heart = {}
 
 --- animation state flag
 local playMovie = -1
@@ -24,7 +24,7 @@ end
 local function postNewLevelReordered(_, stage, stageType)
     for i = 0, game:GetNumPlayers() - 1 do
         local player = Isaac.GetPlayer(i)
-        if (player:HasCollectible(registry.COLLECTIBLE_MENDING_HEART)
+        if (player:HasCollectible(enums.CollectibleType.COLLECTIBLE_MENDING_HEART)
         or ((player:GetPlayerType() == taintedChar) and (blockNewRun == false))) then
             if (player:GetBrokenHearts() > 0) then
 				local amount = 1
@@ -65,10 +65,10 @@ end
 
 --- initialize the item's functionality
 --- @param mod ModReference
-function item:Init(mod)
+function Mending_Heart:Init(mod)
     mod:AddCallbackCustom(isc.ModCallbackCustom.POST_GAME_STARTED_REORDERED, postGameStartedReordered, false)
     mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_LEVEL_REORDERED, postNewLevelReordered)
     mod:AddCallback(ModCallbacks.MC_POST_RENDER, postRender)
 end
 
-return item
+return Mending_Heart

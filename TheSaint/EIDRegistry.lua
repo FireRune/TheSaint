@@ -1,50 +1,55 @@
-local registry = include("TheSaint.ItemRegistry")
-local stats = include("TheSaint.stats")
+local enums = require("TheSaint.Enums")
 
 if EID then
+	local saint = enums.PlayerType.PLAYER_THE_SAINT
+	local tSaint = enums.PlayerType.PLAYER_THE_SAINT_B
+
+	local virtues = CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES
+	local almanach = enums.CollectibleType.COLLECTIBLE_ALMANACH
+	local devoutPrayer = enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER
+	local mendingHeart = enums.CollectibleType.COLLECTIBLE_MENDING_HEART
+
 	local desc = ""
 	local extraTable = {}
 
 	-- Almanach
 	desc = "Invokes the effects of 2 'book'-items (except 'How to jump' and itself)#Can also invoke Books that haven't been unlocked yet"
-	EID:addCollectible(registry.COLLECTIBLE_ALMANACH, desc)
+	EID:addCollectible(almanach, desc)
 
-	EID:assignTransformation("collectible", registry.COLLECTIBLE_ALMANACH, EID.TRANSFORMATION["BOOKWORM"])
+	EID:assignTransformation("collectible", almanach, EID.TRANSFORMATION["BOOKWORM"])
 
 	desc = "Spawns the appropriate wisps of the triggered books"
-	extraTable = {bulletpoint = "VirtuesCollectible"..registry.COLLECTIBLE_ALMANACH}
-	EID:addCondition(registry.COLLECTIBLE_ALMANACH, CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES, desc, nil, nil, extraTable)
-	EID:addCondition(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES, registry.COLLECTIBLE_ALMANACH, desc, nil, nil, extraTable)
+	extraTable = {bulletpoint = "VirtuesCollectible"..almanach}
+	EID:addCondition(almanach, virtues, desc, nil, nil, extraTable)
+	EID:addCondition(virtues, almanach, desc, nil, nil, extraTable)
 
 	desc = "Book effects doubled"
-	EID:addCarBatteryCondition(registry.COLLECTIBLE_ALMANACH, desc)
+	EID:addCarBatteryCondition(almanach, desc)
 
 	-- Devout Prayer
 	desc = "Charges by killing enemies#Effects depend on charges used (never takes more charges than needed)#{{EternalHeart}} Consumes an Eternal Heart for extra effects#\1 1+ charges: +0.1 Luck ({{EternalHeart}} and +0.25 Damage) for the floor per charge spent#3+ charges: Spawns an {{EternalHeart}} Eternal Heart ({{EternalHeart}} and grants a {{HolyMantleSmall}} Holy Mantle shield)#6+ charges: Spawns an {{HolyChest}} Eternal Chest ({{EternalHeart}} and {{AngelChanceSmall}}+10% Angel Room chance)#12 charges: Spawns 2 items (1 from current pool, 1 from Angel pool). Only 1 can be taken ({{EternalHeart}} both can be taken)"
-	EID:addCollectible(registry.COLLECTIBLE_DEVOUT_PRAYER, desc)
+	EID:addCollectible(devoutPrayer, desc)
 
-	desc = "Spawns a regular wisp ({{EternalHeart}} spawns a {{Collectible33}} Bible wisp instead)"
-	extraTable = {bulletpoint = "VirtuesCollectible"..registry.COLLECTIBLE_DEVOUT_PRAYER}
-	EID:addCondition(registry.COLLECTIBLE_DEVOUT_PRAYER, CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES, desc, nil, nil, extraTable)
-	EID:addCondition(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES, registry.COLLECTIBLE_DEVOUT_PRAYER, desc, nil, nil, extraTable)
+	desc = "Spawns a regular wisp ({{EternalHeart}} spawns a {{Collectible"..CollectibleType.COLLECTIBLE_BIBLE.."}} Bible wisp instead)"
+	extraTable = {bulletpoint = "VirtuesCollectible"..devoutPrayer}
+	EID:addCondition(devoutPrayer, virtues, desc, nil, nil, extraTable)
+	EID:addCondition(virtues, devoutPrayer, desc, nil, nil, extraTable)
 
 	desc = "No effect"
-	EID:addCarBatteryCondition(registry.COLLECTIBLE_DEVOUT_PRAYER, desc)
+	EID:addCarBatteryCondition(devoutPrayer, desc)
 
 	-- Mending Heart
 	desc = "Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#Will replace 2 instead, if no damage was taken on the previous floor"
-	EID:addCollectible(registry.COLLECTIBLE_MENDING_HEART, desc)
+	EID:addCollectible(mendingHeart, desc)
 
 	-- The Saint
-	local char = Isaac.GetPlayerTypeByName(stats.default.name, false)
 	desc = "{{AngelRoom}} Entering an Angel Room for the first time each floor has the following effects:#\1{{IND}} Increases one of the following stats, whichever is lowest:#\1{{IND}}{{IND}} +1 Damage#\1{{IND}}{{IND}} +0.5 Fire Rate#\1{{IND}}{{IND}} +0.2 Speed#\1{{IND}}{{IND}} +2.5 Range#{{IND}} Spawns either 3 {{Coin}} coins, 1 {{Bomb}} bomb or 1 {{Key}} key depending on what you have the least of"
-	EID:addBirthright(char, desc, "The Saint")
+	EID:addBirthright(saint, desc, "The Saint")
 
 	-- Tainted Saint
-	local taintedChar = Isaac.GetPlayerTypeByName(stats.tainted.name, true)
-	desc = "Can't use {{SoulHeart}} Soul Hearts#When you take damage, turns all {{EmptyHeart}} empty Heart Containers into {{BrokenHeart}} Broken Hearts (doesn't apply to self-damage)#{{Collectible"..registry.COLLECTIBLE_MENDING_HEART.."}} Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#{{Collectible"..registry.COLLECTIBLE_MENDING_HEART.."}} Will replace 2 instead, if no damage was taken on the previous floor"
-	EID:addCharacterInfo(taintedChar, desc, "The Saint")
+	desc = "Can't use {{SoulHeart}} Soul Hearts#When you take damage, turns all {{EmptyHeart}} empty Heart Containers into {{BrokenHeart}} Broken Hearts (doesn't apply to self-damage)#{{Collectible"..mendingHeart.."}} Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#{{Collectible"..mendingHeart.."}} Will replace 2 instead, if no damage was taken on the previous floor"
+	EID:addCharacterInfo(tSaint, desc, "The Saint")
 
 	desc = "Taking damage that causes penalties will only turn 1{{EmptyHeart}} empty Heart Container into a {{BrokenHeart}} Broken Heart"
-	EID:addBirthright(taintedChar, desc, "The Saint")
+	EID:addBirthright(tSaint, desc, "The Saint")
 end

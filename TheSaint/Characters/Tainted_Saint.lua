@@ -1,11 +1,10 @@
 local isc = require("TheSaint.lib.isaacscript-common")
-local stats = include("TheSaint.stats")
-local registry = include("TheSaint.ItemRegistry")
-
-local Tainted_Saint = {}
+local enums = require("TheSaint.Enums")
 
 local game = Game()
-local taintedChar = Isaac.GetPlayerTypeByName(stats.tainted.name, true)
+local taintedChar = enums.PlayerType.PLAYER_THE_SAINT_B
+
+local Tainted_Saint = {}
 
 local playersDamageTaken = {}
 
@@ -118,7 +117,7 @@ local function postFirstEsauJr(_, player)
         player:AddHearts(2)
         player:AddBrokenHearts(2)
         -- prevent 'Devout Prayer' from being removed
-        player:SetPocketActiveItem(registry.COLLECTIBLE_DEVOUT_PRAYER, ActiveSlot.SLOT_POCKET, false)
+        player:SetPocketActiveItem(enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER, ActiveSlot.SLOT_POCKET, false)
     end
 end
 

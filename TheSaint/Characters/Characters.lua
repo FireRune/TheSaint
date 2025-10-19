@@ -1,5 +1,5 @@
+local enums = require("TheSaint.Enums")
 local stats = include("TheSaint.stats")
-local registry = include("TheSaint.ItemRegistry")
 
 local Characters = {}
 
@@ -9,8 +9,8 @@ local config = Isaac.GetItemConfig()
 local game = Game()
 local pool = game:GetItemPool()
 local isContinue = true -- to differentiate between a fresh run and a continued run
-local char = Isaac.GetPlayerTypeByName(stats.default.name, false)
-local taintedChar = Isaac.GetPlayerTypeByName(stats.tainted.name, true)
+local char = enums.PlayerType.PLAYER_THE_SAINT
+local taintedChar = enums.PlayerType.PLAYER_THE_SAINT_B
 taintedChar = taintedChar == -1 and char or taintedChar
 
 -- Utility Functions
@@ -172,12 +172,12 @@ local function postPlayerInitLate(player)
 
     local pType = player:GetPlayerType()
     if (pType == char) then
-        pool:RemoveCollectible(registry.COLLECTIBLE_ALMANACH)
-        player:AddCollectible(registry.COLLECTIBLE_ALMANACH, config:GetCollectible(registry.COLLECTIBLE_ALMANACH).MaxCharges)
+        pool:RemoveCollectible(enums.CollectibleType.COLLECTIBLE_ALMANACH)
+        player:AddCollectible(enums.CollectibleType.COLLECTIBLE_ALMANACH, config:GetCollectible(enums.CollectibleType.COLLECTIBLE_ALMANACH).MaxCharges)
     end
     if (pType == taintedChar) then
-		pool:RemoveCollectible(registry.COLLECTIBLE_MENDING_HEART)
-        player:SetPocketActiveItem(registry.COLLECTIBLE_DEVOUT_PRAYER, ActiveSlot.SLOT_POCKET, false)
+		pool:RemoveCollectible(enums.CollectibleType.COLLECTIBLE_MENDING_HEART)
+        player:SetPocketActiveItem(enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER, ActiveSlot.SLOT_POCKET, false)
     end
 end
 
