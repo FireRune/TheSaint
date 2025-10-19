@@ -1,5 +1,8 @@
 # Code
 
+## Almanach.lua
+allow adding entries to the blacklist as an API call
+
 ## Devout_Prayer.lua
 function `effectSpawnItem`: change the 2nd spawned item
 - when a devil deal has been taken during the run:
@@ -21,3 +24,9 @@ add character sprites for:
 
 add item sprites for:
 - Devout Prayer
+
+add collection page sprites for:
+- Almanach
+- Devout Prayer
+- Mending Heart
+- Divine Bombs
