@@ -4,4 +4,6 @@
     
     <passive name="Mending Heart" description="Put it back together!" gfx="mending_heart.png" tags="nolostbr summonable" quality="1" />
     <passive name="Divine Bombs" description="Holy blast +5 bombs" gfx="divine_bombs.png" tags="offensive summonable" quality="2" bombs="5" />
+
+    <trinket name="Holy Penny" description="Wealth of faith" gfx="holy_penny.png" />
 </items>

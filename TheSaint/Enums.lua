@@ -10,18 +10,24 @@ local collectibleType = {
 	-- passives
 
 	COLLECTIBLE_MENDING_HEART = Isaac.GetItemIdByName("Mending Heart"),
-	COLLECTIBLE_DIVINE_BOMBS = Isaac.GetItemIdByName("Divine Bombs")
+	COLLECTIBLE_DIVINE_BOMBS = Isaac.GetItemIdByName("Divine Bombs"),
+}
+
+--- @enum TheSaint.TrinketType
+local trinketType = {
+	TRINKET_HOLY_PENNY = Isaac.GetTrinketIdByName("Holy Penny"),
 }
 
 --- @enum TheSaint.PlayerType
 local playerType = {
 	PLAYER_THE_SAINT = Isaac.GetPlayerTypeByName(stats.default.name, false),
-	PLAYER_THE_SAINT_B = Isaac.GetPlayerTypeByName(stats.tainted.name, true)
+	PLAYER_THE_SAINT_B = Isaac.GetPlayerTypeByName(stats.tainted.name, true),
 }
 
 local enums = {
 	CollectibleType = collectibleType,
-	PlayerType = playerType
+	TrinketType = trinketType,
+	PlayerType = playerType,
 }
 
 return enums
