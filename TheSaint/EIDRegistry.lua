@@ -10,6 +10,8 @@ if EID then
 	local mendingHeart = enums.CollectibleType.COLLECTIBLE_MENDING_HEART
 	local divineBombs = enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS
 
+	local holyPenny = enums.TrinketType.TRINKET_HOLY_PENNY
+
 	local desc = ""
 	local extraTable = {}
 
@@ -46,6 +48,10 @@ if EID then
 	-- Divine Bombs
 	desc = "{{Bomb}} +5 Bombs#{{Collectible"..CollectibleType.COLLECTIBLE_HOLY_LIGHT.."}} Isaac's bombs release a beam of light that hits nearby enemies"
 	EID:addCollectible(divineBombs, desc)
+
+	-- Holy Penny
+	desc = "{{EternalHeart}} Picking up a coin has a 17% chance to spawn an Eternal Heart#Higher chance from nickels and dimes"
+	EID:addTrinket(holyPenny, desc)
 
 	-- The Saint
 	desc = "{{AngelRoom}} Entering an Angel Room for the first time each floor has the following effects:#\1{{IND}} Increases one of the following stats, whichever is lowest:#\1{{IND}}{{IND}} +1 Damage#\1{{IND}}{{IND}} +0.5 Fire Rate#\1{{IND}}{{IND}} +0.2 Speed#\1{{IND}}{{IND}} +2.5 Range#{{IND}} Spawns either 3 {{Coin}} coins, 1 {{Bomb}} bomb or 1 {{Key}} key depending on what you have the least of"
