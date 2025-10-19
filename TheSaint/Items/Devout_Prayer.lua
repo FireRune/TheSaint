@@ -235,6 +235,9 @@ end
 --- @param flags UseFlag
 --- @param slot ActiveSlot
 local function useItem(_, collectible, rng, player, flags, slot)
+    -- 'Car Battery' has no effect
+    if (flags & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return false end
+
     local extraEffect = false
     if (player:GetEternalHearts() == 1) then
         player:AddEternalHearts(-1)
@@ -264,6 +267,10 @@ local function useItem(_, collectible, rng, player, flags, slot)
         end
         effectAddLuck(chargeSpent, player, extraEffect)
         player:SetActiveCharge(charge - chargeSpent, slot)
+        if (player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES)) then
+            local wispType = ((extraEffect and CollectibleType.COLLECTIBLE_BIBLE) or CollectibleType.COLLECTIBLE_NULL)
+            player:AddWisp(wispType, player.Position, true)
+        end
         return {
             Discharge = false,
             Remove = false,
