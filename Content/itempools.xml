@@ -1,27 +1,34 @@
 <ItemPools>
     <Pool Name="treasure">
         <Item Name="Almanach" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
-        <item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
     <Pool Name="devil">
         <Item Name="Almanach" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
     <Pool Name="angel">
         <Item Name="Almanach" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
-        <item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
     <Pool Name="library">
         <Item Name="Almanach" Weight="1.0" DecreaseBy="0.1" RemoveOn="0.1" />
     </Pool>
     <Pool Name="greedTreasure">
         <Item Name="Almanach" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
-        <item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
     <Pool Name="greedDevil">
         <Item Name="Almanach" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
     <Pool Name="greedAngel">
         <Item Name="Almanach" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
-        <item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+    </Pool>
+    <Pool Name="bombBum">
+        <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="0.5" RemoveOn="0.1" />
     </Pool>
 </ItemPools>

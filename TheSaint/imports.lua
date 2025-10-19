@@ -6,7 +6,8 @@ local features = {
     include("TheSaint.Characters.Tainted_Saint"),
     include("TheSaint.Items.Almanach"),
     include("TheSaint.Items.Mending_Heart"),
-    include("TheSaint.Items.Devout_Prayer")
+    include("TheSaint.Items.Devout_Prayer"),
+    include("TheSaint.Items.Divine_Bombs")
 }
 
 --- initialize all features of this mod

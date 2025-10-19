@@ -8,6 +8,7 @@ if EID then
 	local almanach = enums.CollectibleType.COLLECTIBLE_ALMANACH
 	local devoutPrayer = enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER
 	local mendingHeart = enums.CollectibleType.COLLECTIBLE_MENDING_HEART
+	local divineBombs = enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS
 
 	local desc = ""
 	local extraTable = {}
@@ -41,6 +42,10 @@ if EID then
 	-- Mending Heart
 	desc = "Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#Will replace 2 instead, if no damage was taken on the previous floor"
 	EID:addCollectible(mendingHeart, desc)
+
+	-- Divine Bombs
+	desc = "{{Bomb}} +5 Bombs#{{Collectible"..CollectibleType.COLLECTIBLE_HOLY_LIGHT.."}} Isaac's bombs release a beam of light that hits nearby enemies"
+	EID:addCollectible(divineBombs, desc)
 
 	-- The Saint
 	desc = "{{AngelRoom}} Entering an Angel Room for the first time each floor has the following effects:#\1{{IND}} Increases one of the following stats, whichever is lowest:#\1{{IND}}{{IND}} +1 Damage#\1{{IND}}{{IND}} +0.5 Fire Rate#\1{{IND}}{{IND}} +0.2 Speed#\1{{IND}}{{IND}} +2.5 Range#{{IND}} Spawns either 3 {{Coin}} coins, 1 {{Bomb}} bomb or 1 {{Key}} key depending on what you have the least of"

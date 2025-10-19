@@ -9,7 +9,8 @@ local collectibleType = {
 
 	-- passives
 
-	COLLECTIBLE_MENDING_HEART = Isaac.GetItemIdByName("Mending Heart")
+	COLLECTIBLE_MENDING_HEART = Isaac.GetItemIdByName("Mending Heart"),
+	COLLECTIBLE_DIVINE_BOMBS = Isaac.GetItemIdByName("Divine Bombs")
 }
 
 --- @enum TheSaint.PlayerType
