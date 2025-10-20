@@ -52,6 +52,7 @@ if EID then
 	-- Holy Penny
 	desc = "{{EternalHeart}} Picking up a coin has a 17% chance to spawn an Eternal Heart#Higher chance from nickels and dimes"
 	EID:addTrinket(holyPenny, desc)
+	EID:addGoldenTrinketMetadataAdditive(holyPenny, nil, 17, {8, 13})
 
 	-- The Saint
 	desc = "{{AngelRoom}} Entering an Angel Room for the first time each floor has the following effects:#\1{{IND}} Increases one of the following stats, whichever is lowest:#\1{{IND}}{{IND}} +1 Damage#\1{{IND}}{{IND}} +0.5 Fire Rate#\1{{IND}}{{IND}} +0.2 Speed#\1{{IND}}{{IND}} +2.5 Range#{{IND}} Spawns either 3 {{Coin}} coins, 1 {{Bomb}} bomb or 1 {{Key}} key depending on what you have the least of"
