@@ -1,5 +1,5 @@
 <bombcostumes anm2root="gfx/items/pick ups/bombs/">
     <bomb variant="0">
-        <rule includeFlags="31" body="divine.anm2" />
+        <rule includeFlags="39" body="divine.anm2" />
     </bomb>
 </bombcostumes>

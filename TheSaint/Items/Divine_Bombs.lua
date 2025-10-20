@@ -6,7 +6,7 @@ local enums = require("TheSaint.Enums")
 ]]
 local Divine_Bombs = {}
 
-local targetFlag = TearFlags.TEAR_GLOW
+local targetFlag = TearFlags.TEAR_LIGHT_FROM_HEAVEN
 
 local v = {
 	room = {}
@@ -97,7 +97,7 @@ local function postEffectInit(_, effect)
     end
 end
 
---- Synergy 'Epic Fetus' + 'Divine Bombs' or 'Godhead' (due to TearFlags.TEAR_GLOW)
+--- Synergy 'Epic Fetus' + 'Divine Bombs' or 'Holy Light' (due to TearFlags.LIGHT_FROM_HEAVEN)
 --- @param effect EntityEffect
 local function postEffectUpdate(_, effect)
 	if (effect.SpawnerEntity) then
@@ -107,7 +107,7 @@ local function postEffectUpdate(_, effect)
 			local data = v.room[ptr]
 			if (data and data["firstFrame"] == true) then
 				local player = data["spawnerPlayer"]
-				if player:HasCollectible(CollectibleType.COLLECTIBLE_GODHEAD)
+				if player:HasCollectible(CollectibleType.COLLECTIBLE_HOLY_LIGHT)
 				or player:HasCollectible(enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS) then
 					local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_EPIC_FETUS)
 					local chance = (30 + (5 * player.Luck))
