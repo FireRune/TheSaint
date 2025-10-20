@@ -12,14 +12,6 @@ local hud = game:GetHUD()
     - can be used with 1+ charges (like 'Larnyx' or 'Everything Jar')<br>
     - Effect depends on the amount of charges spent (1, 3, 6 or 12; see functions below for effect details)<br>
 	- using while having an Eternal Heart will consume it for extra effects
-    
-    (will not use more charges than needed, effect in brackets only applies when having an Eternal Heart)
-    > 1+: Luck Up for the current floor (+0.1 * charges spent)
-    [also grants Damage Up for the current floor (+0.25 * charges spent)]
-    > 3+: spawns an Eternal Heart [and triggers the effect of 'Holy Card']
-    > 6+: spawns an Eternal Chest [and +10% Angel chance]
-    > 12: spawns an Item from current pool or ARP/DRP
-    [spawns another Item from a random pool, only one can be taken]
 ]]
 local Devout_Prayer = {}
 

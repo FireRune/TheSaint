@@ -111,7 +111,7 @@ local function useItem(_, _, rng, player, flag)
             wispNames = {}
         end
     end
-    game:GetHUD():ShowItemText(itemNames[0].."...", "... and "..itemNames[1])
+    game:GetHUD():ShowItemText(itemNames[0].."...", "... and "..itemNames[1], false, false)
     return true
 end
 
