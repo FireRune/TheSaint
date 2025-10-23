@@ -14,12 +14,10 @@ local config = Isaac.GetItemConfig()
 ]]
 local Almanach = {}
 
--- table containing all items with the 'book'-tag, except 'How to jump' and 'Almanach'
+-- table containing all items with the 'book'-tag, except those on the blacklist
 local books = {}
-local books_blacklist = {
-    enums.CollectibleType.COLLECTIBLE_ALMANACH,
-    CollectibleType.COLLECTIBLE_HOW_TO_JUMP
-}
+--- @type table<CollectibleType, string>
+local books_blacklist = {}
 
 -- flag to check wether the used item was 'Lemegeton'
 local almanachLemegeton = false
@@ -34,10 +32,29 @@ local itemNames = {
     [1] = ""
 }
 
+--- Adds the given items to the book-blacklist if not already set
+--- @param modName string
+--- @param items table<any, CollectibleType>
+local function addItemToBookBlacklist(modName, items)
+    for _, item in ipairs(items) do
+        if (not books_blacklist[item]) then
+            books_blacklist[item] = modName
+        end
+    end
+end
+--- Exposed API version of `addItemToBookBlacklist`<br>
+--- Adds the given item(s) to the book-blacklist if not already set
+--- @param mod ModReference
+--- @param item CollectibleType|table<any, CollectibleType>
+function TheSaintAPI:AddItemToBookBlacklist(mod, item)
+    if (type(item) ~= "table") then item = {item} end
+    addItemToBookBlacklist(mod.Name, item)
+end
+
 --- checks wether the given item is in the books-blacklist
 --- @param item CollectibleType
 local function isBlacklisted(item)
-    for _, collectible in ipairs(books_blacklist) do
+    for collectible, _ in pairs(books_blacklist) do
         if (item == collectible) then
             return true
         end
@@ -49,17 +66,21 @@ end
 local function getBooks()
     if (#books > 0) then return end
     local counter = 0
-    Isaac.DebugString("[The Saint] (INFO) <Almanach> generate list of items with 'book'-tag (except 'How to jump' and 'Almanach')")
+    Isaac.DebugString("[The Saint] (INFO) <Almanach> generate list of items with 'book'-tag (except blacklisted items)")
     for i = 0, config:GetCollectibles().Size - 1 do
         local collectible = config:GetCollectible(i)
         if collectible then
-            if (collectible:HasTags(ItemConfig.TAG_BOOK))
-            and (isBlacklisted(collectible.ID) == false) then
-                counter = counter + 1
+            if (collectible:HasTags(ItemConfig.TAG_BOOK)) then
                 local id = collectible.ID
                 local name = isc:getCollectibleName(id)
-                table.insert(books, counter, {ID = id, Name = name})
-                Isaac.DebugString("[The Saint] (INFO) <Almanach> add ["..id.."]' "..name.."'")
+                if (isBlacklisted(id) == false) then
+                    counter = counter + 1
+                    table.insert(books, counter, {ID = id, Name = name})
+                    Isaac.DebugString("[The Saint] (INFO) <Almanach> add ["..id.."] '"..name.."'")
+                else
+                    local modName = books_blacklist[id]
+                    Isaac.DebugString("[The Saint] (INFO) <Almanach> skipped blacklisted item ["..id.."] '"..name.."' (blacklisted by the mod: '"..modName.."')")
+                end
             end
         end
     end
@@ -140,6 +161,7 @@ end
 --- initialize the item's functionality
 --- @param mod ModReference
 function Almanach:Init(mod)
+    addItemToBookBlacklist(mod.Name, {CollectibleType.COLLECTIBLE_HOW_TO_JUMP, enums.CollectibleType.COLLECTIBLE_ALMANACH})
     mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, getBooks)
     mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, getWispName, FamiliarVariant.ITEM_WISP)
     mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, enums.CollectibleType.COLLECTIBLE_ALMANACH)

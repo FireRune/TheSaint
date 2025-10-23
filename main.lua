@@ -12,6 +12,9 @@ local features = {
 }
 local TheSaint = isc:upgradeMod(TheSaintVanilla, features)
 
+-- Global for exposing certain functions as external API calls
+TheSaintAPI = {}
+
 --- Custom commands
 --- @param cmd string
 function TheSaint:executeCmd(cmd)
