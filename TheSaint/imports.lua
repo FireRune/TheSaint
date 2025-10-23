@@ -9,6 +9,7 @@ local features = {
     include("TheSaint.Items.Devout_Prayer"),
     include("TheSaint.Items.Divine_Bombs"),
     include("TheSaint.Items.Holy_Penny"),
+    include("TheSaint.Items.Wooden_Key"),
 }
 
 --- initialize all features of this mod

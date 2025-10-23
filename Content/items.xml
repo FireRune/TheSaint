@@ -1,10 +1,11 @@
 <items gfxroot="gfx/items/" version="1">
     <active name="Almanach" description="A library's worth of knowledge" gfx="almanach.png" maxcharges="3" tags="book offensive" quality="2" />
+    <passive name="Mending Heart" description="Put it back together!" gfx="mending_heart.png" tags="nolostbr summonable" quality="1" />
     <!-- TODO: replace gfx -->
     <active name="Devout Prayer" description="Pray in your times of need" gfx="sprite_missing.png" maxcharges="12" initcharge="0" chargetype="special" cache="damage luck" tags="noeden nocantrip" quality="0" hidden="true" />
-    
-    <passive name="Mending Heart" description="Put it back together!" gfx="mending_heart.png" tags="nolostbr summonable" quality="1" />
     <passive name="Divine Bombs" description="Holy blast +5 bombs" gfx="divine_bombs.png" tags="offensive summonable" quality="2" bombs="5" />
+    <!-- TODO: replace gfx -->
+    <active name="Wooden Key" description="Where could it fit?" gfx="sprite_missing.png" maxcharges="3" tags="offensive" quality="1" />
 
     <trinket name="Holy Penny" description="Wealth of faith" gfx="holy_penny.png" />
 </items>

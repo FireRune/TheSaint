@@ -3,7 +3,10 @@
         <Item Name="Almanach" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Wooden Key" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
+    <!-- <Pool Name="shop"></Pool> -->
+    <!-- <Pool Name="boss"></Pool> -->
     <Pool Name="devil">
         <Item Name="Almanach" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
@@ -12,14 +15,30 @@
         <Item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
+    <!-- <Pool Name="secret"></Pool> -->
     <Pool Name="library">
         <Item Name="Almanach" Weight="1.0" DecreaseBy="0.1" RemoveOn="0.1" />
     </Pool>
+    <!-- <Pool Name="shellGame"></Pool> -->
+    <!-- <Pool Name="goldenChest"></Pool> -->
+    <!-- <Pool Name="redChest"></Pool> -->
+    <!-- <Pool Name="beggar"></Pool> -->
+    <!-- <Pool Name="demonBeggar"></Pool> -->
+    <!-- <Pool Name="curse"></Pool> -->
+    <Pool Name="keyMaster">
+        <Item Name="Wooden Key" Weight="1.0" DecreaseBy="0.5" RemoveOn="0.1" />
+    </Pool>
+    <!-- <Pool Name="batteryBum"></Pool> -->
+    <!-- <Pool Name="momsChest"></Pool> -->
     <Pool Name="greedTreasure">
         <Item Name="Almanach" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Wooden Key" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
+    <!-- <Pool Name="greedBoss"></Pool> -->
+    <!-- <Pool Name="greedShop"></Pool> -->
+    <!-- <Pool Name="greedCurse"></Pool> -->
     <Pool Name="greedDevil">
         <Item Name="Almanach" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
@@ -28,7 +47,17 @@
         <Item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
+    <!-- <Pool Name="greedSecret"></Pool> -->
+    <!-- <Pool Name="craneGame"></Pool> -->
+    <!-- <Pool Name="ultraSecret"></Pool> -->
     <Pool Name="bombBum">
         <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="0.5" RemoveOn="0.1" />
     </Pool>
+    <!-- <Pool Name="planetarium"></Pool> -->
+    <!-- <Pool Name="oldChest"></Pool> -->
+    <!-- <Pool Name="babyShop"></Pool> -->
+    <Pool Name="woodenChest">
+        <Item Name="Wooden Key" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+    </Pool>
+    <!-- <Pool Name="rottenBeggar"></Pool> -->
 </ItemPools>
