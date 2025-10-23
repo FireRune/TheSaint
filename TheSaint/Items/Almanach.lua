@@ -5,17 +5,20 @@ local game = Game()
 local config = Isaac.GetItemConfig()
 
 --[[
-    - 3 Room Charge
-    - When used, will activate the effect of 2 random
-      items with the 'book'-tag. (modded items included)
-    - Can also activate books that have not been
-      unlocked yet.
+    "Almanach"<br>
+    - 3 Room Charge<br>
+    - When used, will activate the effect of 2 random<br>
+      items with the `book`-tag (modded items included)<br>
+    - Can also activate books that have not been unlocked yet<br>
     - Cannot activate itself
 ]]
 local Almanach = {}
 
 -- table containing all items with the 'book'-tag, except those on the blacklist
 local books = {}
+
+--- Blacklist of items with the 'book'-tag.<br>
+--- Key is the item's id (see `Isaac.GetItemIdByName()`), Value is the name of the mod that blacklisted it.
 --- @type table<CollectibleType, string>
 local books_blacklist = {}
 

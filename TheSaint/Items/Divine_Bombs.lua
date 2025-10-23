@@ -1,7 +1,8 @@
 local enums = require("TheSaint.Enums")
 
 --[[
-    - +5 bombs
+    "Divine Bombs"<br>
+    - +5 bombs<br>
     - Bombs spawn 'Holy Light' beams upon exploding
 ]]
 local Divine_Bombs = {}

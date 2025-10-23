@@ -5,8 +5,9 @@ local taintedChar = enums.PlayerType.PLAYER_THE_SAINT_B
 local game = Game()
 
 --[[
-    At the start of each new floor, replaces 1 Broken Heart with an empty Heart Container.
-    When no damage was taken on the previous floor, will replace 2 instead.
+    "Mending Heart"<br>
+    - At the start of each new floor, replaces 1 Broken Heart with an empty Heart Container<br>
+    - When no damage was taken on the previous floor, will replace 2 instead
 ]]
 local Mending_Heart = {}
 
@@ -16,11 +17,15 @@ local playMovie = -1
 -- prevent accidental trigger when starting a new run as 'Tainted Saint'
 local blockNewRun = true
 
+--- Prevents the item's effect when starting a new run
+--- @param isContinue boolean
 local function postGameStartedReordered(_, isContinue)
     blockNewRun = true
 end
 
---- when entering a new floor, replace Broken Heart(s) with empty Heart Container(s), then set the animation flag
+--- When entering a new floor, replace Broken Heart(s) with empty Heart Container(s), then set the animation flag
+--- @param stage LevelStage
+--- @param stageType StageType
 local function postNewLevelReordered(_, stage, stageType)
     for i = 0, game:GetNumPlayers() - 1 do
         local player = Isaac.GetPlayer(i)

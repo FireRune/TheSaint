@@ -3,7 +3,7 @@ local enums = require("TheSaint.Enums")
 local game = Game()
 
 --[[
-    "Holy Penny"
+    "Holy Penny"<br>
     - picking up coins has a chance to spawn an Eternal Heart
 ]]
 local Holy_Penny = {}
