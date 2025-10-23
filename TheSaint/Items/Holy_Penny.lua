@@ -8,6 +8,7 @@ local game = Game()
 ]]
 local Holy_Penny = {}
 
+--- When picking up a coin, has a 17%/25%/30% chance to spawn an Eternal Heart (same chance formula as for 'Blessed Penny')
 --- @param pickup EntityPickup
 --- @param collider Entity
 local function onPickup(_, pickup, collider)
@@ -15,7 +16,7 @@ local function onPickup(_, pickup, collider)
         if (pickup.Variant == PickupVariant.PICKUP_COIN) then
             local player = collider:ToPlayer()
             if (player and player:HasTrinket(enums.TrinketType.TRINKET_HOLY_PENNY)) then
-                local multiplier = (0.5 + (player:GetTrinketMultiplier(enums.TrinketType.TRINKET_HOLY_PENNY) // 2))
+                local multiplier = math.min(2, 0.5 + (player:GetTrinketMultiplier(enums.TrinketType.TRINKET_HOLY_PENNY) / 2))
                 local rng = player:GetTrinketRNG(enums.TrinketType.TRINKET_HOLY_PENNY)
                 if (rng:RandomFloat() < (1 - (0.8334 ^ (multiplier * pickup:GetCoinValue())))) then
                     Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_ETERNAL, game:GetRoom():FindFreePickupSpawnPosition(player.Position, 0, true), Vector.Zero, nil)

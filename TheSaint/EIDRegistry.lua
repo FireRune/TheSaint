@@ -4,7 +4,6 @@ if EID then
 	local saint = enums.PlayerType.PLAYER_THE_SAINT
 	local tSaint = enums.PlayerType.PLAYER_THE_SAINT_B
 
-	local virtues = CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES
 	local almanach = enums.CollectibleType.COLLECTIBLE_ALMANACH
 	local devoutPrayer = enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER
 	local mendingHeart = enums.CollectibleType.COLLECTIBLE_MENDING_HEART
@@ -13,7 +12,6 @@ if EID then
 	local holyPenny = enums.TrinketType.TRINKET_HOLY_PENNY
 
 	local desc = ""
-	local extraTable = {}
 
 	-- Almanach
 	desc = "Invokes the effects of 2 'book'-items (except 'How to jump' and itself)#Can also invoke Books that haven't been unlocked yet"
@@ -22,9 +20,7 @@ if EID then
 	EID:assignTransformation("collectible", almanach, EID.TRANSFORMATION["BOOKWORM"])
 
 	desc = "Spawns the appropriate wisps of the triggered books"
-	extraTable = {bulletpoint = "VirtuesCollectible"..almanach}
-	EID:addCondition(almanach, virtues, desc, nil, nil, extraTable)
-	EID:addCondition(virtues, almanach, desc, nil, nil, extraTable)
+	EID:addToGeneralCondition(almanach, "bookOfVirtuesWisps", desc)
 
 	desc = "Book effects doubled"
 	EID:addCarBatteryCondition(almanach, desc)
@@ -34,11 +30,9 @@ if EID then
 	EID:addCollectible(devoutPrayer, desc)
 
 	desc = "Spawns a regular wisp ({{EternalHeart}} spawns a {{Collectible"..CollectibleType.COLLECTIBLE_BIBLE.."}} Bible wisp instead)"
-	extraTable = {bulletpoint = "VirtuesCollectible"..devoutPrayer}
-	EID:addCondition(devoutPrayer, virtues, desc, nil, nil, extraTable)
-	EID:addCondition(virtues, devoutPrayer, desc, nil, nil, extraTable)
+	EID:addToGeneralCondition(devoutPrayer, "bookOfVirtuesWisps", desc)
 
-	desc = "No effect"
+	desc = "No Effect"
 	EID:addCarBatteryCondition(devoutPrayer, desc)
 
 	-- Mending Heart
