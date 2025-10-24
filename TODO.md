@@ -16,20 +16,22 @@
 # Assets
 
 add character sprites for:
-- The Saint:
-	- vs. screen / stage transition
-	- player select screen
-	- co-op menu icon
-- Tainted Saint:
-	- vs. screen / stage transition
-	- player select screen
-	- co-op menu icon
+- [ ] The Saint:
+	- [ ] vs. screen / stage transition
+	- [ ] player select screen
+	- [ ] co-op menu icon
+- [ ] Tainted Saint:
+	- [ ] vs. screen / stage transition
+	- [ ] player select screen
+	- [ ] co-op menu icon
 
 add item sprites for:
-- Devout Prayer
+- [ ] Devout Prayer
+- [ ] Wooden Key
 
 add collection page sprites for:
-- Almanach
-- Devout Prayer
-- Mending Heart
-- Divine Bombs
+- [ ] Almanach
+- [ ] Devout Prayer
+- [ ] Mending Heart
+- [ ] Divine Bombs
+- [ ] Wooden Key

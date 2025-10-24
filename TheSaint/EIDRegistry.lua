@@ -8,6 +8,7 @@ if EID then
 	local devoutPrayer = enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER
 	local mendingHeart = enums.CollectibleType.COLLECTIBLE_MENDING_HEART
 	local divineBombs = enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS
+	local woodenKey = enums.CollectibleType.COLLECTIBLE_WOODEN_KEY
 
 	local holyPenny = enums.TrinketType.TRINKET_HOLY_PENNY
 
@@ -42,6 +43,12 @@ if EID then
 	-- Divine Bombs
 	desc = "{{Bomb}} +5 Bombs#{{Collectible"..CollectibleType.COLLECTIBLE_HOLY_LIGHT.."}} Isaac's bombs release a beam of light that hits nearby enemies"
 	EID:addCollectible(divineBombs, desc)
+
+	-- Wooden Key
+	desc = "Opens a random door in the current room#Can open locked doors#Can open {{SecretRoom}}{{SuperSecretRoom}} Secret Rooms/Super Secret Rooms#{{Collectible"..CollectibleType.COLLECTIBLE_RED_KEY.."}} Can also create Red Room Doors"
+	EID:addCollectible(woodenKey, desc)
+
+	EID:addCarBatteryCondition(woodenKey, {"a random door", "2{{CR}} random doors"})
 
 	-- Holy Penny
 	desc = "{{EternalHeart}} Picking up a coin has a 17% chance to spawn an Eternal Heart#Higher chance from nickels and dimes"

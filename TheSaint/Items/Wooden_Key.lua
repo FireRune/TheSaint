@@ -44,6 +44,8 @@ local function GetPossibleRoomDoors(shape)
 	return doors
 end
 
+--- Get number of entries in v.room.checkedDoorSlots, because the length operator `#` always returns 0
+--- @return integer
 local function getNumCheckedDoorSlots()
 	local counter = 0
 	for _, _ in pairs(v.room.checkedDoorSlots) do
@@ -64,10 +66,7 @@ local function useItem(_, collectible, rng, player, flags)
 	local doors = GetPossibleRoomDoors(room:GetRoomShape())
 	if (doors) then
 		-- only check doors if not all have been checked
-		local numCheckedDoorSlots = getNumCheckedDoorSlots()
-		if (#doors > numCheckedDoorSlots) then
-			print("#doors = "..#doors)
-			print("getNumCheckedDoorSlots() = "..numCheckedDoorSlots)
+		if (#doors > getNumCheckedDoorSlots()) then
 			-- randomly choose a door slot (or 2 with 'Car Battery')
 			local effectMult = ((player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY) and 2) or 1)
 			for _ = 1, effectMult do
@@ -75,13 +74,19 @@ local function useItem(_, collectible, rng, player, flags)
 				repeat
 					local randInt = rng:RandomInt(#doors) + 1
 					door = doors[randInt]
-				until (not v.room.checkedDoorSlots["DoorSlot_"..door])
-				v.room.checkedDoorSlots["DoorSlot_"..door] = true
+				until (not v.room.checkedDoorSlots[door])
+				v.room.checkedDoorSlots[door] = true
 				if (room:IsDoorSlotAllowed(door)) then
 					local gridEntDoor = room:GetDoor(door)
 					if (gridEntDoor) then
-						if (gridEntDoor:IsLocked()) then
-							gridEntDoor:SetLocked(false)
+						if (gridEntDoor:IsRoomType(RoomType.ROOM_SECRET)
+						or gridEntDoor:IsRoomType(RoomType.ROOM_SUPERSECRET)) then
+							gridEntDoor:TryBlowOpen(false, player)
+							gridEntDoor:Close(true)
+						else
+							if (gridEntDoor:IsLocked()) then
+								gridEntDoor:SetLocked(false)
+							end
 						end
 						gridEntDoor:Open()
 					else
@@ -101,7 +106,7 @@ end
 --- @param mod ModReference
 function Wooden_Key:Init(mod)
 	mod:saveDataManager("Wooden Key", v)
-	--mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, enums.CollectibleType.COLLECTIBLE_WOODEN_KEY)
+	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, enums.CollectibleType.COLLECTIBLE_WOODEN_KEY)
 end
 
 return Wooden_Key
