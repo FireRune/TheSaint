@@ -19,6 +19,11 @@ local trinketType = {
 	TRINKET_HOLY_PENNY = Isaac.GetTrinketIdByName("Holy Penny"),
 }
 
+--- @enum TheSaint.Card
+local card = {
+	CARD_LIBRARY = Isaac.GetCardIdByName("librarycard"),
+}
+
 --- @enum TheSaint.PlayerType
 local playerType = {
 	PLAYER_THE_SAINT = Isaac.GetPlayerTypeByName(stats.default.name, false),
@@ -28,6 +33,7 @@ local playerType = {
 local enums = {
 	CollectibleType = collectibleType,
 	TrinketType = trinketType,
+	Card = card,
 	PlayerType = playerType,
 }
 

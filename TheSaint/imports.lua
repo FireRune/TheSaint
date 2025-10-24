@@ -4,12 +4,13 @@ local features = {
     include("TheSaint.Characters.Characters"),
     include("TheSaint.Characters.The_Saint"),
     include("TheSaint.Characters.Tainted_Saint"),
-    include("TheSaint.Items.Almanach"),
-    include("TheSaint.Items.Mending_Heart"),
-    include("TheSaint.Items.Devout_Prayer"),
-    include("TheSaint.Items.Divine_Bombs"),
-    include("TheSaint.Items.Holy_Penny"),
-    include("TheSaint.Items.Wooden_Key"),
+    include("TheSaint.Items.Collectibles.Almanach"),
+    include("TheSaint.Items.Collectibles.Mending_Heart"),
+    include("TheSaint.Items.Collectibles.Devout_Prayer"),
+    include("TheSaint.Items.Collectibles.Divine_Bombs"),
+    include("TheSaint.Items.Trinkets.Holy_Penny"),
+    include("TheSaint.Items.Collectibles.Wooden_Key"),
+    include("TheSaint.Items.PocketItems.Library_Card"),
 }
 
 --- initialize all features of this mod

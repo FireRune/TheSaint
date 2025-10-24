@@ -1,0 +1,4 @@
+<pocketitems>
+	<!-- type "suit" so 'Tarot Cloth' doesn't affect it. pickup "2" for now, change to custom later -->
+    <card type="suit" pickup="2" description="I hope nothing's overdue..." hud="librarycard" name="Library Card" mimiccharge="2" greedmode="false" />
+</pocketitems>
