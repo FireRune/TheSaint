@@ -35,3 +35,6 @@ add collection page sprites for:
 - [ ] Mending Heart
 - [ ] Divine Bombs
 - [ ] Wooden Key
+
+add front/back sprites + anims for:
+- [ ] Library Card
