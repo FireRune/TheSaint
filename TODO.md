@@ -1,4 +1,40 @@
+# Content
+
+- [ ] Soul of the Saint
+- teleports Isaac to a special Angel Room that contains 2 Items (both can be taken)
+- if a Devil Deal has been taken, acts like Joker but guarantees an Angel Room if the current floor's Devil/Angel Room hasn't been generated yet.
+
 # Code
+
+## General
+
+- [ ] Handling of unlocks for both characters' completion marks
+- The Saint:
+	- Boss Rush
+	- Mom's Heart (Hard Mode)
+	- Satan
+	- Isaac
+	- The Lamb
+	- ???
+	- Mega Satan (maybe co-op baby?)
+	- Hush
+	- Greed Mode
+	- Greedier Mode
+	- Delirium
+	- Mother
+	- The Beast
+- Tainted Saint:
+	- Boss Rush + Hush (Soul of the Saint)
+	- Satan + Isaac + The Lamb + ??? (Trinket)
+	- Greedier Mode (Card)
+	- Delirium (Item akin to character mechanic)
+	- Mother (Trinket)
+	- The Beast (Item)
+	- Mega Satan (Pickup or Object)
+
+- [ ] actual Book of Virtues wisps for the following active items:
+- Devout Prayer (2 variations)
+- Wooden Key
 
 ## Almanach.lua
 
