@@ -30,6 +30,11 @@ end
 TheSaint:AddCallback(ModCallbacks.MC_EXECUTE_CMD, TheSaint.executeCmd)
 
 -- feature initialization
+local dealTracking = require("TheSaint.DevilDealTracking")
+if (type(dealTracking) == "table") then
+    dealTracking:Init(TheSaint)
+end
+
 local imports = include("TheSaint.imports")
 if (type(imports) == "table") then
     imports:Init(TheSaint)
