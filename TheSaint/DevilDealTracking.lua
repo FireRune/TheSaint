@@ -2,18 +2,6 @@ local isc = require("TheSaint.lib.isaacscript-common")
 
 local game = Game()
 
---- Devil Deal tracking:
---- if tracking flag == false then:
---- 1. if picking up an item/pickup while at least 1 of the following is true:
----     - current RoomType == RoomType.ROOM_DEVIL
----     - current RoomDescriptor.Flags has RoomDescriptor.FLAG_DEVIL_TREASURE
----     - current level.GetStateFlag(LevelStateFlag.STATE_SATANIC_BIBLE_USED) == true and current RoomType == RoomType.ROOM_BOSS
---- 2. check wether 1 of the following is true:
----     - EntityPickup.Price < 0 (item had to be purchased with health OR pickup had to be paid with damage (PickupPrice.PRICE_SPIKES))
----     - EntityPickup.Price > 0 (item/pickup had to be purchased with money (any player is Keeper or Tainted Keeper, Pound of Flesh))
----     - (REP+) EntityPickup.Price == 0 and EntityPickup.State == 1 (item acquired after using sacrifice spikes)
---- 3. if both are true, set tracking flag to true
-
 local DevilDealTracking = {}
 
 local firstInit = true
@@ -24,14 +12,9 @@ local v = {
 	}
 }
 
---- @return boolean
-function DevilDealTracking:HasDevilDealBeenTaken()
-	return v.run.hasDevilDealBeenTaken
-end
-
 --- Function to determine wether purchasing an item/pickup would be considered as taking a Devil Deal.<br>
 --- Returns true if current room is a Devil Room, a Devil Treasure Room (Devil's Crown) or a Boss Room after Satanic Bible has been used on the current floor.<br>
---- Otherwise, returns false
+--- Otherwise, returns false.
 --- @return boolean
 local function isCurrentRoomConsideredDevil()
 	local level = game:GetLevel()
@@ -46,6 +29,7 @@ local function isCurrentRoomConsideredDevil()
 	end
 end
 
+--- Sets the Devil Deal Tracking flag after collecting a pickup/item that is considered a Devil Deal.
 --- @param player EntityPlayer
 --- @param pickup EntityPickup
 local function pickupGet(_, player, pickup)
@@ -59,6 +43,7 @@ local function pickupGet(_, player, pickup)
 	end
 end
 
+--- Initialize this feature only once
 --- @param mod ModReference
 function DevilDealTracking:Init(mod)
 	if (firstInit == true) then
@@ -67,6 +52,14 @@ function DevilDealTracking:Init(mod)
 		mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_COLLECT, pickupGet)
 		firstInit = false
 	end
+end
+
+--- Returns wether a Devil Deal has been taken in the current run. (i.e. any purchase that causes Angel Room chance to be displayed as 0%)<br>
+--- That includes any pickup/item with a price tag (money, hearts, (REP+ only) sacrifice spikes)<br>
+--- found in a Devil Room, Boss Room after using "Satanic Bible" or Devil Treasure Room (from "Devil's Crown")
+--- @return boolean
+function DevilDealTracking:HasDevilDealBeenTaken()
+	return v.run.hasDevilDealBeenTaken
 end
 
 return DevilDealTracking

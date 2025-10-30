@@ -1,8 +1,10 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
+local ddTracking = require("TheSaint.DevilDealTracking")
 
 local game = Game()
 local hud = game:GetHUD()
+local conf = Isaac.GetItemConfig()
 
 --[[
     "Devout Prayer"<br>
@@ -132,8 +134,6 @@ end
 --- @param player EntityPlayer
 --- @param flag CacheFlag
 local function evaluateStats(_, player, flag)
-    if (not player:HasCollectible(enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER)) then return end
-
     local counters = getPlayerCounters(player)
 
     if (flag & CacheFlag.CACHE_DAMAGE == CacheFlag.CACHE_DAMAGE) then
@@ -149,7 +149,9 @@ end
 local function postNewLevel_resetCounters()
     for i = 0, game:GetNumPlayers() - 1 do
         local player = Isaac.GetPlayer(i)
-        player:AddCacheFlags((CacheFlag.CACHE_DAMAGE | CacheFlag.CACHE_LUCK))
+        local flags = (CacheFlag.CACHE_DAMAGE | CacheFlag.CACHE_LUCK)
+        --- @cast flags CacheFlag
+        player:AddCacheFlags(flags)
         player:EvaluateItems()
     end
 end
@@ -161,7 +163,9 @@ end
 local function effectSpawnHeart(player, extraEffect)
     Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_ETERNAL, game:GetRoom():FindFreePickupSpawnPosition(player.Position, 0, true), Vector.Zero, nil)
     if (extraEffect == true) then
-        player:UseCard(Card.CARD_HOLY, (UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER | UseFlag.USE_NOHUD))
+        local flags = (UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER | UseFlag.USE_NOHUD)
+        --- @cast flags UseFlag
+        player:UseCard(Card.CARD_HOLY, flags)
     end
 end
 
@@ -210,16 +214,24 @@ local function effectSpawnItem(rng, player, extraEffect)
         [1] = CollectibleType.COLLECTIBLE_NULL
     }
 
+    -- 1st item from current pool
     collectibles[0] = pool:GetCollectible(pool:GetPoolForRoom(room:GetType(), rng:RandomInt(math.maxinteger)), false, rng:RandomInt(math.maxinteger))
     Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, collectibles[0], room:FindFreePickupSpawnPosition(player.Position, 0, true), Vector.Zero, nil):ToPickup().OptionsPickupIndex = optionIndex
 
-    -- todo: spawn item from Devil Room pool if Devil Deal has been taken before (must be paid for)
-    local poolAngelOrDevil = ItemPoolType.POOL_ANGEL
+    -- 2nd item from Angel pool
+    -- if a Devil Deal has been taken before, spawn either from Devil pool or an empty pedestal (50% chance)
+    local ddTaken = ddTracking:HasDevilDealBeenTaken()
+    local poolAngelOrDevil = ((ddTaken and ItemPoolType.POOL_DEVIL) or ItemPoolType.POOL_ANGEL)
     if (game.Difficulty == Difficulty.DIFFICULTY_GREED or game.Difficulty == Difficulty.DIFFICULTY_GREEDIER) then
-        poolAngelOrDevil = ItemPoolType.POOL_GREED_ANGEL
+        poolAngelOrDevil = ((ddTaken and ItemPoolType.POOL_GREED_DEVIL) or ItemPoolType.POOL_GREED_ANGEL)
     end
     collectibles[1] = pool:GetCollectible(poolAngelOrDevil, false, rng:RandomInt(math.maxinteger))
-    Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, collectibles[1], room:FindFreePickupSpawnPosition(player.Position, 0, true), Vector.Zero, nil):ToPickup().OptionsPickupIndex = optionIndex
+    local pos = room:FindFreePickupSpawnPosition(player.Position, 0, true)
+    if (ddTaken == true and (rng:RandomInt(math.maxinteger) % 2) == 1) then
+        isc:spawnEmptyCollectible(pos, rng)
+    else
+        Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, collectibles[1], pos, Vector.Zero, nil):ToPickup().OptionsPickupIndex = optionIndex
+    end
 end
 
 --- @param collectible CollectibleType
