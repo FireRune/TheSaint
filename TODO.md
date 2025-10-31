@@ -1,6 +1,6 @@
 # Content
 
-- [ ] Soul of the Saint
+- [x] Soul of the Saint
 - teleports Isaac to a special Angel Room that contains 2 Items (both can be taken)
 - if a Devil Deal has been taken, acts like Joker but guarantees an Angel Room if the current floor's Devil/Angel Room hasn't been generated yet.
 
@@ -72,3 +72,4 @@ add collection page sprites for:
 
 add front/back sprites + anims for:
 - [ ] Library Card
+- [ ] Soul of the Saint

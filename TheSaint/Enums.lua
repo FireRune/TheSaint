@@ -22,6 +22,7 @@ local trinketType = {
 --- @enum TheSaint.Card
 local card = {
 	CARD_LIBRARY = Isaac.GetCardIdByName("librarycard"),
+	CARD_SOUL_SAINT = Isaac.GetCardIdByName("soulofthesaint"),
 }
 
 --- @enum TheSaint.PlayerType
