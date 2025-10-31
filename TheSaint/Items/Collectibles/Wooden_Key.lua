@@ -105,7 +105,7 @@ end
 --- Initialize the item's functionality
 --- @param mod ModReference
 function Wooden_Key:Init(mod)
-	mod:saveDataManager("Wooden Key", v)
+	mod:saveDataManager("Wooden_Key", v)
 	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, enums.CollectibleType.COLLECTIBLE_WOODEN_KEY)
 end
 
