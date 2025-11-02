@@ -73,13 +73,21 @@ if EID then
 	-- PocketItems END
 
 	-- Characters BEGIN
+	-- Character Icons
+	local charIcons = Sprite()
+	charIcons:Load("gfx/EID/eid_player_icons.anm2", true)
+
 	-- The Saint
 	local saint = enums.PlayerType.PLAYER_THE_SAINT
+	EID:addIcon("Player"..saint, "Players", 0, 16, 16, 0, 0, charIcons)
+
 	desc = "{{AngelRoom}} Entering an Angel Room for the first time each floor has the following effects:#↑{{IND}} Increases one of the following stats, whichever is lowest:#↑{{IND}}{{IND}} +1 Damage#↑{{IND}}{{IND}} +0.5 Fire Rate#↑{{IND}}{{IND}} +0.2 Speed#↑{{IND}}{{IND}} +2.5 Range#{{IND}} Spawns either 3 {{Coin}} coins, 1 {{Bomb}} bomb or 1 {{Key}} key depending on what you have the least of"
 	EID:addBirthright(saint, desc, "The Saint")
 
 	-- Tainted Saint
 	local tSaint = enums.PlayerType.PLAYER_THE_SAINT_B
+	EID:addIcon("Player"..tSaint, "Players", 1, 16, 16, 0, 0, charIcons)
+
 	desc = "Can't use {{SoulHeart}} Soul Hearts#When you take damage, turns all {{EmptyHeart}} empty Heart Containers into {{BrokenHeart}} Broken Hearts (doesn't apply to self-damage)#{{Collectible"..mendingHeart.."}} Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#{{Collectible"..mendingHeart.."}} Will replace 2 instead, if no damage was taken on the previous floor"
 	EID:addCharacterInfo(tSaint, desc, "The Saint")
 

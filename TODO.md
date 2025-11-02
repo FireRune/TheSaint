@@ -53,13 +53,15 @@ add character sprites for:
 - [ ] The Saint:
 	- [ ] vs. screen / stage transition
 	- [ ] player select screen
-	- [ ] co-op menu icon
-	- [ ] EID character icon
+	- [ ] starting room controls
+	- [x] co-op menu icon
+	- [x] EID character icon
 - [ ] Tainted Saint:
 	- [ ] vs. screen / stage transition
 	- [ ] player select screen
-	- [ ] co-op menu icon
-	- [ ] EID character icon
+	- [ ] starting room controls
+	- [x] co-op menu icon
+	- [x] EID character icon
 
 add item sprites for:
 - [ ] Devout Prayer
