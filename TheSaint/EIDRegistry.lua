@@ -61,13 +61,19 @@ if EID then
 	-- Trinkets END
 
 	-- PocketItems BEGIN
+	-- Pocket Item icons
+	local pocketIcons = Sprite()
+	pocketIcons:Load("gfx/EID/eid_cardspills.anm2")
+
 	-- Library Card
 	local libraryCard = enums.Card.CARD_LIBRARY
+	EID:addIcon("Card"..libraryCard, "librarycard", 0, 16, 24, 4, 7, pocketIcons)
 	desc = "{{Library}} Teleports Isaac to the Library"
 	EID:addCard(libraryCard, desc)
 
 	-- Soul of the Saint
 	local soulOfTheSaint = enums.Card.CARD_SOUL_SAINT
+	EID:addIcon("Card"..soulOfTheSaint, "soulofthesaint", 0, 32, 32, 4, 7, pocketIcons)
 	desc = "{{AngelDevilChance}} Teleports Isaac to the Devil or Angel Room#{{AngelRoom}} Guarantees an Angel Room if it hasn't been generated yet#{{AngelRoom}} If Isaac hasn't taken any Devil Deal, allows all items to be taken"
 	EID:addCard(soulOfTheSaint, desc)
 	-- PocketItems END

@@ -75,5 +75,5 @@ add collection page sprites for:
 - [ ] Wooden Key
 
 add front/back sprites + anims for:
-- [ ] Library Card
-- [ ] Soul of the Saint
+- [x] Library Card
+- [x] Soul of the Saint
