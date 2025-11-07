@@ -7,6 +7,7 @@ local collectibleType = {
 	COLLECTIBLE_ALMANACH = Isaac.GetItemIdByName("Almanach"),
 	COLLECTIBLE_DEVOUT_PRAYER = Isaac.GetItemIdByName("Devout Prayer"),
 	COLLECTIBLE_WOODEN_KEY = Isaac.GetItemIdByName("Wooden Key"),
+	COLLECTIBLE_HOLY_HAND_GRENADE = Isaac.GetItemIdByName("Holy Hand Grenade"),
 
 	-- passives
 

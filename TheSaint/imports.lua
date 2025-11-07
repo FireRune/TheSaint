@@ -12,6 +12,7 @@ local features = {
     include("TheSaint.Items.Collectibles.Wooden_Key"),
     include("TheSaint.Items.PocketItems.Library_Card"),
     include("TheSaint.Items.PocketItems.Soul_Saint"),
+    include("TheSaint.Items.Collectibles.Holy_Hand_Grenade"),
 }
 
 --- initialize all features of this mod

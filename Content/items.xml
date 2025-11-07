@@ -6,6 +6,8 @@
     <passive name="Divine Bombs" description="Holy blast +5 bombs" gfx="divine_bombs.png" tags="offensive summonable" quality="2" bombs="5" />
     <!-- TODO: replace gfx -->
     <active name="Wooden Key" description="Where could it fit?" gfx="sprite_missing.png" maxcharges="3" tags="offensive" quality="1" />
+    <!-- TODO: replace gfx -->
+    <active name="Holy Hand Grenade" description="Thou shalt count to three, no more, no less" gfx="sprite_missing.png" maxcharges="0" tags="offensive" quality="3" />
 
     <trinket name="Holy Penny" description="Wealth of faith" gfx="holy_penny.png" />
 </items>
