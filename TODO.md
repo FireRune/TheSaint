@@ -35,6 +35,7 @@
 - [ ] actual Book of Virtues wisps for the following active items:
 - Devout Prayer (2 variations)
 - Wooden Key
+- Holy Hand Grenade
 
 ## Almanach.lua
 
@@ -66,6 +67,7 @@ add character sprites for:
 add item sprites for:
 - [ ] Devout Prayer
 - [ ] Wooden Key
+- [ ] Holy Hand Grenade
 
 add collection page sprites for:
 - [ ] Almanach
@@ -73,6 +75,7 @@ add collection page sprites for:
 - [ ] Mending Heart
 - [ ] Divine Bombs
 - [ ] Wooden Key
+- [ ] Holy Hand Grenade
 
 add front/back sprites + anims for:
 - [x] Library Card

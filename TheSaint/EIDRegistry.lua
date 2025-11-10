@@ -50,6 +50,13 @@ if EID then
 	EID:addCollectible(woodenKey, desc)
 
 	EID:addCarBatteryCondition(woodenKey, {"a random door", "2{{CR}} random doors"})
+
+	local holyHandGrenade = enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE
+	desc = "Using the item and firing in a direction throws the grenade#The grenade explodes after some time and releases a shockwave that kills every enemy in the room"
+	EID:addCollectible(holyHandGrenade, desc)
+
+	desc = "No Effect"
+	EID:addCarBatteryCondition(devoutPrayer, desc)
 	-- Collectibles END
 
 	-- Trinkets BEGIN

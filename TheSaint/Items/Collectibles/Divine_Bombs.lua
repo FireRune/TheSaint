@@ -39,7 +39,7 @@ end
 --- Add effect only to bombs spawned by the player
 --- @param bomb EntityBomb
 local function postBombInit(_, bomb)
-    if (bomb.Variant == BombVariant.BOMB_THROWABLE) then return end
+    if (bomb.Variant == BombVariant.BOMB_GIGA) then return end
     if bomb.SpawnerEntity then
         local player = bomb.SpawnerEntity:ToPlayer()
         if player then
@@ -52,7 +52,7 @@ end
 --- Add 'Holy Light'-effect to bombs
 --- @param bomb EntityBomb
 local function postBombUpdate(_, bomb)
-    if (bomb.Variant == BombVariant.BOMB_THROWABLE) then return end
+    if (bomb.Variant == BombVariant.BOMB_GIGA) then return end
     if bomb.SpawnerEntity then
         local player = bomb.SpawnerEntity:ToPlayer()
         if player then

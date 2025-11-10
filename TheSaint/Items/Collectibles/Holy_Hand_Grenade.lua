@@ -80,12 +80,16 @@ local function postPlayerUpdate(_, player)
 				v.room.playerItemState[playerIndex] = false
 				player:AnimateCollectible(enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE, "HideItem")
 				local launchVector = getAxisAlignedVector(shootingInput):Resized(15)
-				local grenade = Isaac.Spawn(EntityType.ENTITY_BOMB, BombVariant.BOMB_THROWABLE, 0, player.Position, Vector.Zero, player):ToBomb()
+				local grenade = Isaac.Spawn(EntityType.ENTITY_BOMB, BombVariant.BOMB_GIGA, 0, player.Position, Vector.Zero, player):ToBomb()
 				if (grenade) then
+					local sprite = grenade:GetSprite()
+					sprite:ReplaceSpritesheet(0, "gfx/items/pick ups/pickup_giga_bomb.png")
+					sprite:LoadGraphics()
 					local ptr = GetPtrHash(grenade)
-					v.room.bombList[ptr] = {["firstFrame"] = true}
+					v.room.bombList[ptr] = {["Holy_Hand_Grenade"] = true}
 					player:TryHoldEntity(grenade)
 					player:ThrowHeldEntity(launchVector)
+					player:RemoveCollectible(enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE)
 				end
 			end
 		end
@@ -100,9 +104,9 @@ local function postBombUpdate(_, bomb)
         if player then
 			local ptr = GetPtrHash(bomb)
             local data = v.room.bombList[ptr]
-            if (data and data["firstFrame"] == true) then
+            if (data and data["Holy_Hand_Grenade"] == true) then
                 bomb:AddTearFlags(targetFlag)
-                data["firstFrame"] = nil
+                data["Holy_Hand_Grenade"] = nil
             end
 			if bomb:HasTearFlags(targetFlag) then
 				if bomb:GetSprite():IsPlaying("Explode") then
@@ -130,6 +134,7 @@ local function entityTakeDamage(_, entity, amount, dmgFlags, source, countdownFr
 	if (v.room.bigExplosion) then
 		if ((source.Type == EntityType.ENTITY_EFFECT) and (source.Variant == EffectVariant.MAMA_MEGA_EXPLOSION)) then
 			entity:Die()
+			return false
 		end
 	end
 end
@@ -146,7 +151,7 @@ function Holy_Hand_Grenade:Init(mod)
 	mod:saveDataManager("Holy_Hand_Grenade", v)
 	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate, 0)
-    mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, postBombUpdate, BombVariant.BOMB_THROWABLE)
+    mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, postBombUpdate, BombVariant.BOMB_GIGA)
 	mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, entityTakeDamage)
     mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, postEntityKill)
 end

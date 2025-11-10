@@ -14,6 +14,7 @@
         <Item Name="Almanach" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Holy Hand Grenade" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
     <!-- <Pool Name="secret"></Pool> -->
     <Pool Name="library">
