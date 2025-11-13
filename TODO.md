@@ -48,6 +48,14 @@
 		- spawn an empty item pedestal (50% chance)
 		- spawn an item from the devil pool (50% chance)
 
+## Holy_Hand_Grenade.lua
+
+- [ ] change how throwing the grenade is handled, to be more akin to the source material
+	- after pressing a shooting input: store the direction, hold the grenade entity above the player and show an animated speech bubble (counting to 3)
+	- on reaching the number 3, throws the grenade entity in the stored direction (allows the player to reposition)
+	- grenade entity can bounce once when colliding with the ground, a wall or a grid entity and explode on the second collision
+		- if first collision is with an enemy, will explode immedeately instead
+
 # Assets
 
 add character sprites for:

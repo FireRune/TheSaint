@@ -64,6 +64,30 @@ local function getAxisAlignedVector(inputVector)
 	return Vector.FromAngle(targetDegrees)
 end
 
+--- launch the grenade in the first pressed shooting direction
+--- @param player EntityPlayer
+--- @return boolean `true` if grenade was thrown, otherwise `false`
+local function tryThrowGrenade(player)
+	local shootingInput = player:GetShootingInput()
+	if (shootingInput:Length() > 0) then
+		player:AnimateCollectible(enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE, "HideItem")
+		local launchVector = getAxisAlignedVector(shootingInput):Resized(15)
+		local grenade = Isaac.Spawn(EntityType.ENTITY_BOMB, BombVariant.BOMB_GIGA, 0, player.Position, Vector.Zero, player):ToBomb()
+		if (grenade) then
+			local sprite = grenade:GetSprite()
+			sprite:ReplaceSpritesheet(0, "gfx/items/pick ups/pickup_giga_bomb.png")
+			sprite:LoadGraphics()
+			local ptr = GetPtrHash(grenade)
+			v.room.bombList[ptr] = {["Holy_Hand_Grenade"] = true}
+			player:TryHoldEntity(grenade)
+			player:ThrowHeldEntity(launchVector)
+			player:RemoveCollectible(enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE)
+		end
+		return true
+	end
+	return false
+end
+
 --- if the given player is currently holding up "Holy Hand Grenade", launch it in the first pressed shooting direction
 --- @param player EntityPlayer
 local function postPlayerUpdate(_, player)
@@ -75,22 +99,8 @@ local function postPlayerUpdate(_, player)
 			-- which is why it's solved like this, and not by cancelling the input in MC_INPUT_ACTION
 			player:SwapActiveItems()
 		else
-			local shootingInput = player:GetShootingInput()
-			if (shootingInput:Length() > 0) then
+			if (tryThrowGrenade(player) == true) then
 				v.room.playerItemState[playerIndex] = false
-				player:AnimateCollectible(enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE, "HideItem")
-				local launchVector = getAxisAlignedVector(shootingInput):Resized(15)
-				local grenade = Isaac.Spawn(EntityType.ENTITY_BOMB, BombVariant.BOMB_GIGA, 0, player.Position, Vector.Zero, player):ToBomb()
-				if (grenade) then
-					local sprite = grenade:GetSprite()
-					sprite:ReplaceSpritesheet(0, "gfx/items/pick ups/pickup_giga_bomb.png")
-					sprite:LoadGraphics()
-					local ptr = GetPtrHash(grenade)
-					v.room.bombList[ptr] = {["Holy_Hand_Grenade"] = true}
-					player:TryHoldEntity(grenade)
-					player:ThrowHeldEntity(launchVector)
-					player:RemoveCollectible(enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE)
-				end
 			end
 		end
 	end

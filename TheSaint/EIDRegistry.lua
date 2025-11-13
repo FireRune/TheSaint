@@ -51,12 +51,17 @@ if EID then
 
 	EID:addCarBatteryCondition(woodenKey, {"a random door", "2{{CR}} random doors"})
 
+	-- Holy Hand Grenade
 	local holyHandGrenade = enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE
 	desc = "Using the item and firing in a direction throws the grenade#The grenade explodes after some time and releases a shockwave that kills every enemy in the room"
 	EID:addCollectible(holyHandGrenade, desc)
 
 	desc = "No Effect"
-	EID:addCarBatteryCondition(devoutPrayer, desc)
+	EID:addCarBatteryCondition(holyHandGrenade, desc)
+
+	EID.SingleUseCollectibles[holyHandGrenade] = true
+	EID:AddSynergyConditional(holyHandGrenade, CollectibleType.COLLECTIBLE_VOID, "Void Single Use")
+	EID:AddSynergyConditional(holyHandGrenade, "5.300.48", "? Card Single Use")
 	-- Collectibles END
 
 	-- Trinkets BEGIN
