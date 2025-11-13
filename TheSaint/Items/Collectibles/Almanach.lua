@@ -14,20 +14,20 @@ local config = Isaac.GetItemConfig()
 ]]
 local Almanach = {}
 
--- table containing all items with the 'book'-tag, except those on the blacklist
+-- table containing all items with the `book`-tag, except those on the blacklist
 local books = {}
 
---- Blacklist of items with the 'book'-tag.<br>
+--- Blacklist of items with the `book`-tag.<br>
 --- Key is the item's id (see `Isaac.GetItemIdByName()`), Value is the name of the mod that blacklisted it.
 --- @type table<CollectibleType, string>
 local books_blacklist = {}
 
--- flag to check wether the used item was 'Lemegeton'
+-- flag to check wether the used item was "Lemegeton"
 local almanachLemegeton = false
--- name of the item granted by the spawned Lemegeton-wisp(s)
+-- name of the item granted by the spawned "Lemegeton"-wisp(s)
 local wispNames = {}
 
--- flag to check wether the item used was invoked from 'Almanach'
+-- flag to check wether the item used was invoked from "Almanach"
 local calledFromAlmanach = false
 -- table containing the names of the invoked items
 local itemNames = {
@@ -37,7 +37,7 @@ local itemNames = {
 
 --- Adds the given items to the book-blacklist if not already set
 --- @param modName string
---- @param items table<any, CollectibleType>
+--- @param items CollectibleType[]
 local function addItemToBookBlacklist(modName, items)
     for _, item in ipairs(items) do
         if (not books_blacklist[item]) then
@@ -48,7 +48,7 @@ end
 --- Exposed API version of `addItemToBookBlacklist`<br>
 --- Adds the given item(s) to the book-blacklist if not already set
 --- @param mod ModReference
---- @param item CollectibleType|table<any, CollectibleType>
+--- @param item CollectibleType | CollectibleType[]
 function TheSaintAPI:AddItemToBookBlacklist(mod, item)
     if (type(item) ~= "table") then item = {item} end
     addItemToBookBlacklist(mod.Name, item)
@@ -65,7 +65,7 @@ local function isBlacklisted(item)
     return false
 end
 
---- caches all items with the 'book'-tag
+--- caches all items with the `book`-tag
 local function getBooks()
     if (#books > 0) then return end
     local counter = 0
@@ -89,7 +89,7 @@ local function getBooks()
     end
 end
 
---- when invoking the effect of 'Lemegeton' caches the name of the item granted by the spawned wisp
+--- when invoking the effect of "Lemegeton" caches the name of the item granted by the spawned wisp
 --- @param itemWisp EntityFamiliar
 local function getWispName(_, itemWisp)
     if almanachLemegeton then
@@ -98,14 +98,15 @@ local function getWispName(_, itemWisp)
 end
 
 --- on use, invoke the effects of 2 items from the books-table (can be the same item twice)
---- and displays the names of the chosen items ('Lemegeton' also shows which item it grants)
+--- and displays the names of the chosen items ("Lemegeton" also shows which item it grants)
 --- @param rng RNG
 --- @param player EntityPlayer
 --- @param flag UseFlag
 local function useItem(_, _, rng, player, flag)
-    -- 'Car Battery' should boost the triggered items instead of using 'Almanach' twice
+    -- "Car Battery" should boost the triggered items instead of using "Almanach" twice
     if (flag & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return false end
     local hasCarBattery = isc:hasCollectible(player, CollectibleType.COLLECTIBLE_CAR_BATTERY)
+
     for i = 0, 1 do
         local randInt = rng:RandomInt(#books) + 1
         itemNames[i] = books[randInt].Name
@@ -135,11 +136,16 @@ local function useItem(_, _, rng, player, flag)
             wispNames = {}
         end
     end
-    game:GetHUD():ShowItemText(itemNames[0].."...", "... and "..itemNames[1], false, false)
+    if REPENTANCE_PLUS then
+        -- stack up text in case of multiple activations, to see what effects were granted
+        game:GetHUD():ShowItemText(itemNames[0].."...", "... and "..itemNames[1], false, false)
+    else
+        game:GetHUD():ShowItemText(itemNames[0].."...", "... and "..itemNames[1], false)
+    end
     return true
 end
 
---- if player holds 'Book of Virtues' spawns the respective wisps of the invoked items (except 'Lemegeton')
+--- if player holds "Book of Virtues" spawns the respective wisps of the invoked items (except "Lemegeton")
 --- @param book CollectibleType
 --- @param player EntityPlayer
 local function spawnAlmanachBookWisp(_, book, _, player)
