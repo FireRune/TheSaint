@@ -4,14 +4,13 @@ local ddTracking = require("TheSaint.DevilDealTracking")
 
 local game = Game()
 local hud = game:GetHUD()
-local conf = Isaac.GetItemConfig()
 
 --[[
     "Devout Prayer"<br>
     - 12 charges, starts empty; only charges by killing enemies<br>
 	- gains 1 charge for every 10th enemy killed and 1 charge for clearing a boss room<br>
 	- charges faster while having an Eternal Heart<br>
-    - can be used with 1+ charges (like 'Larnyx' or 'Everything Jar')<br>
+    - can be used with 1+ charges (like "Larnyx" or "Everything Jar")<br>
     - Effect depends on the amount of charges spent (1, 3, 6 or 12; see functions below for effect details)<br>
 	- using while having an Eternal Heart will consume it for extra effects
 ]]
@@ -27,7 +26,7 @@ local v = {
     level = {}
 }
 
--- flag to check wether any Pocket Item other than 'Devout Prayer' was used
+-- flag to check wether any Pocket Item other than "Devout Prayer" was used
 local otherPocketItemUsed = false
 
 --- charge mechanic
@@ -74,13 +73,13 @@ local function preSpawnCleanAward(_, rng, spawnPos)
     end
 end
 
---- if any Pocket Item other than 'Devout Prayer' is used, set flag to prevent accidental activation.<br>
+--- if any Pocket Item other than "Devout Prayer" is used, set flag to prevent accidental activation.<br>
 --- used both in MC_USE_CARD and MC_USE_PILL
 local function useOtherPocketItem()
     otherPocketItemUsed = true
 end
 
---- check wether 'Devout Prayer' should be used when corresponding action is triggered
+--- check wether "Devout Prayer" should be used when corresponding action is triggered
 --- @param player EntityPlayer
 local function postPlayerUpdate(_, player)
     if ((player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER)
@@ -130,7 +129,7 @@ local function effectAddLuck(chargeValue, player, extraEffect)
     player:EvaluateItems()
 end
 
---- re-evaluates the given players stats after using 'Devout Prayer'
+--- re-evaluates the given players stats after using "Devout Prayer"
 --- @param player EntityPlayer
 --- @param flag CacheFlag
 local function evaluateStats(_, player, flag)
@@ -157,7 +156,7 @@ local function postNewLevel_resetCounters()
 end
 
 --- Spawns an Eternal Heart.<br>
---- Extra effect: grants the effect of 'Holy Card'.
+--- Extra effect: grants the effect of "Holy Card".
 --- @param player EntityPlayer
 --- @param extraEffect boolean
 local function effectSpawnHeart(player, extraEffect)
@@ -240,15 +239,18 @@ end
 --- @param flags UseFlag
 --- @param slot ActiveSlot
 local function useItem(_, collectible, rng, player, flags, slot)
-    -- 'Car Battery' has no effect
+    -- "Car Battery" has no effect
     if (flags & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return false end
+
+    -- "Void" only invokes the luck up effect
+    local isVoid = (flags & UseFlag.USE_VOID == UseFlag.USE_VOID)
 
     local extraEffect = false
     if (player:GetEternalHearts() == 1) then
         player:AddEternalHearts(-1)
         extraEffect = true
     end
-    local charge = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
+    local charge = (isVoid and 1) or (player:GetActiveCharge(slot) + player:GetBatteryCharge(slot))
 
     if (charge >= 1) then
         -- 1+ charge(s)
@@ -271,11 +273,16 @@ local function useItem(_, collectible, rng, player, flags, slot)
             end
         end
         effectAddLuck(chargeSpent, player, extraEffect)
-        player:SetActiveCharge(charge - chargeSpent, slot)
+
+        -- manually remove charges, except when used through "Void"
+        if (not isVoid) then player:SetActiveCharge(charge - chargeSpent, slot) end
+
+        -- if holding "Book of Virtues", spawn wisps
         if (player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES)) then
             local wispType = ((extraEffect and CollectibleType.COLLECTIBLE_BIBLE) or CollectibleType.COLLECTIBLE_NULL)
             player:AddWisp(wispType, player.Position, true)
         end
+
         return {
             Discharge = false,
             Remove = false,
