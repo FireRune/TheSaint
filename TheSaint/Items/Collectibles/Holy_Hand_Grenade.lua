@@ -95,8 +95,8 @@ local function postPlayerUpdate(_, player)
 	if (v.room.playerItemState[playerIndex] == true) then
 		-- prevent swapping active items if Isaac has "Schoolbag"
 		if (Input.IsActionTriggered(ButtonAction.ACTION_DROP, player.ControllerIndex)) then
-			-- testing with "Bob's Rotten Head" has shown, that Pocket Items still cycle through each other when pressing the input,
-			-- which is why it's solved like this, and not by cancelling the input in MC_INPUT_ACTION
+			-- Testing with "Bob's Rotten Head" has shown that Active Items don't switch while Pocket Items still cycle through each other when pressing the input.
+			-- To mimic this behaviour, call player:SwapActiveItems() instead of cancelling the input in MC_INPUT_ACTION.
 			player:SwapActiveItems()
 		else
 			if (tryThrowGrenade(player) == true) then
@@ -106,7 +106,7 @@ local function postPlayerUpdate(_, player)
 	end
 end
 
---- Add 'Holy Light'-effect to bombs
+--- Add "Holy Light"-effect to bombs
 --- @param bomb EntityBomb
 local function postBombUpdate(_, bomb)
     if bomb.SpawnerEntity then
@@ -128,7 +128,7 @@ local function postBombUpdate(_, bomb)
     end
 end
 
---- Spawn a 'Holy Light'-beam
+--- Spawn a "Holy Light"-beam
 --- @param pos Vector
 --- @param spawner? Entity default: `nil`
 local function spawnHolyLight(pos, spawner)

@@ -8,7 +8,7 @@ local Tainted_Saint = {}
 
 local playersDamageTaken = {}
 
---- 'Tainted Saint' took damage that invokes penalties (i.e. decreasing Devil/Angel chance)
+--- "Tainted Saint" took damage that invokes penalties (i.e. decreasing Devil/Angel chance)
 --- @param ent Entity
 --- @param flag DamageFlag
 local function onDmgTaken(_, ent, _, flag)
@@ -34,7 +34,7 @@ local function getEmptyContainers(player)
 end
 
 --- When taking damage that causes penalties, turn all empty containers into Broken Hearts.<br>
---- (with 'Birthright' only 1 Heart Container will turn into a Broken Heart instead.)<br>
+--- (with "Birthright" only 1 Heart Container will turn into a Broken Heart instead.)<br>
 --- Remove any Soul Hearts, that may be applied through items.
 --- @param player EntityPlayer
 local function postPlayerUpdate_TSaint_Hearts(_, player)
@@ -52,7 +52,7 @@ local function postPlayerUpdate_TSaint_Hearts(_, player)
             end
 			playersDamageTaken[playerIndex] = false
 		end
-        -- T.Saint can't utilize Soul/Black Hearts
+        -- "Tainted Saint" can't utilize Soul/Black Hearts
         local soulHearts = player:GetSoulHearts()
         if (soulHearts > 0) then
             player:AddSoulHearts(-soulHearts)
@@ -73,7 +73,7 @@ local function preGetPedestal_TSaint_BrokenHearts(_, player, item)
     end
 end
 
---- chance to replace Soul/Black/Blended Hearts with an Eternal Heart while playing as 'Tainted Saint'
+--- chance to replace Soul/Black/Blended Hearts with an Eternal Heart while playing as "Tainted Saint"
 --- @param heart EntityPickup
 local function postPickupInitFirst_TSaint_Hearts(_, heart)
     for i = 0, game:GetNumPlayers() - 1 do
@@ -88,12 +88,12 @@ local function postPickupInitFirst_TSaint_Hearts(_, heart)
                     heart:Morph(heart.Type, heart.Variant, HeartSubType.HEART_ETERNAL, true)
                 end
             end
-			return -- attempt to replace only once, in case more than 1 player is 'Tainted Saint'
+			return -- attempt to replace only once, in case more than 1 player is "Tainted Saint"
         end
     end
 end
 
---- prevent 'Tainted Saint' from picking up Soul/Black Hearts, as well as Blended Hearts while at full health
+--- prevent "Tainted Saint" from picking up Soul/Black Hearts, as well as Blended Hearts while at full health
 --- @param heart EntityPickup
 --- @param collider Entity
 local function prePickupCollision_TSaint_Hearts(_, heart, collider)
@@ -108,23 +108,23 @@ local function prePickupCollision_TSaint_Hearts(_, heart, collider)
     end
 end
 
---- When using 'Esau Jr.' for the first time as 'Tainted Saint' in a run,<br>
---- sets health to 1 full Heart Container + 2 Broken Hearts and re-add 'Devout Prayer'
+--- When using "Esau Jr." for the first time as "Tainted Saint" in a run,<br>
+--- sets health to 1 full Heart Container + 2 Broken Hearts and re-add "Devout Prayer"
 --- @param player EntityPlayer
 local function postFirstEsauJr(_, player)
     if (player:GetPlayerType() == taintedChar) then
         player:AddMaxHearts(2)
         player:AddHearts(2)
         player:AddBrokenHearts(2)
-        -- prevent 'Devout Prayer' from being removed
+        -- prevent "Devout Prayer" from being removed
         player:SetPocketActiveItem(enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER, ActiveSlot.SLOT_POCKET, false)
     end
 end
 
--- Used to store the current amount of Heart Containers when picking up 'Abaddon'.
+-- Used to store the current amount of Heart Containers when picking up "Abaddon".
 local abaddonHeartsRemoved = 0
 
---- Store the current amount of Heart Containers when picking up 'Abaddon'.
+--- Store the current amount of Heart Containers when picking up "Abaddon".
 --- @param player EntityPlayer
 local function preItemPickup_Abaddon(_, player, _)
 	if (player:GetPlayerType() == taintedChar) then
@@ -132,8 +132,8 @@ local function preItemPickup_Abaddon(_, player, _)
 	end
 end
 
---- Picking up 'Abaddon' would turn all Heart Containers into Black Hearts.<br>
---- For 'Tainted Saint' instead sets health to 1 Heart Containter with half a heart<br>
+--- Picking up "Abaddon" would turn all Heart Containers into Black Hearts.<br>
+--- For "Tainted Saint" instead sets health to 1 Heart Containter with half a heart<br>
 --- and replace all other Heart Containers with Broken Hearts.
 --- @param player EntityPlayer
 local function postItemPickup_Abaddon(_, player, _)

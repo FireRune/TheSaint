@@ -12,7 +12,7 @@ local v = {
     }
 }
 
---- Birthright effect: when entering an Angel Room increases lowest stat (by giving and removing 'Consolation Prize')
+--- "Birthright": when entering an Angel Room increases lowest stat (by giving and removing "Consolation Prize")
 --- @param room RoomType
 local function postNewRoomReordered_Saint_Birthright(_, room)
     if (v.level.angelRoomFirstEntry) then

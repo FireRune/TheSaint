@@ -13,7 +13,7 @@ local v = {
 }
 
 --- Function to determine wether purchasing an item/pickup would be considered as taking a Devil Deal.<br>
---- Returns true if current room is a Devil Room, a Devil Treasure Room (Devil's Crown) or a Boss Room after Satanic Bible has been used on the current floor.<br>
+--- Returns true if current room is a Devil Room, a Devil Treasure Room ("Devil's Crown") or a Boss Room after "Satanic Bible" has been used on the current floor.<br>
 --- Otherwise, returns false.
 --- @return boolean
 local function isCurrentRoomConsideredDevil()

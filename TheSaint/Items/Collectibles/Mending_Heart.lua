@@ -14,7 +14,7 @@ local Mending_Heart = {}
 --- animation state flag
 local playMovie = -1
 
--- prevent accidental trigger when starting a new run as 'Tainted Saint'
+-- prevent accidental trigger when starting a new run as "Tainted Saint"
 local blockNewRun = true
 
 --- Prevents the item's effect when starting a new run
@@ -68,7 +68,7 @@ local function postRender()
     end
 end
 
---- initialize the item's functionality
+--- Initialize the item's functionality
 --- @param mod ModReference
 function Mending_Heart:Init(mod)
     mod:AddCallbackCustom(isc.ModCallbackCustom.POST_GAME_STARTED_REORDERED, postGameStartedReordered, false)

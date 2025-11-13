@@ -1,4 +1,3 @@
-local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 
 local game = Game()
@@ -7,7 +6,7 @@ local game = Game()
 	"Wooden Key"<br>
 	- 3 Room Charge<br>
 	- When used, opens a random door of the room (if possible)<br>
-	- Can also create 'Red Room'-doors
+	- Can also create "Red Room"-doors
 ]]
 local Wooden_Key = {}
 
@@ -19,8 +18,8 @@ local v = {
 
 --- Returns a table containing all possible DoorSlots for the given RoomShape
 --- @param shape RoomShape
---- @return table<integer, DoorSlot>?
-local function GetPossibleRoomDoors(shape)
+--- @return DoorSlot[]?
+local function getPossibleRoomDoors(shape)
 	local doors = nil
 
 	if (shape == RoomShape.ROOMSHAPE_1x1) then
@@ -59,15 +58,15 @@ end
 --- @param player EntityPlayer
 --- @param flags UseFlag
 local function useItem(_, collectible, rng, player, flags)
-	-- 'Car Battery' is checked later
+	-- "Car Battery" is checked later
 	if (flags & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return false end
 
 	local room = game:GetRoom()
-	local doors = GetPossibleRoomDoors(room:GetRoomShape())
+	local doors = getPossibleRoomDoors(room:GetRoomShape())
 	if (doors) then
 		-- only check doors if not all have been checked
 		if (#doors > getNumCheckedDoorSlots()) then
-			-- randomly choose a door slot (or 2 with 'Car Battery')
+			-- randomly choose a door slot (or 2 with "Car Battery")
 			local effectMult = ((player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY) and 2) or 1)
 			for _ = 1, effectMult do
 				local door = nil

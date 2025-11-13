@@ -8,7 +8,7 @@ local game = Game()
 ]]
 local Holy_Penny = {}
 
---- When picking up a coin, has a 17%/25%/30% chance to spawn an Eternal Heart (same chance formula as for 'Blessed Penny')
+--- When picking up a coin, has a 17%/25%/30% chance to spawn an Eternal Heart (same chance formula as for "Blessed Penny")
 --- @param pickup EntityPickup
 --- @param collider Entity
 local function onPickup(_, pickup, collider)

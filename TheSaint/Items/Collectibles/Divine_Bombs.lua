@@ -3,7 +3,7 @@ local enums = require("TheSaint.Enums")
 --[[
     "Divine Bombs"<br>
     - +5 bombs<br>
-    - Bombs spawn 'Holy Light' beams upon exploding
+    - Bombs spawn "Holy Light" beams upon exploding
 ]]
 local Divine_Bombs = {}
 
@@ -13,14 +13,14 @@ local v = {
 	room = {}
 }
 
---- Spawn a 'Holy Light'-beam
+--- Spawn a "Holy Light"-beam
 --- @param pos Vector
 --- @param spawner? Entity default: `nil`
 local function spawnHolyLight(pos, spawner)
     Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.CRACK_THE_SKY, 0, pos, Vector.Zero, spawner)
 end
 
---- Spawns 'Holy Light'-beams at the given position, as well as at the position of all surrounding enemies
+--- Spawns "Holy Light"-beams at the given position, as well as at the position of all surrounding enemies
 --- @param pos Vector
 --- @param spawner? Entity default: `nil`
 local function triggerHolyLight(pos, spawner)
@@ -49,7 +49,7 @@ local function postBombInit(_, bomb)
     end
 end
 
---- Add 'Holy Light'-effect to bombs
+--- Add "Holy Light"-effect to bombs
 --- @param bomb EntityBomb
 local function postBombUpdate(_, bomb)
     if (bomb.Variant == BombVariant.BOMB_GIGA) then return end
@@ -64,6 +64,7 @@ local function postBombUpdate(_, bomb)
                 end
                 data["firstFrame"] = nil
                 if bomb.IsFetus then
+                    -- bombs from "Dr. Fetus" only have a chance to apply bomb effects from items
                     local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_DR_FETUS)
                     local chance = (30 + (5 * player.Luck))
                     if ((rng:RandomInt(100) + 1) > chance) then
@@ -80,7 +81,7 @@ local function postBombUpdate(_, bomb)
     end
 end
 
---- Add bomb effect to 'Epic Fetus'-rockets
+--- Add bomb effect to rockets ("Epic Fetus" and "Doctor's Remote")
 --- @param effect EntityEffect
 local function postEffectInit(_, effect)
     if effect.SpawnerEntity then
@@ -100,7 +101,7 @@ local function postEffectInit(_, effect)
     end
 end
 
---- Synergy 'Epic Fetus' + 'Divine Bombs' or 'Holy Light' (due to TearFlags.LIGHT_FROM_HEAVEN)
+--- Synergy "Epic Fetus" (or "Doctor's Remote") + "Divine Bombs" or "Holy Light" (due to TearFlags.LIGHT_FROM_HEAVEN)
 --- @param effect EntityEffect
 local function postEffectUpdate(_, effect)
 	if (effect.SpawnerEntity) then
