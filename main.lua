@@ -8,7 +8,8 @@ include("TheSaint.EIDRegistry")
 
 local TheSaintVanilla = RegisterMod(stats.ModName, 1)
 local features = {
-    isc.ISCFeature.SAVE_DATA_MANAGER
+    isc.ISCFeature.SAVE_DATA_MANAGER,
+    isc.ISCFeature.EXTRA_CONSOLE_COMMANDS,
 }
 local TheSaint = isc:upgradeMod(TheSaintVanilla, features)
 
@@ -16,18 +17,13 @@ local TheSaint = isc:upgradeMod(TheSaintVanilla, features)
 TheSaintAPI = {}
 
 --- Custom commands
---- @param cmd string
-function TheSaint:executeCmd(cmd)
-    cmd = string.lower(cmd)
-    if cmd == "saint_help" then
-        print("'The Saint' commands:")
-        print("'saint_help': shows this list")
-        print("'saint_reloadbooks': reloads the cache of 'book'-items for 'Almanach'")
-        print("'saint_marks': check progress for The Saint's completion marks")
-        print("'saint_marksb': check progress for Tainted Saint's completion marks")
-    end
+local function thesaint_help()
+    print("[The Saint] list of commands (all commands and their parameters are case-insensitive, unless stated otherwise):")
+    print("[The Saint] - 'thesaint_help': shows this list")
+    print("[The Saint] - 'thesaint_reloadbooks': reloads the cache of 'book'-items for 'Almanach'")
+    print("[The Saint] - 'thesaint_marks': check progress for this mod's characters' completion marks")
 end
-TheSaint:AddCallback(ModCallbacks.MC_EXECUTE_CMD, TheSaint.executeCmd)
+TheSaint:addConsoleCommand("thesaint_help", thesaint_help)
 
 -- feature initialization
 local dealTracking = require("TheSaint.DevilDealTracking")
@@ -40,4 +36,4 @@ if (type(imports) == "table") then
     imports:Init(TheSaint)
 end
 
-print("[The Saint] Type 'saint_help' for a list of commands")
+print("[The Saint] Type 'thesaint_help' for a list of commands")

@@ -1,6 +1,7 @@
 local imports = {}
 
 local features = {
+    include("TheSaint.Unlocks"),
     include("TheSaint.Characters.Characters"),
     include("TheSaint.Characters.The_Saint"),
     include("TheSaint.Characters.Tainted_Saint"),
@@ -8,11 +9,11 @@ local features = {
     include("TheSaint.Items.Collectibles.Mending_Heart"),
     include("TheSaint.Items.Collectibles.Devout_Prayer"),
     include("TheSaint.Items.Collectibles.Divine_Bombs"),
-    include("TheSaint.Items.Trinkets.Holy_Penny"),
     include("TheSaint.Items.Collectibles.Wooden_Key"),
+    include("TheSaint.Items.Collectibles.Holy_Hand_Grenade"),
+    include("TheSaint.Items.Trinkets.Holy_Penny"),
     include("TheSaint.Items.PocketItems.Library_Card"),
     include("TheSaint.Items.PocketItems.Soul_Saint"),
-    include("TheSaint.Items.Collectibles.Holy_Hand_Grenade"),
 }
 
 --- initialize all features of this mod

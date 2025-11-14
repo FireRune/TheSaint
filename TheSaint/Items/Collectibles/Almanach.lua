@@ -159,12 +159,10 @@ local function spawnAlmanachBookWisp(_, book, _, player)
 end
 
 --- reload the books-table via the Debug Console
---- @param cmd string
-local function enterCmd(_, cmd)
-    if (string.lower(cmd) == "saint_reloadbooks") then
-        books = {}
-        getBooks()
-    end
+local function thesaint_reloadbooks()
+    books = {}
+    getBooks()
+    print("[The Saint]: reloaded book-cache")
 end
 
 --- initialize the item's functionality
@@ -175,7 +173,7 @@ function Almanach:Init(mod)
     mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, getWispName, FamiliarVariant.ITEM_WISP)
     mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, enums.CollectibleType.COLLECTIBLE_ALMANACH)
     mod:AddCallback(ModCallbacks.MC_USE_ITEM, spawnAlmanachBookWisp)
-    mod:AddCallback(ModCallbacks.MC_EXECUTE_CMD, enterCmd)
+    mod:addConsoleCommand("thesaint_reloadbooks", thesaint_reloadbooks)
 end
 
 return Almanach
