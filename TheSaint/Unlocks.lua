@@ -52,8 +52,8 @@ local v = {
 	persistent = {
 		--- @type table<PlayerType, CharacterCompletionMarks>
 		characterMarks = {
-			[saint] = {},
-			[tSaint] = {},
+			["Saint"] = {},
+			["T_Saint"] = {},
 		}
 	}
 }
@@ -61,10 +61,10 @@ local v = {
 --- @param targetMark string
 --- @param difficulty Difficulty
 local function awardCompletionMarks(targetMark, difficulty)
-	--- @type PlayerType[]
+	--- @type string[]
 	local targetPlayers = {}
-	if (isc:anyPlayerIs(saint)) then table.insert(targetPlayers, saint) end
-	if (isc:anyPlayerIs(tSaint)) then table.insert(targetPlayers, tSaint) end
+	if (isc:anyPlayerIs(saint)) then table.insert(targetPlayers, "Saint") end
+	if (isc:anyPlayerIs(tSaint)) then table.insert(targetPlayers, "T_Saint") end
 	for _, char in ipairs(targetPlayers) do
 		local state = nil
 		if ((difficulty == Difficulty.DIFFICULTY_NORMAL) or (difficulty == Difficulty.DIFFICULTY_GREED)) then
@@ -153,8 +153,8 @@ end
 --- Automatically reroll any item/pickup that hasn't been unlocked yet
 --- @param pickup EntityPickup
 local function postPickupInitFirst(_, pickup)
-	local marks_saint = v.persistent.characterMarks[saint]
-	local marks_tSaint = v.persistent.characterMarks[tSaint]
+	local marks_saint = v.persistent.characterMarks["Saint"]
+	local marks_tSaint = v.persistent.characterMarks["T_Saint"]
 
 	-- (Boss Rush with Saint)
 
@@ -168,10 +168,22 @@ local function postPickupInitFirst(_, pickup)
 	end
 	-- (Satan with Saint)
 
-	-- (Isaac with Saint)
-
-	-- (The Lamb with Saint)
-
+	-- "Divine Bombs" (Isaac with Saint)
+	if ((pickup.Variant == PickupVariant.PICKUP_COLLECTIBLE)
+	and (pickup.SubType == enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS)) then
+		if (marks_saint["Isaac"] == nil) then
+			rerollItem(pickup, "collectible", enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS)
+			return
+		end
+	end
+	-- "Wooden Key" (The Lamb with Saint)
+	if ((pickup.Variant == PickupVariant.PICKUP_COLLECTIBLE)
+	and (pickup.SubType == enums.CollectibleType.COLLECTIBLE_WOODEN_KEY)) then
+		if (marks_saint["TheLamb"] == nil) then
+			rerollItem(pickup, "collectible", enums.CollectibleType.COLLECTIBLE_WOODEN_KEY)
+			return
+		end
+	end
 	-- "Holy Penny" (??? with Saint)
 	if ((pickup.Variant == PickupVariant.PICKUP_TRINKET)
 	and ((pickup.SubType % TrinketType.TRINKET_GOLDEN_FLAG) == enums.TrinketType.TRINKET_HOLY_PENNY)) then
@@ -218,8 +230,14 @@ local function postPickupInitFirst(_, pickup)
 
 	-- (Greedier Mode with T.Saint)
 
-	-- (Delirium with T.Saint)
-
+	-- "Mending Heart" (Delirium with T.Saint)
+	if ((pickup.Variant == PickupVariant.PICKUP_COLLECTIBLE)
+	and (pickup.SubType == enums.CollectibleType.COLLECTIBLE_MENDING_HEART)) then
+		if (marks_tSaint["Delirium"] == nil) then
+			rerollItem(pickup, "collectible", enums.CollectibleType.COLLECTIBLE_MENDING_HEART)
+			return
+		end
+	end
 	-- (Mother with T.Saint)
 
 	-- (The Beast with T.Saint)
@@ -332,8 +350,8 @@ local function executeCommand(char, operation, mark, diff)
 		if (not mark) then mark = "all" end
 		if (not diff) then diff = "normal" end
 
-		local character = (((char == "saint") and saint) or tSaint)
-		local charName = (((character == saint) and "The Saint") or "Tainted Saint")
+		local character = (((char == "saint") and "Saint") or "T_Saint")
+		local charName = (((char == "saint") and "The Saint") or "Tainted Saint")
 		local marks = v.persistent.characterMarks[character]
 
 		if (operation == "show") then
