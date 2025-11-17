@@ -1,62 +1,58 @@
-# Content
+# Must be finished for initial release
+
+## Content
 
 - [x] Soul of the Saint
 - teleports Isaac to a special Angel Room that contains 2 Items (both can be taken)
 - if a Devil Deal has been taken, acts like Joker but guarantees an Angel Room if the current floor's Devil/Angel Room hasn't been generated yet.
 
-# Code
+## Code
 
-## General
+### General
 
-- [ ] Handling of unlocks for both characters' completion marks
-- The Saint:
-	- Boss Rush
-	- Mom's Heart (Hard Mode)
-	- Satan
-	- Isaac
-	- The Lamb
-	- ???
-	- Mega Satan (maybe co-op baby?)
-	- Hush
-	- Greed Mode
-	- Greedier Mode
-	- Delirium
-	- Mother
-	- The Beast
-- Tainted Saint:
-	- Boss Rush + Hush (Soul of the Saint)
-	- Satan + Isaac + The Lamb + ??? (Trinket)
-	- Greedier Mode (Card)
-	- Delirium (Item akin to character mechanic)
-	- Mother (Trinket)
-	- The Beast (Item)
-	- Mega Satan (Pickup or Object)
+- [x] Handling of unlocks for both characters' completion marks
 
 - [ ] actual Book of Virtues wisps for the following active items:
 - Devout Prayer (2 variations)
 - Wooden Key
 - Holy Hand Grenade
 
-## Almanach.lua
+### Unlocks.lua
+- The Saint:
+	- [ ] Boss Rush
+	- [x] Mom's Heart on Hard Mode (Almanach)
+	- [ ] Satan
+	- [x] Isaac (Divine Bombs)
+	- [x] The Lamb (Wooden Key)
+	- [x] ??? (Holy Penny)
+	- [ ] Mega Satan (maybe co-op baby?)
+	- [ ] Hush
+	- [x] Greed Mode (Library Card)
+	- [ ] Greedier Mode
+	- [ ] Delirium
+	- [ ] Mother
+	- [x] The Beast (Holy Hand Grenade)
+- Tainted Saint:
+	- [x] Boss Rush + Hush (Soul of the Saint)
+	- [ ] Satan + Isaac + The Lamb + ??? (Trinket)
+	- [ ] Greedier Mode (Card)
+	- [x] Delirium (Unbreaking Heart)
+	- [ ] Mother (Trinket)
+	- [ ] The Beast (Item)
+	- [ ] Mega Satan (Pickup or Object)
+
+### Almanach.lua
 
 - [x] allow adding entries to the blacklist as an API call
 
-## Devout_Prayer.lua
+### Devout_Prayer.lua
 
 - [x] function `effectSpawnItem`: change the 2nd spawned item
 	- if a devil deal has been taken during the run:
 		- spawn an empty item pedestal (50% chance)
 		- spawn an item from the devil pool (50% chance)
 
-## Holy_Hand_Grenade.lua
-
-- [ ] change how throwing the grenade is handled, to be more akin to the source material
-	- after pressing a shooting input: store the direction, hold the grenade entity above the player and show an animated speech bubble (counting to 3)
-	- on reaching the number 3, throws the grenade entity in the stored direction (allows the player to reposition)
-	- grenade entity can bounce once when colliding with the ground, a wall or a grid entity and explode on the second collision
-		- if first collision is with an enemy, will explode immedeately instead
-
-# Assets
+## Assets
 
 add character sprites for:
 - [ ] The Saint:
@@ -88,3 +84,12 @@ add collection page sprites for:
 add front/back sprites + anims for:
 - [x] Library Card
 - [x] Soul of the Saint
+
+# future features
+## Holy_Hand_Grenade.lua
+
+- [ ] change how throwing the grenade is handled, to be more akin to the source material
+	- after pressing a shooting input: store the direction, hold the grenade entity above the player and show an animated speech bubble (counting to 3)
+	- on reaching the number 3, throws the grenade entity in the stored direction (allows the player to reposition)
+	- grenade entity can bounce once when colliding with the ground, a wall or a grid entity and explode on the second collision
+		- if first collision is with an enemy, will explode immedeately instead
