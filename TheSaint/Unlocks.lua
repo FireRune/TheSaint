@@ -104,6 +104,87 @@ local function preSpawnCleanAward(_, rng, spawnPos)
 	end
 end
 
+--#region Unlocks
+
+--- @param pickup EntityPickup
+--- @param type string
+--- @param lockedSubType integer
+--- @return integer
+local function rerollItem(pickup, type, lockedSubType)
+	local retVal = 0
+	local pool = game:GetItemPool()
+	if (type == "collectible") then
+		local room = game:GetRoom()
+		local seed = game:GetSeeds():GetStartSeed()
+		local itemPool = pool:GetPoolForRoom(room:GetType(), seed)
+		pool:RemoveCollectible(lockedSubType)
+		retVal = pool:GetCollectible(itemPool, true, pickup.InitSeed)
+		pool:RemoveCollectible(retVal)
+	elseif (type == "trinket") then
+		local isGold = (pickup.SubType > TrinketType.TRINKET_GOLDEN_FLAG)
+		pool:RemoveTrinket(lockedSubType)
+		retVal = pool:GetTrinket(false)
+		pool:RemoveTrinket(retVal)
+		if (isGold) then retVal = retVal + TrinketType.TRINKET_GOLDEN_FLAG end
+	elseif (type == "card") then
+		repeat
+			retVal = pool:GetCard(pickup.InitSeed, false, false, false)
+		until (retVal ~= lockedSubType)
+	elseif (type == "rune") then
+		repeat
+			retVal = pool:GetCard(pickup.InitSeed, false, true, true)
+		until (retVal ~= lockedSubType)
+	end
+	return retVal
+end
+
+--- Automatically reroll any item/pickup that hasn't been unlocked yet
+--- @param pickup EntityPickup
+local function postPickupInitFirst(_, pickup)
+	local marks_saint = v.persistent.characterMarks[saint]
+	local marks_tSaint = v.persistent.characterMarks[tSaint]
+
+	-- (Boss Rush with Saint)
+	-- (Mom's Heart on Hard Mode with Saint)
+	if ((pickup.Variant == PickupVariant.PICKUP_COLLECTIBLE) and (pickup.SubType == enums.CollectibleType.COLLECTIBLE_ALMANACH)) then
+		if (not marks_saint["MomsHeart"]) then
+			local newCollectible = rerollItem(pickup, "collectible", enums.CollectibleType.COLLECTIBLE_ALMANACH)
+			pickup:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, newCollectible, true)
+		end
+	end
+	-- (Satan with Saint)
+	-- (Isaac with Saint)
+	-- (The Lamb with Saint)
+	-- (??? with Saint)
+	-- (Mega Satan with Saint)
+	-- (Greed Mode with Saint)
+	-- (Hush with Saint)
+	-- (Greedier Mode with Saint)
+	-- (Delirium with Saint)
+	-- (Mother with Saint)
+	-- Holy Hand Grenade (The Beast with Saint)
+	if ((pickup.Variant == PickupVariant.PICKUP_COLLECTIBLE) and (pickup.SubType == enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE)) then
+		if (marks_saint["TheBeast"] == nil) then
+			local newCollectible = rerollItem(pickup, "collectible", enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE)
+			pickup:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, newCollectible, true)
+		end
+	end
+	-- Soul of the Saint (Boss Rush + Hush with T.Saint)
+	if ((pickup.Variant == PickupVariant.PICKUP_TAROTCARD) and (pickup.SubType == enums.Card.CARD_SOUL_SAINT)) then
+		if ((marks_tSaint["BossRush"] == nil) or (marks_tSaint["Hush"] == nil)) then
+			local newRune = rerollItem(pickup, "rune", enums.Card.CARD_SOUL_SAINT)
+			pickup:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, newRune, true)
+		end
+	end
+	-- (Satan + Isaac + The Lamb + ??? with T.Saint)
+	-- (Greedier Mode with T.Saint)
+	-- (Delirium with T.Saint)
+	-- (Mother with T.Saint)
+	-- (The Beast with T.Saint)
+	-- (Mega Satan with T.Saint)
+end
+
+--#endregion
 
 --#region Console Commands
 
@@ -181,61 +262,64 @@ local function listMarks(marks)
 	print("[The Saint] The Beast: "..getStatusString(marks["TheBeast"]))
 end
 
+--- @param mark string
+--- @return boolean
+local function isValidMark(mark)
+	local marks = {
+		"BossRush", "MomsHeart", "Satan", "Isaac",
+		"TheLamb", "BlueBaby", "MegaSatan", "GreedMode",
+		"Hush", "Delirium", "Mother", "TheBeast", "all",
+	}
+	local retVal = isc:find(marks, function (value) return (value == mark) end) --- @cast retVal boolean
+	if (retVal == false) then
+		print("[The Saint] invalid argument <completion mark>")
+	end
+	return retVal
+end
+
 --- @param char string?
 --- @param operation string?
 --- @param mark string?
 --- @param diff string?
 local function executeCommand(char, operation, mark, diff)
 	if (char) then
+		-- set default values
+		if (not operation) then operation = "show" end
+		if (not mark) then mark = "all" end
+		if (not diff) then diff = "normal" end
+
 		local character = (((char == "saint") and saint) or tSaint)
 		local charName = (((character == saint) and "The Saint") or "Tainted Saint")
 		local marks = v.persistent.characterMarks[character]
+
 		if (operation == "show") then
 			print("[The Saint] completion marks for '"..charName.."':")
 			listMarks(marks)
-		elseif (operation == "set") then
-			local status = false
-			if (diff == "hard") then
-				status = true
-			else
-				diff = "normal"
-			end
-			if (mark == "all") then
-				for field, _ in pairs(marks) do
-					marks[field] = status
-				end
-				print("[The Saint] set all completion marks for '"..charName.."' to '"..diff.."'")
-			elseif ((mark == "BossRush") or (mark == "MomsHeart") or (mark == "Satan") or
-					(mark == "Isaac") or (mark == "TheLamb") or (mark == "BlueBaby") or
-					(mark == "MegaSatan") or (mark == "GreedMode") or (mark == "Hush") or
-					(mark == "Delirium") or (mark == "Mother") or (mark == "TheBeast")
-			) then
-				marks[mark] = status
-				print("[The Saint] set completion mark '"..mark.."' for '"..charName.."' to '"..diff.."'")
-			else
-				print("[The Saint] invalid argument #3")
-			end
-		elseif (operation == "clear") then
-			if (mark == "all") then
-				for field, _ in pairs(marks) do
-					marks[field] = nil
-				end
-				print("[The Saint] cleared all completion marks for '"..charName.."'")
-			elseif ((mark == "BossRush") or (mark == "MomsHeart") or (mark == "Satan") or
-					(mark == "Isaac") or (mark == "TheLamb") or (mark == "BlueBaby") or
-					(mark == "MegaSatan") or (mark == "GreedMode") or (mark == "Hush") or
-					(mark == "Delirium") or (mark == "Mother") or (mark == "TheBeast")
-			) then
-				marks[mark] = nil
-				print("[The Saint] cleared completion mark '"..mark.."' for '"..charName.."'")
-			else
-				print("[The Saint] invalid argument #3")
-			end
 		else
-			print("[The Saint] invalid argument #2")
+			if (isValidMark(mark)) then
+				local status = nil
+				if (operation == "set") then
+					status = (diff == "hard")
+				end
+				local msg = {
+					["set"] = "[The Saint] set @ for '"..charName.."' to '"..diff.."'",
+					["clear"] = "[The Saint] cleared @ for '"..charName.."'",
+				}
+				if (mark == "all") then
+					for field, _ in pairs(marks) do
+						marks[field] = status
+					end
+					local output = msg[operation]:gsub("@", "all completion marks")
+					print(output)
+				else
+					marks[mark] = status
+					local output = msg[operation]:gsub("@", "completion mark '"..mark.."'")
+					print(output)
+				end
+			end
 		end
 	else
-		print("[The Saint] invalid argument #1")
+		print("[The Saint] invalid argument <character>")
 	end
 end
 
@@ -287,8 +371,12 @@ end
 --- @param mod ModReference
 function UnlockManager:Init(mod)
 	mod:saveDataManager("UnlockManager", v)
+	-- awarding completion marks
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_AMBUSH_FINISHED, postAmbushFinished, isc.AmbushType.BOSS_RUSH)
     mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, preSpawnCleanAward)
+	-- prevent getting things, that aren't unlocked yet
+	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst)
+	-- console commands
 	mod:addConsoleCommand("thesaint_marks", thesaint_marks)
 end
 
