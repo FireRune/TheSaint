@@ -29,7 +29,7 @@ local UnlockManager = {}
 local saint = enums.PlayerType.PLAYER_THE_SAINT
 local tSaint = enums.PlayerType.PLAYER_THE_SAINT_B
 
---- mapping of isc.BossID to `CompletionMarks` field names + allowed Levels (to prevent awarding the mark on the "Void"-floor)
+--- mapping of isc.BossID to `CharacterCompletionMarks` field names + allowed Levels (to prevent awarding the mark on the "Void"-floor)
 --- @type table<_, BossCompletionMark>
 local bossMarks = {
 	[isc.BossID.MOMS_HEART] = {Mark = "MomsHeart", Floor = LevelStage.STAGE4_2},
@@ -97,7 +97,12 @@ local function preSpawnCleanAward(_, rng, spawnPos)
 		if (mark) then
 			-- to obtain the Boss Mark, check wether the current floor is valid
 			if (mark.Floor) then
-				if (game:GetLevel():GetAbsoluteStage() ~= mark.Floor) then return end
+				-- no floor-check for Greed(ier) Mode
+				-- this shouldn't normally happen, but just to make sure
+				if ((game.Difficulty == Difficulty.DIFFICULTY_GREED) or
+					(game.Difficulty == Difficulty.DIFFICULTY_GREEDIER) or
+					(game:GetLevel():GetAbsoluteStage() ~= mark.Floor)
+				) then return end
 			end
 			awardCompletionMarks(mark.Mark, game.Difficulty)
 		end
@@ -109,33 +114,40 @@ end
 --- @param pickup EntityPickup
 --- @param type string
 --- @param lockedSubType integer
---- @return integer
 local function rerollItem(pickup, type, lockedSubType)
-	local retVal = 0
+	--- @type PickupVariant
+	local variant = PickupVariant.PICKUP_NULL
+	local newSubType = 0
 	local pool = game:GetItemPool()
 	if (type == "collectible") then
-		local room = game:GetRoom()
-		local seed = game:GetSeeds():GetStartSeed()
-		local itemPool = pool:GetPoolForRoom(room:GetType(), seed)
-		pool:RemoveCollectible(lockedSubType)
-		retVal = pool:GetCollectible(itemPool, true, pickup.InitSeed)
-		pool:RemoveCollectible(retVal)
+		-- if a collectible spawns that has already been removed from the pools (i.e. starting active items)
+		-- then `RemoveCollectible` will return `false`, which can be used to prevent starting active items
+		-- from being rerolled when picking up a different active item
+		if (pool:RemoveCollectible(lockedSubType)) then
+			variant = PickupVariant.PICKUP_COLLECTIBLE
+			local room = game:GetRoom()
+			local seed = game:GetSeeds():GetStartSeed()
+			local itemPool = pool:GetPoolForRoom(room:GetType(), seed)
+			newSubType = pool:GetCollectible(itemPool, true, pickup.InitSeed)
+			pool:RemoveCollectible(newSubType)
+		end
 	elseif (type == "trinket") then
+		variant = PickupVariant.PICKUP_TRINKET
 		local isGold = (pickup.SubType > TrinketType.TRINKET_GOLDEN_FLAG)
 		pool:RemoveTrinket(lockedSubType)
-		retVal = pool:GetTrinket(false)
-		pool:RemoveTrinket(retVal)
-		if (isGold) then retVal = retVal + TrinketType.TRINKET_GOLDEN_FLAG end
-	elseif (type == "card") then
+		newSubType = pool:GetTrinket(false)
+		pool:RemoveTrinket(newSubType)
+		if (isGold) then newSubType = newSubType + TrinketType.TRINKET_GOLDEN_FLAG end
+	elseif ((type == "card") or (type == "rune")) then
+		variant = PickupVariant.PICKUP_TAROTCARD
+		local isRune = (type == "rune")
 		repeat
-			retVal = pool:GetCard(pickup.InitSeed, false, false, false)
-		until (retVal ~= lockedSubType)
-	elseif (type == "rune") then
-		repeat
-			retVal = pool:GetCard(pickup.InitSeed, false, true, true)
-		until (retVal ~= lockedSubType)
+			newSubType = pool:GetCard(pickup.InitSeed, false, isRune, isRune)
+		until (newSubType ~= lockedSubType)
 	end
-	return retVal
+	if (variant ~= PickupVariant.PICKUP_NULL) then
+		pickup:Morph(EntityType.ENTITY_PICKUP, variant, newSubType, true)
+	end
 end
 
 --- Automatically reroll any item/pickup that hasn't been unlocked yet
@@ -145,43 +157,75 @@ local function postPickupInitFirst(_, pickup)
 	local marks_tSaint = v.persistent.characterMarks[tSaint]
 
 	-- (Boss Rush with Saint)
-	-- (Mom's Heart on Hard Mode with Saint)
-	if ((pickup.Variant == PickupVariant.PICKUP_COLLECTIBLE) and (pickup.SubType == enums.CollectibleType.COLLECTIBLE_ALMANACH)) then
+
+	-- "Almanach" (Mom's Heart on Hard Mode with Saint)
+	if ((pickup.Variant == PickupVariant.PICKUP_COLLECTIBLE)
+	and (pickup.SubType == enums.CollectibleType.COLLECTIBLE_ALMANACH)) then
 		if (not marks_saint["MomsHeart"]) then
-			local newCollectible = rerollItem(pickup, "collectible", enums.CollectibleType.COLLECTIBLE_ALMANACH)
-			pickup:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, newCollectible, true)
+			rerollItem(pickup, "collectible", enums.CollectibleType.COLLECTIBLE_ALMANACH)
+			return
 		end
 	end
 	-- (Satan with Saint)
+
 	-- (Isaac with Saint)
+
 	-- (The Lamb with Saint)
-	-- (??? with Saint)
-	-- (Mega Satan with Saint)
-	-- (Greed Mode with Saint)
-	-- (Hush with Saint)
-	-- (Greedier Mode with Saint)
-	-- (Delirium with Saint)
-	-- (Mother with Saint)
-	-- Holy Hand Grenade (The Beast with Saint)
-	if ((pickup.Variant == PickupVariant.PICKUP_COLLECTIBLE) and (pickup.SubType == enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE)) then
-		if (marks_saint["TheBeast"] == nil) then
-			local newCollectible = rerollItem(pickup, "collectible", enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE)
-			pickup:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, newCollectible, true)
+
+	-- "Holy Penny" (??? with Saint)
+	if ((pickup.Variant == PickupVariant.PICKUP_TRINKET)
+	and ((pickup.SubType % TrinketType.TRINKET_GOLDEN_FLAG) == enums.TrinketType.TRINKET_HOLY_PENNY)) then
+		if (marks_saint["BlueBaby"] == nil) then
+			rerollItem(pickup, "trinket", enums.TrinketType.TRINKET_HOLY_PENNY)
+			return
 		end
 	end
-	-- Soul of the Saint (Boss Rush + Hush with T.Saint)
-	if ((pickup.Variant == PickupVariant.PICKUP_TAROTCARD) and (pickup.SubType == enums.Card.CARD_SOUL_SAINT)) then
+	-- (Mega Satan with Saint)
+
+	-- "Library Card" (Greed Mode with Saint)
+	if ((pickup.Variant == PickupVariant.PICKUP_TAROTCARD)
+	and (pickup.SubType == enums.Card.CARD_LIBRARY)) then
+		if (marks_saint["GreedMode"] == nil) then
+			rerollItem(pickup, "card", enums.Card.CARD_LIBRARY)
+			return
+		end
+	end
+	-- (Hush with Saint)
+
+	-- (Greedier Mode with Saint)
+
+	-- (Delirium with Saint)
+
+	-- (Mother with Saint)
+
+	-- "Holy Hand Grenade" (The Beast with Saint)
+	if ((pickup.Variant == PickupVariant.PICKUP_COLLECTIBLE)
+	and (pickup.SubType == enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE)) then
+		if (marks_saint["TheBeast"] == nil) then
+			rerollItem(pickup, "collectible", enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE)
+			return
+		end
+	end
+	-- "Soul of the Saint" (Boss Rush + Hush with T.Saint)
+	if ((pickup.Variant == PickupVariant.PICKUP_TAROTCARD)
+	and (pickup.SubType == enums.Card.CARD_SOUL_SAINT)) then
 		if ((marks_tSaint["BossRush"] == nil) or (marks_tSaint["Hush"] == nil)) then
-			local newRune = rerollItem(pickup, "rune", enums.Card.CARD_SOUL_SAINT)
-			pickup:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, newRune, true)
+			rerollItem(pickup, "rune", enums.Card.CARD_SOUL_SAINT)
+			return
 		end
 	end
 	-- (Satan + Isaac + The Lamb + ??? with T.Saint)
+
 	-- (Greedier Mode with T.Saint)
+
 	-- (Delirium with T.Saint)
+
 	-- (Mother with T.Saint)
+
 	-- (The Beast with T.Saint)
+
 	-- (Mega Satan with T.Saint)
+
 end
 
 --#endregion
