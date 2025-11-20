@@ -120,6 +120,11 @@ local function rerollItem(pickup, type, lockedSubType)
 	local newSubType = 0
 	local pool = game:GetItemPool()
 	if (type == "collectible") then
+		-- prevent collectible from appearing in the "Death Certificate" area
+		if (isc:inDimension(isc.Dimension.DEATH_CERTIFICATE)) then
+			pickup:Remove()
+			return
+		end
 		-- if a collectible spawns that has already been removed from the pools (i.e. starting active items)
 		-- then `RemoveCollectible` will return `false`, which can be used to prevent starting active items
 		-- from being rerolled when picking up a different active item
