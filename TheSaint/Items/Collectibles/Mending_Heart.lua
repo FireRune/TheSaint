@@ -7,39 +7,71 @@ local game = Game()
 --[[
     "Mending Heart"<br>
     - At the start of each new floor, replaces 1 Broken Heart with an empty Heart Container<br>
-    - When no damage was taken on the previous floor, will replace 2 instead
+    - When no damage was taken on the previous floor, will replace 2 instead<br>
+    - +0.25 damage per heart replaced
 ]]
 local Mending_Heart = {}
+
+--- @class MendingHeart_Counters
+--- @field heartsRestored integer
+
+local v = {
+    run = {
+        blockNewRun = true,
+        --- @type { [string]: MendingHeart_Counters }
+        counters = {},
+    },
+}
 
 --- animation state flag
 local playMovie = -1
 
--- prevent accidental trigger when starting a new run as "Tainted Saint"
-local blockNewRun = true
+--- Returns true if the player has "Mending Heart" or is "Tainted Saint"
+--- @param player EntityPlayer
+--- @return boolean
+local function hasMendingHeart(player)
+    return (player:HasCollectible(enums.CollectibleType.COLLECTIBLE_MENDING_HEART) or (player:GetPlayerType() == taintedChar))
+end
 
---- Prevents the item's effect when starting a new run
---- @param isContinue boolean
-local function postGameStartedReordered(_, isContinue)
-    blockNewRun = true
+--- @param player EntityPlayer
+--- @return MendingHeart_Counters
+local function getPlayerCounters(player)
+    local playerIndex = "MendingHeart_"..isc:getPlayerIndex(player)
+    if (not v.run.counters[playerIndex]) then
+        v.run.counters[playerIndex] = {
+            heartsRestored = 0,
+        }
+    end
+    return v.run.counters[playerIndex]
 end
 
 --- When entering a new floor, replace Broken Heart(s) with empty Heart Container(s), then set the animation flag
 --- @param stage LevelStage
 --- @param stageType StageType
 local function postNewLevelReordered(_, stage, stageType)
-    for i = 0, game:GetNumPlayers() - 1 do
-        local player = Isaac.GetPlayer(i)
-        if (player:HasCollectible(enums.CollectibleType.COLLECTIBLE_MENDING_HEART)
-        or ((player:GetPlayerType() == taintedChar) and (blockNewRun == false))) then
-            if (player:GetBrokenHearts() > 0) then
-				local amount = 1
-				if (game:GetStagesWithoutDamage() > 0) then amount = 2 end
-                player:AddBrokenHearts(-amount)
-				player:AddMaxHearts(2 * amount)
-                playMovie = 0
+    -- prevent accidental trigger when starting a new run
+    if (v.run.blockNewRun == true) then
+        v.run.blockNewRun = false
+    else
+        for i = 0, game:GetNumPlayers() - 1 do
+            local player = Isaac.GetPlayer(i)
+            if (hasMendingHeart(player)) then
+                local brokenHearts = player:GetBrokenHearts()
+                if (brokenHearts > 0) then
+                    -- set how many broken hearts to replace
+                    local amount = 1
+                    if (game:GetStagesWithoutDamage() > 0) then amount = 2 end
+                    -- replace broken hearts
+                    player:AddBrokenHearts(-amount)
+                    player:AddMaxHearts(2 * amount)
+                    -- add counters for damage up effect
+                    local heartsReplaced = (brokenHearts - player:GetBrokenHearts())
+                    local counters = getPlayerCounters(player)
+                    counters.heartsRestored = counters.heartsRestored + heartsReplaced
+                    -- set animation state flag
+                    playMovie = 0
+                end
             end
-        else
-            blockNewRun = false
         end
     end
 end
@@ -68,12 +100,26 @@ local function postRender()
     end
 end
 
+--- @param player EntityPlayer
+--- @param flag CacheFlag
+local function evaluateStats(_, player, flag)
+    if (hasMendingHeart(player)) then
+        local counters = getPlayerCounters(player)
+
+        if (flag & CacheFlag.CACHE_DAMAGE == CacheFlag.CACHE_DAMAGE) then
+            player.Damage = player.Damage + (0.25 * counters.heartsRestored)
+        end
+    end
+end
+
 --- Initialize the item's functionality
 --- @param mod ModReference
 function Mending_Heart:Init(mod)
+    mod:saveDataManager("Mending_Heart", v)
     mod:AddCallbackCustom(isc.ModCallbackCustom.POST_GAME_STARTED_REORDERED, postGameStartedReordered, false)
     mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_LEVEL_REORDERED, postNewLevelReordered)
     mod:AddCallback(ModCallbacks.MC_POST_RENDER, postRender)
+    mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats, CacheFlag.CACHE_DAMAGE)
 end
 
 return Mending_Heart

@@ -23,6 +23,11 @@ if EID then
 	desc = "Book effects doubled"
 	EID:addCarBatteryCondition(almanach, desc)
 
+	-- Mending Heart
+	local mendingHeart = enums.CollectibleType.COLLECTIBLE_MENDING_HEART
+	desc = "Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#Will replace 2 instead, if no damage was taken on the previous floor#↑ +0.25 Damage per heart restored"
+	EID:addCollectible(mendingHeart, desc)
+
 	-- Devout Prayer
 	local devoutPrayer = enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER
 	desc = "Charges by killing enemies#Effects depend on charges used (never takes more charges than needed)#{{EternalHeart}} Consumes an Eternal Heart for extra effects#↑ 1+ charges: +0.1 Luck ({{EternalHeart}} and +0.25 Damage) for the floor per charge spent#3+ charges: Spawns an {{EternalHeart}} Eternal Heart ({{EternalHeart}} and grants a {{HolyMantleSmall}} Holy Mantle shield)#6+ charges: Spawns an {{HolyChest}} Eternal Chest ({{EternalHeart}} and {{AngelChanceSmall}}+10% Angel Room chance)#12 charges: Spawns 2 items (1 from current pool, 1 from Angel pool). Only 1 can be taken ({{EternalHeart}} both can be taken)"
@@ -33,11 +38,6 @@ if EID then
 
 	desc = "No Effect"
 	EID:addCarBatteryCondition(devoutPrayer, desc)
-
-	-- Mending Heart
-	local mendingHeart = enums.CollectibleType.COLLECTIBLE_MENDING_HEART
-	desc = "Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#Will replace 2 instead, if no damage was taken on the previous floor"
-	EID:addCollectible(mendingHeart, desc)
 
 	-- Divine Bombs
 	local divineBombs = enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS
