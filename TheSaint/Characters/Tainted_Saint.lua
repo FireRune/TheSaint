@@ -2,9 +2,11 @@ local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 
 local game = Game()
-local taintedChar = enums.PlayerType.PLAYER_THE_SAINT_B
 
-local Tainted_Saint = {}
+--- @class TheSaint.Characters.Tainted_Saint : TheSaint_Feature
+local Tainted_Saint = {
+    FeatureSubType = enums.PlayerType.PLAYER_THE_SAINT_B,
+}
 
 local playersDamageTaken = {}
 
@@ -15,7 +17,7 @@ local function onDmgTaken(_, ent, _, flag)
     local player = ent:ToPlayer()
 	if player then
 		local pType = player:GetPlayerType()
-		if (pType == taintedChar) then
+		if (pType == Tainted_Saint.FeatureSubType) then
 			if (flag & DamageFlag.DAMAGE_RED_HEARTS ~= DamageFlag.DAMAGE_RED_HEARTS)
 			and (flag & DamageFlag.DAMAGE_NO_PENALTIES ~= DamageFlag.DAMAGE_NO_PENALTIES) then
                 local playerIndex = "TSaint_DmgTaken_"..isc:getPlayerIndex(player)
@@ -38,7 +40,7 @@ end
 --- Remove any Soul Hearts, that may be applied through items.
 --- @param player EntityPlayer
 local function postPlayerUpdate_TSaint_Hearts(_, player)
-    if (player:GetPlayerType() == taintedChar) then
+    if (player:GetPlayerType() == Tainted_Saint.FeatureSubType) then
         local playerIndex = "TSaint_DmgTaken_"..isc:getPlayerIndex(player)
 		-- player took damage that causes penalties, then remove all empty Heart Containers, replace with Broken Hearts
 		if (playersDamageTaken[playerIndex] == true) then
@@ -78,7 +80,7 @@ end
 local function postPickupInitFirst_TSaint_Hearts(_, heart)
     for i = 0, game:GetNumPlayers() - 1 do
         local player = Isaac.GetPlayer(i)
-        if (player:GetPlayerType() == taintedChar) then
+        if (player:GetPlayerType() == Tainted_Saint.FeatureSubType) then
             if (heart.SubType == HeartSubType.HEART_SOUL)
             or (heart.SubType == HeartSubType.HEART_BLACK)
             or (heart.SubType == HeartSubType.HEART_HALF_SOUL)
@@ -98,7 +100,7 @@ end
 --- @param collider Entity
 local function prePickupCollision_TSaint_Hearts(_, heart, collider)
     local player = collider:ToPlayer()
-    if player and (player:GetPlayerType() == taintedChar) then
+    if player and (player:GetPlayerType() == Tainted_Saint.FeatureSubType) then
         if (heart.SubType == HeartSubType.HEART_SOUL)
         or (heart.SubType == HeartSubType.HEART_BLACK)
         or (heart.SubType == HeartSubType.HEART_HALF_SOUL)
@@ -112,7 +114,7 @@ end
 --- sets health to 1 full Heart Container + 2 Broken Hearts and re-add "Devout Prayer"
 --- @param player EntityPlayer
 local function postFirstEsauJr(_, player)
-    if (player:GetPlayerType() == taintedChar) then
+    if (player:GetPlayerType() == Tainted_Saint.FeatureSubType) then
         player:AddMaxHearts(2)
         player:AddHearts(2)
         player:AddBrokenHearts(2)
@@ -127,7 +129,7 @@ local abaddonHeartsRemoved = 0
 --- Store the current amount of Heart Containers when picking up "Abaddon".
 --- @param player EntityPlayer
 local function preItemPickup_Abaddon(_, player, _)
-	if (player:GetPlayerType() == taintedChar) then
+	if (player:GetPlayerType() == Tainted_Saint.FeatureSubType) then
 		abaddonHeartsRemoved = math.max(0, (player:GetMaxHearts() // 2) - 1)
 	end
 end
@@ -137,7 +139,7 @@ end
 --- and replace all other Heart Containers with Broken Hearts.
 --- @param player EntityPlayer
 local function postItemPickup_Abaddon(_, player, _)
-	if (player:GetPlayerType() == taintedChar) then
+	if (player:GetPlayerType() == Tainted_Saint.FeatureSubType) then
 		player:AddMaxHearts(2)
 		player:AddHearts(1)
 		if (abaddonHeartsRemoved > 0) then
@@ -151,7 +153,7 @@ end
 function Tainted_Saint:Init(mod)
 	mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, onDmgTaken, EntityType.ENTITY_PLAYER)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate_TSaint_Hearts, 0)
-	mod:AddCallbackCustom(isc.ModCallbackCustom.PRE_GET_PEDESTAL, preGetPedestal_TSaint_BrokenHearts, 0, taintedChar)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.PRE_GET_PEDESTAL, preGetPedestal_TSaint_BrokenHearts, 0, self.FeatureSubType)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst_TSaint_Hearts, PickupVariant.PICKUP_HEART)
 	mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, prePickupCollision_TSaint_Hearts, PickupVariant.PICKUP_HEART)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_FIRST_ESAU_JR, postFirstEsauJr)

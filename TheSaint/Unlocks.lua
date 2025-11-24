@@ -3,7 +3,10 @@ local enums = require("TheSaint.Enums")
 
 local game = Game()
 
-local UnlockManager = {}
+--- @class TheSaint.UnlockManager : TheSaint_Feature
+local UnlockManager = {
+	SaveDataKey = "UnlockManager",
+}
 
 --- Character Completion Marks.<br>
 --- Each field represents a completion mark, with the value being the completion difficulty.<br>
@@ -30,7 +33,7 @@ local saint = enums.PlayerType.PLAYER_THE_SAINT
 local tSaint = enums.PlayerType.PLAYER_THE_SAINT_B
 
 --- mapping of isc.BossID to `CharacterCompletionMarks` field names + allowed Levels (to prevent awarding the mark on the "Void"-floor)
---- @type table<_, BossCompletionMark>
+--- @type table<integer, BossCompletionMark>
 local bossMarks = {
 	[isc.BossID.MOMS_HEART] = {Mark = "MomsHeart", Floor = LevelStage.STAGE4_2},
 	[isc.BossID.IT_LIVES] = {Mark = "MomsHeart", Floor = LevelStage.STAGE4_2},
@@ -50,7 +53,7 @@ local bossMarks = {
 
 local v = {
 	persistent = {
-		--- @type table<PlayerType, CharacterCompletionMarks>
+		--- @type table<string, CharacterCompletionMarks>
 		characterMarks = {
 			["Saint"] = {},
 			["T_Saint"] = {},
@@ -256,10 +259,10 @@ end
 --#region Console Commands
 
 --- if any argument is "?", displays all valid values + information
---- @param char string?
---- @param operation string?
---- @param mark string?
---- @param diff string?
+--- @param char? string
+--- @param operation? string
+--- @param mark? string
+--- @param diff? string
 local function showCommandHelp(char, operation, mark, diff)
 	if (char == "?") then
 		print("[The Saint] 1st argument (<character>)")
@@ -301,7 +304,7 @@ local function showCommandHelp(char, operation, mark, diff)
 	end
 end
 
---- @param status boolean?
+--- @param status? boolean
 --- @return string
 local function getStatusString(status)
 	local retVal = "not completed"
@@ -332,22 +335,22 @@ end
 --- @param mark string
 --- @return boolean
 local function isValidMark(mark)
-	local marks = {
+	local validMarks = {
 		"BossRush", "MomsHeart", "Satan", "Isaac",
 		"TheLamb", "BlueBaby", "MegaSatan", "GreedMode",
 		"Hush", "Delirium", "Mother", "TheBeast", "all",
 	}
-	local retVal = isc:find(marks, function (value) return (value == mark) end) --- @cast retVal boolean
+	local retVal = isc:find(validMarks, function (value) return (value == mark) end) --- @cast retVal boolean
 	if (retVal == false) then
 		print("[The Saint] invalid argument <completion mark>")
 	end
 	return retVal
 end
 
---- @param char string?
---- @param operation string?
---- @param mark string?
---- @param diff string?
+--- @param char? string
+--- @param operation? string
+--- @param mark? string
+--- @param diff? string
 local function executeCommand(char, operation, mark, diff)
 	if (char) then
 		-- set default values
@@ -437,7 +440,7 @@ end
 
 --- @param mod ModReference
 function UnlockManager:Init(mod)
-	mod:saveDataManager("UnlockManager", v)
+	mod:saveDataManager(self.SaveDataKey, v)
 	-- awarding completion marks
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_AMBUSH_FINISHED, postAmbushFinished, isc.AmbushType.BOSS_RUSH)
     mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, preSpawnCleanAward)

@@ -1,6 +1,15 @@
+--- @class TheSaint.imports
 local imports = {}
 
+--- Base class for this mod's features
+--- @class TheSaint_Feature
+--- @field Init function
+--- @field FeatureSubType integer?
+--- @field SaveDataKey string?
+
+---- @type TheSaint_Feature[]
 local features = {
+    require("TheSaint.DevilDealTracking"),
     include("TheSaint.Unlocks"),
     include("TheSaint.Characters.Characters"),
     include("TheSaint.Characters.The_Saint"),

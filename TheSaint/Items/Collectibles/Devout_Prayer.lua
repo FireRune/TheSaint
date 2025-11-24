@@ -5,16 +5,18 @@ local ddTracking = require("TheSaint.DevilDealTracking")
 local game = Game()
 local hud = game:GetHUD()
 
---[[
-    "Devout Prayer"<br>
-    - 12 charges, starts empty; only charges by killing enemies<br>
-	- gains 1 charge for every 10th enemy killed and 1 charge for clearing a boss room<br>
-	- charges faster while having an Eternal Heart<br>
-    - can be used with 1+ charges (like "Larnyx" or "Everything Jar")<br>
-    - Effect depends on the amount of charges spent (1, 3, 6 or 12; see functions below for effect details)<br>
-	- using while having an Eternal Heart will consume it for extra effects
-]]
-local Devout_Prayer = {}
+--- "Devout Prayer"
+--- - 12 charges, starts empty; only charges by killing enemies
+--- - gains 1 charge for every 10th enemy killed and 1 charge for clearing a boss room
+--- - charges faster while having an Eternal Heart
+--- - can be used with 1+ charges (like "Larnyx" or "Everything Jar")
+--- - Effect depends on the amount of charges spent (1, 3, 6 or 12; see functions below for effect details)
+--- - using while having an Eternal Heart will consume it for extra effects
+--- @class TheSaint.Items.Collectibles.Devout_Prayer : TheSaint_Feature
+local Devout_Prayer = {
+    FeatureSubType = enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER,
+    SaveDataKey = "Devout_Prayer",
+}
 
 --[[
     local variables with persistent data. for use with the save data manager.<br>
@@ -34,7 +36,7 @@ local otherPocketItemUsed = false
 local function chargeDevoutPrayer(pointValue)
     for i = 0, game:GetNumPlayers() - 1 do
         local player = Isaac.GetPlayer(i)
-        if player:HasCollectible(enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER) then
+        if player:HasCollectible(Devout_Prayer.FeatureSubType) then
             if (player:GetEternalHearts() == 1) then
                 pointValue = pointValue * 2
             end
@@ -42,7 +44,7 @@ local function chargeDevoutPrayer(pointValue)
             v.run[playerIndex] = (v.run[playerIndex] and (v.run[playerIndex] + pointValue)) or pointValue
             while (v.run[playerIndex] >= 10) do
                 v.run[playerIndex] = v.run[playerIndex] - 10
-                for _, slot in ipairs(isc:getActiveItemSlots(player, enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER)) do
+                for _, slot in ipairs(isc:getActiveItemSlots(player, Devout_Prayer.FeatureSubType)) do
                     local currentCharge = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
                     if (player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY) and (currentCharge < 24))
                     or (currentCharge < 12) then
@@ -82,19 +84,19 @@ end
 --- check wether "Devout Prayer" should be used when corresponding action is triggered
 --- @param player EntityPlayer
 local function postPlayerUpdate(_, player)
-    if ((player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER)
+    if ((player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == Devout_Prayer.FeatureSubType)
     and (Input.IsActionTriggered(ButtonAction.ACTION_ITEM, player.ControllerIndex))) then
         local charge = player:GetActiveCharge(ActiveSlot.SLOT_PRIMARY)
         if (charge > 0) and (charge < 12) then
-            player:UseActiveItem(enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER, UseFlag.USE_OWNED, ActiveSlot.SLOT_PRIMARY)
+            player:UseActiveItem(Devout_Prayer.FeatureSubType, UseFlag.USE_OWNED, ActiveSlot.SLOT_PRIMARY)
         end
     else
-        if ((player:GetActiveItem(ActiveSlot.SLOT_POCKET) == enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER)
+        if ((player:GetActiveItem(ActiveSlot.SLOT_POCKET) == Devout_Prayer.FeatureSubType)
         and (Input.IsActionTriggered(ButtonAction.ACTION_PILLCARD, player.ControllerIndex))) then
             if (not otherPocketItemUsed) then
                 local charge = player:GetActiveCharge(ActiveSlot.SLOT_POCKET)
                 if (charge > 0) and (charge < 12) then
-                    player:UseActiveItem(enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER, UseFlag.USE_OWNED, ActiveSlot.SLOT_POCKET)
+                    player:UseActiveItem(Devout_Prayer.FeatureSubType, UseFlag.USE_OWNED, ActiveSlot.SLOT_POCKET)
                 end
             else
                 otherPocketItemUsed = false
@@ -184,7 +186,7 @@ end
 --- @return integer
 local function getOptionIndex()
     local optionIndex = 2
-    for i, entity in ipairs(Isaac.GetRoomEntities()) do
+    for _, entity in ipairs(Isaac.GetRoomEntities()) do
         if (entity.Type == EntityType.ENTITY_PICKUP and entity.Variant == PickupVariant.PICKUP_COLLECTIBLE) then
             local entCollectible = entity:ToPickup()
             if (entCollectible) then
@@ -294,13 +296,13 @@ end
 --- Initialize the item's functionality.
 --- @param mod ModReference
 function Devout_Prayer:Init(mod)
-    mod:saveDataManager("Devout_Prayer", v)
+    mod:saveDataManager(self.SaveDataKey, v)
     mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, postEntityKill)
     mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, preSpawnCleanAward)
     mod:AddCallback(ModCallbacks.MC_USE_CARD, useOtherPocketItem)
     mod:AddCallback(ModCallbacks.MC_USE_PILL, useOtherPocketItem)
     mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate, 0)
-    mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER)
+    mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.FeatureSubType)
     mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, postNewLevel_resetCounters)
     mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats, CacheFlag.CACHE_DAMAGE)
     mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats, CacheFlag.CACHE_LUCK)

@@ -1,6 +1,7 @@
 local enums = require("TheSaint.Enums")
 local stats = include("TheSaint.stats")
 
+--- @class TheSaint.Characters.Characters : TheSaint_Feature
 local Characters = {}
 
 -- Fields
@@ -36,12 +37,12 @@ end
 
 --- if the given player is a character from this mod, returns the corresponding stat-table from stats.lua; otherwise nil
 --- @param player EntityPlayer
---- @return table|nil
+--- @return TheSaint.stats.Character?
 local function GetPlayerStatTable(player)
     local taint = IsTainted(player)
     if (taint == nil) then return nil end
 
-    return (taint and stats.tainted) or stats.default
+    return (taint and stats.tSaint) or stats.saint
 end
 
 -- Character Code

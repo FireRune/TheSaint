@@ -2,15 +2,18 @@ local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 
 local taintedChar = enums.PlayerType.PLAYER_THE_SAINT_B
+
 local game = Game()
 
---[[
-    "Mending Heart"<br>
-    - At the start of each new floor, replaces 1 Broken Heart with an empty Heart Container<br>
-    - When no damage was taken on the previous floor, will replace 2 instead<br>
-    - +0.25 damage per heart replaced
-]]
-local Mending_Heart = {}
+--- "Mending Heart"
+--- - At the start of each new floor, replaces 1 Broken Heart with an empty Heart Container
+--- - When no damage was taken on the previous floor, will replace 2 instead
+--- - +0.25 damage per heart replaced
+--- @class TheSaint.Items.Collectibles.Mending_Heart : TheSaint_Feature
+local Mending_Heart = {
+    FeatureSubType = enums.CollectibleType.COLLECTIBLE_MENDING_HEART,
+    SaveDataKey = "Mending_Heart",
+}
 
 --- @class MendingHeart_Counters
 --- @field heartsRestored integer
@@ -18,7 +21,7 @@ local Mending_Heart = {}
 local v = {
     run = {
         blockNewRun = true,
-        --- @type { [string]: MendingHeart_Counters }
+        --- @type table<string, MendingHeart_Counters>
         counters = {},
     },
 }
@@ -30,7 +33,7 @@ local playMovie = -1
 --- @param player EntityPlayer
 --- @return boolean
 local function hasMendingHeart(player)
-    return (player:HasCollectible(enums.CollectibleType.COLLECTIBLE_MENDING_HEART) or (player:GetPlayerType() == taintedChar))
+    return (player:HasCollectible(Mending_Heart.FeatureSubType) or (player:GetPlayerType() == taintedChar))
 end
 
 --- @param player EntityPlayer
@@ -116,7 +119,7 @@ end
 --- Initialize the item's functionality
 --- @param mod ModReference
 function Mending_Heart:Init(mod)
-    mod:saveDataManager("Mending_Heart", v)
+    mod:saveDataManager(self.SaveDataKey, v)
     mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_LEVEL_REORDERED, postNewLevelReordered)
     mod:AddCallback(ModCallbacks.MC_POST_RENDER, postRender)
     mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats, CacheFlag.CACHE_DAMAGE)

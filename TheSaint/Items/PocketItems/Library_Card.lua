@@ -2,12 +2,13 @@ local enums = require("TheSaint.Enums")
 
 local game = Game()
 
---[[
-	"Library Card"<br>
-	- teleports Isaac to the Library if one exists on the current floor<br>
-	- random teleport otherwise
-]]
-local Library_Card = {}
+--- "Library Card"
+--- - teleports Isaac to the Library if one exists on the current floor
+--- - random teleport otherwise
+--- @class TheSaint.Items.PocketItems.Library_Card : TheSaint_Feature
+local Library_Card = {
+	FeatureSubType = enums.Card.CARD_LIBRARY,
+}
 
 --- @param card Card
 --- @param player EntityPlayer
@@ -43,7 +44,7 @@ end
 --- Initialize this item's functionality
 --- @param mod ModReference
 function Library_Card:Init(mod)
-	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard, enums.Card.CARD_LIBRARY)
+	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard, self.FeatureSubType)
 end
 
 return Library_Card

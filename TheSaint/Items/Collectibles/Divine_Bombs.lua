@@ -1,11 +1,13 @@
 local enums = require("TheSaint.Enums")
 
---[[
-    "Divine Bombs"<br>
-    - +5 bombs<br>
-    - Bombs spawn "Holy Light" beams upon exploding
-]]
-local Divine_Bombs = {}
+--- "Divine Bombs"
+--- - +5 bombs
+--- - Bombs spawn "Holy Light" beams upon exploding
+--- @class TheSaint.Items.Collectibles.Divine_Bombs : TheSaint_Feature
+local Divine_Bombs = {
+    FeatureSubType = enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS,
+    SaveDataKey = "Divine_Bombs",
+}
 
 local targetFlag = TearFlags.TEAR_LIGHT_FROM_HEAVEN
 
@@ -59,7 +61,7 @@ local function postBombUpdate(_, bomb)
 			local ptr = GetPtrHash(bomb)
             local data = v.room[ptr]
             if (data and data["firstFrame"] == true) then
-                if player:HasCollectible(enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS) then
+                if player:HasCollectible(Divine_Bombs.FeatureSubType) then
                     bomb:AddTearFlags(targetFlag)
                 end
                 data["firstFrame"] = nil
@@ -112,7 +114,7 @@ local function postEffectUpdate(_, effect)
 			if (data and data["firstFrame"] == true) then
 				local player = data["spawnerPlayer"]
 				if player:HasCollectible(CollectibleType.COLLECTIBLE_HOLY_LIGHT)
-				or player:HasCollectible(enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS) then
+				or player:HasCollectible(Divine_Bombs.FeatureSubType) then
 					local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_EPIC_FETUS)
 					local chance = (30 + (5 * player.Luck))
 					if ((rng:RandomInt(100) + 1) <= chance) then
@@ -129,7 +131,7 @@ end
 --- Initialize the item's functionality.
 --- @param mod ModReference
 function Divine_Bombs:Init(mod)
-	mod:saveDataManager("Divine_Bombs", v)
+	mod:saveDataManager(self.SaveDataKey, v)
     mod:AddCallback(ModCallbacks.MC_POST_BOMB_INIT, postBombInit)
     mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, postBombUpdate)
     mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, postEffectInit, EffectVariant.BOMB_EXPLOSION)

@@ -4,15 +4,16 @@ local enums = require("TheSaint.Enums")
 local game = Game()
 local config = Isaac.GetItemConfig()
 
---[[
-    "Almanach"<br>
-    - 3 Room Charge<br>
-    - When used, will activate the effect of 2 random<br>
-      items with the `book`-tag (modded items included)<br>
-    - Can also activate books that have not been unlocked yet<br>
-    - Cannot activate itself
-]]
-local Almanach = {}
+--- "Almanach"
+--- - 3 Room Charge
+--- - When used, will activate the effect of 2 random<br>
+---   items with the `book`-tag (modded items included)
+--- - Can also activate books that have not been unlocked yet
+--- - Cannot activate itself
+--- @class TheSaint.Items.Collectibles.Almanach : TheSaint_Feature
+local Almanach = {
+    FeatureSubType = enums.CollectibleType.COLLECTIBLE_ALMANACH,
+}
 
 -- table containing all items with the `book`-tag, except those on the blacklist
 local books = {}
@@ -168,10 +169,10 @@ end
 --- initialize the item's functionality
 --- @param mod ModReference
 function Almanach:Init(mod)
-    addItemToBookBlacklist(mod.Name, {CollectibleType.COLLECTIBLE_HOW_TO_JUMP, enums.CollectibleType.COLLECTIBLE_ALMANACH})
+    addItemToBookBlacklist(mod.Name, {CollectibleType.COLLECTIBLE_HOW_TO_JUMP, self.FeatureSubType})
     mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, getBooks)
     mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, getWispName, FamiliarVariant.ITEM_WISP)
-    mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, enums.CollectibleType.COLLECTIBLE_ALMANACH)
+    mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.FeatureSubType)
     mod:AddCallback(ModCallbacks.MC_USE_ITEM, spawnAlmanachBookWisp)
     mod:addConsoleCommand("thesaint_reloadbooks", thesaint_reloadbooks)
 end

@@ -2,7 +2,10 @@ local isc = require("TheSaint.lib.isaacscript-common")
 
 local game = Game()
 
-local DevilDealTracking = {}
+--- @class TheSaint.DevilDealTracking : TheSaint_Feature
+local DevilDealTracking = {
+	SaveDataKey = "DevilDealTracking",
+}
 
 local firstInit = true
 
@@ -43,16 +46,16 @@ local function pickupGet(_, player, pickup)
 	end
 end
 
---- Initialize this feature only once
---- @param mod ModReference
-function DevilDealTracking:Init(mod)
-	if (firstInit == true) then
-		mod:saveDataManager("DevilDealTracking", v)
-		mod:AddCallbackCustom(isc.ModCallbackCustom.PRE_GET_PEDESTAL, pickupGet)
-		mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_COLLECT, pickupGet)
-		firstInit = false
-	end
-end
+-- --- Initialize this feature only once
+-- --- @param mod ModReference
+-- function DevilDealTracking:Init(mod)
+-- 	if (firstInit == true) then
+-- 		mod:saveDataManager(self.SaveDataKey, v)
+-- 		mod:AddCallbackCustom(isc.ModCallbackCustom.PRE_GET_PEDESTAL, pickupGet)
+-- 		mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_COLLECT, pickupGet)
+-- 		firstInit = false
+-- 	end
+-- end
 
 --- Returns wether a Devil Deal has been taken in the current run. (i.e. any purchase that causes Angel Room chance to be displayed as 0%)<br>
 --- That includes any pickup/item with a price tag (money, hearts, (REP+ only) sacrifice spikes)<br>

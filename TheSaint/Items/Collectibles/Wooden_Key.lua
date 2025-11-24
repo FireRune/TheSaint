@@ -2,13 +2,15 @@ local enums = require("TheSaint.Enums")
 
 local game = Game()
 
---[[
-	"Wooden Key"<br>
-	- 3 Room Charge<br>
-	- When used, opens a random door of the room (if possible)<br>
-	- Can also create "Red Room"-doors
-]]
-local Wooden_Key = {}
+--- "Wooden Key"
+--- - 3 Room Charge
+--- - When used, opens a random door of the room (if possible)
+--- - Can also create "Red Room"-doors
+--- @class TheSaint.Items.Collectibles.Wooden_Key : TheSaint_Feature
+local Wooden_Key = {
+	FeatureSubType = enums.CollectibleType.COLLECTIBLE_WOODEN_KEY,
+	SaveDataKey = "Wooden_Key",
+}
 
 local v = {
 	room = {
@@ -104,8 +106,8 @@ end
 --- Initialize the item's functionality
 --- @param mod ModReference
 function Wooden_Key:Init(mod)
-	mod:saveDataManager("Wooden_Key", v)
-	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, enums.CollectibleType.COLLECTIBLE_WOODEN_KEY)
+	mod:saveDataManager(self.SaveDataKey, v)
+	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.FeatureSubType)
 end
 
 return Wooden_Key

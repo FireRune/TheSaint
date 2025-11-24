@@ -4,14 +4,16 @@ local ddTracking = require("TheSaint.DevilDealTracking")
 
 local game = Game()
 
---[[
-	"Soul of The Saint"<br>
-	- teleports Isaac to a special Angel Room with 2 items both can be taken<br>
-	- if a Devil Deal has been taken during the run:<br>
-	-> acts like "Joker"<br>
-	-> forces an Angel Room if the Devil/Angel Room hasn't been generated yet
-]]
-local Soul_Saint = {}
+--- "Soul of The Saint"
+--- - teleports Isaac to a special Angel Room with 2 items both can be taken
+--- - if a Devil Deal has been taken during the run:
+---   - acts like "Joker"
+---   - forces an Angel Room if the Devil/Angel Room hasn't been generated yet
+--- @class TheSaint.Items.PocketItems.Soul_Saint : TheSaint_Feature
+local Soul_Saint = {
+	FeatureSubType = enums.Card.CARD_SOUL_SAINT,
+	SaveDataKey = "Soul_Saint",
+}
 
 local v = {
 	level = {
@@ -61,8 +63,8 @@ end
 --- Initialize this item's functionality
 --- @param mod ModReference
 function Soul_Saint:Init(mod)
-	mod:saveDataManager("Soul_Saint", v)
-	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard, enums.Card.CARD_SOUL_SAINT)
+	mod:saveDataManager(self.SaveDataKey, v)
+	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard, self.FeatureSubType)
 	mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, postNewRoom)
 end
 
