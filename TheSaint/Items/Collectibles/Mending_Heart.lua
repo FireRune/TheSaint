@@ -100,6 +100,7 @@ local function postRender()
     end
 end
 
+--- Increase the players damage by 0.25 per heart restored with "Mending Heart"
 --- @param player EntityPlayer
 --- @param flag CacheFlag
 local function evaluateStats(_, player, flag)
@@ -116,7 +117,6 @@ end
 --- @param mod ModReference
 function Mending_Heart:Init(mod)
     mod:saveDataManager("Mending_Heart", v)
-    mod:AddCallbackCustom(isc.ModCallbackCustom.POST_GAME_STARTED_REORDERED, postGameStartedReordered, false)
     mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_LEVEL_REORDERED, postNewLevelReordered)
     mod:AddCallback(ModCallbacks.MC_POST_RENDER, postRender)
     mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats, CacheFlag.CACHE_DAMAGE)
