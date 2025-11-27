@@ -12,10 +12,9 @@
 
 - [x] Handling of unlocks for both characters' completion marks
 
-- [ ] actual Book of Virtues wisps for the following active items:
+- [x] actual Book of Virtues wisps for the following active items:
 - Devout Prayer (2 variations)
 - Wooden Key
-- Holy Hand Grenade
 
 ### Unlocks.lua
 - The Saint:

@@ -1,13 +1,13 @@
 <items gfxroot="gfx/items/" version="1">
-    <active name="Almanach" description="A library's worth of knowledge" gfx="almanach.png" maxcharges="3" tags="book offensive" quality="2" />
-    <passive name="Mending Heart" description="Put it back together!" gfx="mending_heart.png" tags="nolostbr summonable" quality="2" />
+    <active id="1" name="Almanach" description="A library's worth of knowledge" gfx="almanach.png" maxcharges="3" tags="book offensive" quality="2" />
+    <passive id="2" name="Mending Heart" description="Put it back together!" gfx="mending_heart.png" tags="nolostbr summonable" quality="2" />
     <!-- TODO: replace gfx -->
-    <active name="Devout Prayer" description="Pray in your times of need" gfx="sprite_missing.png" maxcharges="12" initcharge="0" chargetype="special" cache="damage luck" tags="noeden nocantrip" quality="0" hidden="true" />
-    <passive name="Divine Bombs" description="Holy blast +5 bombs" gfx="divine_bombs.png" tags="offensive summonable" quality="2" bombs="5" />
+    <active id="3" name="Devout Prayer" description="Pray in your times of need" gfx="sprite_missing.png" maxcharges="12" initcharge="0" chargetype="special" cache="damage luck" tags="noeden nocantrip" quality="0" hidden="true" />
+    <passive id="4" name="Divine Bombs" description="Holy blast +5 bombs" gfx="divine_bombs.png" tags="offensive summonable" quality="2" bombs="5" />
     <!-- TODO: replace gfx -->
-    <active name="Wooden Key" description="Where could it fit?" gfx="sprite_missing.png" maxcharges="3" tags="offensive" quality="1" />
+    <active id="5" name="Wooden Key" description="Where could it fit?" gfx="sprite_missing.png" maxcharges="3" tags="offensive" quality="1" />
     <!-- TODO: replace gfx -->
-    <active name="Holy Hand Grenade" description="Thou shalt count to three, no more, no less" gfx="sprite_missing.png" maxcharges="0" tags="offensive" quality="3" />
+    <active id="6" name="Holy Hand Grenade" description="Thou shalt count to three, no more, no less" gfx="sprite_missing.png" maxcharges="0" tags="offensive" quality="3" />
 
     <trinket name="Holy Penny" description="Wealth of faith" gfx="holy_penny.png" />
 </items>

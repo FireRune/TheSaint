@@ -2,12 +2,40 @@ if EID then
 
 	local enums = require("TheSaint.Enums")
 
+	--#region Helper functions
+
 	--- Small helper function for adding 'bookOfVirtuesWisps'-condition entries
 	--- @param collectible CollectibleType
 	--- @param description string
 	local function addVirtuesCondition(collectible, description)
 		EID:addToGeneralCondition(collectible, "bookOfVirtuesWisps", description)
 	end
+
+	--- Helper function to add an EID.XMLWisps entry
+	--- @param collectible CollectibleType
+	--- @param hp integer
+	--- @param layer -1 | 0 | 1 | 2
+	--- @param damage integer
+	--- @param stageDamage number
+	--- @param damageMultiplier2 number
+	--- @param shotSpeed number
+	--- @param fireDelay integer
+	--- @param procChance number
+	--- @param canShoot boolean
+	--- @param amount integer
+	--- @param tearFlags integer[]
+	--- @param tearFlags2 integer[]
+	--- @param additionalDesc? string
+	local function addWispData(collectible, hp, layer, damage, stageDamage, damageMultiplier2, shotSpeed, fireDelay, procChance, canShoot, amount, tearFlags, tearFlags2, additionalDesc)
+		if (EID.XMLWisps and not EID.XMLWisps[collectible]) then
+			EID.XMLWisps[collectible] = {hp, layer, damage, stageDamage, damageMultiplier2, shotSpeed, fireDelay, procChance, canShoot, amount, tearFlags, tearFlags2}
+			if (additionalDesc) then
+				addVirtuesCondition(collectible, additionalDesc)
+			end
+		end
+	end
+
+	--#endregion
 
 	local desc = ""
 
@@ -33,8 +61,8 @@ if EID then
 	desc = "Charges by killing enemies#Effects depend on charges used (never takes more charges than needed)#{{EternalHeart}} Consumes an Eternal Heart for extra effects#↑ 1+ charges: +0.1 Luck ({{EternalHeart}} and +0.25 Damage) for the floor per charge spent#3+ charges: Spawns an {{EternalHeart}} Eternal Heart ({{EternalHeart}} and grants a {{HolyMantleSmall}} Holy Mantle shield)#6+ charges: Spawns an {{HolyChest}} Eternal Chest ({{EternalHeart}} and {{AngelChanceSmall}}+10% Angel Room chance)#12 charges: Spawns 2 items (1 from current pool, 1 from Angel pool). Only 1 can be taken ({{EternalHeart}} both can be taken)"
 	EID:addCollectible(devoutPrayer, desc)
 
-	desc = "Spawns a regular wisp ({{EternalHeart}} spawns a {{Collectible"..CollectibleType.COLLECTIBLE_BIBLE.."}} Bible wisp instead)"
-	addVirtuesCondition(devoutPrayer, desc)
+	desc = "Spawns 1 - 4 wisp(s), depending on charges spent ({{EternalHeart}} spawns {{Collectible"..CollectibleType.COLLECTIBLE_BIBLE.."}} Bible wisp(s) instead)"
+	addWispData(devoutPrayer, 2, 1, 3, 0.1, 1, 0.75, 42, 1, true, 0, {2}, {-1}, desc)
 
 	desc = "No Effect"
 	EID:addCarBatteryCondition(devoutPrayer, desc)
@@ -46,10 +74,13 @@ if EID then
 
 	-- Wooden Key
 	local woodenKey = enums.CollectibleType.COLLECTIBLE_WOODEN_KEY
-	desc = "Opens a random door in the current room#Can open locked doors#Can open {{SecretRoom}}{{SuperSecretRoom}} Secret Rooms/Super Secret Rooms#{{Collectible"..CollectibleType.COLLECTIBLE_RED_KEY.."}} Can also create Red Room Doors"
+	desc = "Chooses a random door in the current room and opens it if it is closed#Can open locked doors#Can open {{SecretRoom}}{{SuperSecretRoom}} Secret Rooms/Super Secret Rooms#{{Collectible"..CollectibleType.COLLECTIBLE_RED_KEY.."}} Can also create Red Room Doors"
 	EID:addCollectible(woodenKey, desc)
 
-	EID:addCarBatteryCondition(woodenKey, {"a random door", "2{{CR}} random doors"})
+	desc = "On death, invokes the effect of {{Collectible"..woodenKey.."}} Wooden Key"
+	addWispData(woodenKey, 2, 0, 0, 0, 0, 0, 0, 1, false, 1, {-1}, {-1}, desc)
+
+	EID:addCarBatteryCondition(woodenKey, {"a random door", "opens it if it is", "2{{CR}} random doors", "opens them if they are"})
 
 	-- Holy Hand Grenade
 	local holyHandGrenade = enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE
@@ -106,7 +137,7 @@ if EID then
 	local tSaint = enums.PlayerType.PLAYER_THE_SAINT_B
 	EID:addIcon("Player"..tSaint, "Players", 1, 16, 16, 0, 0, charIcons)
 
-	desc = "Can't use {{SoulHeart}} Soul Hearts#When you take damage, turns all {{EmptyHeart}} empty Heart Containers into {{BrokenHeart}} Broken Hearts (doesn't apply to self-damage)#{{Collectible"..mendingHeart.."}} Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#{{Collectible"..mendingHeart.."}} Will replace 2 instead, if no damage was taken on the previous floor"
+	desc = "Can't use {{SoulHeart}} Soul Hearts#When you take damage, turns all {{EmptyHeart}} empty Heart Containers into {{BrokenHeart}} Broken Hearts (doesn't apply to self-damage)#{{Collectible"..mendingHeart.."}} Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#{{Collectible"..mendingHeart.."}} Will replace 2 instead, if no damage was taken on the previous floor#{{Collectible"..mendingHeart.."}} ↑ +0.25 Damage per heart restored"
 	EID:addCharacterInfo(tSaint, desc, "The Saint")
 
 	desc = "Taking damage that causes penalties will only turn 1{{EmptyHeart}} empty Heart Container into a {{BrokenHeart}} Broken Heart"

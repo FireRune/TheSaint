@@ -256,20 +256,20 @@ local function useItem(_, collectible, rng, player, flags, slot)
 
     if (charge >= 1) then
         -- 1+ charge(s)
-        local chargeSpent = 1
+        local chargeSpent, numWisps = 1, 1
         -- effectLuck applies after these checks,
         -- as it depends on total charges spent.
         if (charge >= 3) then
             -- 3+ charges
-            chargeSpent = 3
+            chargeSpent, numWisps = 3, 2
             effectSpawnHeart(player, extraEffect)
             if (charge >= 6) then
                 -- 6+ charges
-                chargeSpent = 6
+                chargeSpent, numWisps = 6, 3
                 effectSpawnChest(player, extraEffect)
                 if (charge >= 12) then
                     -- 12 charges
-                    chargeSpent = 12
+                    chargeSpent, numWisps = 12, 4
                     effectSpawnItem(rng, player, extraEffect)
                 end
             end
@@ -281,8 +281,10 @@ local function useItem(_, collectible, rng, player, flags, slot)
 
         -- if holding "Book of Virtues", spawn wisps
         if (player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES)) then
-            local wispType = ((extraEffect and CollectibleType.COLLECTIBLE_BIBLE) or CollectibleType.COLLECTIBLE_NULL)
-            player:AddWisp(wispType, player.Position, true)
+            local wispType = ((extraEffect and CollectibleType.COLLECTIBLE_BIBLE) or Devout_Prayer.FeatureSubType)
+            for _ = 1, numWisps do
+                player:AddWisp(wispType, player.Position, true)
+            end
         end
 
         return {

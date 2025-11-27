@@ -1,3 +1,4 @@
+local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 
 local game = Game()
@@ -55,52 +56,65 @@ local function getNumCheckedDoorSlots()
 	return counter
 end
 
---- @param collectible CollectibleType
+--- open a random door in the current room
 --- @param rng RNG
---- @param player EntityPlayer
---- @param flags UseFlag
-local function useItem(_, collectible, rng, player, flags)
-	-- "Car Battery" is checked later
-	if (flags & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return false end
-
+--- @param source Entity
+local function openDoors(rng, source)
 	local room = game:GetRoom()
 	local doors = getPossibleRoomDoors(room:GetRoomShape())
 	if (doors) then
 		-- only check doors if not all have been checked
 		if (#doors > getNumCheckedDoorSlots()) then
-			-- randomly choose a door slot (or 2 with "Car Battery")
-			local effectMult = ((player:HasCollectible(CollectibleType.COLLECTIBLE_CAR_BATTERY) and 2) or 1)
-			for _ = 1, effectMult do
-				local door = nil
-				repeat
-					local randInt = rng:RandomInt(#doors) + 1
-					door = doors[randInt]
-				until (not v.room.checkedDoorSlots[door])
-				v.room.checkedDoorSlots[door] = true
-				if (room:IsDoorSlotAllowed(door)) then
-					local gridEntDoor = room:GetDoor(door)
-					if (gridEntDoor) then
-						if (gridEntDoor:IsRoomType(RoomType.ROOM_SECRET)
-						or gridEntDoor:IsRoomType(RoomType.ROOM_SUPERSECRET)) then
-							gridEntDoor:TryBlowOpen(false, player)
-							gridEntDoor:Close(true)
-						else
-							if (gridEntDoor:IsLocked()) then
-								gridEntDoor:SetLocked(false)
-							end
-						end
-						gridEntDoor:Open()
+			local door = nil
+			repeat
+				local randInt = rng:RandomInt(#doors) + 1
+				door = doors[randInt]
+			until (not v.room.checkedDoorSlots[door])
+			v.room.checkedDoorSlots[door] = true
+			if (room:IsDoorSlotAllowed(door)) then
+				local gridEntDoor = room:GetDoor(door)
+				local isClosed = false
+				if (gridEntDoor) then
+					isClosed = (not gridEntDoor:IsOpen())
+					if (gridEntDoor:IsRoomType(RoomType.ROOM_SECRET)
+					or gridEntDoor:IsRoomType(RoomType.ROOM_SUPERSECRET)) then
+						gridEntDoor:TryBlowOpen(false, source)
+						gridEntDoor:Close(true)
 					else
-						local level = game:GetLevel()
-						local currentRoomIdx = level:GetCurrentRoomIndex()
-						level:MakeRedRoomDoor(currentRoomIdx, door)
+						if (gridEntDoor:IsLocked()) then
+							gridEntDoor:SetLocked(false)
+						end
 					end
+					gridEntDoor:Open()
+				else
+					local level = game:GetLevel()
+					local currentRoomIdx = level:GetCurrentRoomIndex()
+					level:MakeRedRoomDoor(currentRoomIdx, door)
 				end
+				if (isClosed) then SFXManager():Play(SoundEffect.SOUND_UNLOCK00) end
 			end
 		end
 	end
+end
 
+--- @param collectible CollectibleType
+--- @param rng RNG
+--- @param player EntityPlayer
+--- @param flags UseFlag
+local function useItem(_, collectible, rng, player, flags)
+	openDoors(rng, player)
 	return true
+end
+
+--- @param wisp EntityFamiliar
+local function wispFamiliarUpdate(_, wisp)
+	-- only apply to this item's wisp
+	if (wisp.SubType ~= Wooden_Key.FeatureSubType) then return end
+
+	-- on wisp death, trigger "Wooden Key" effect
+	if (wisp:HasMortalDamage()) then
+		openDoors(wisp:GetDropRNG(), wisp.Parent)
+	end
 end
 
 --- Initialize the item's functionality
@@ -108,6 +122,7 @@ end
 function Wooden_Key:Init(mod)
 	mod:saveDataManager(self.SaveDataKey, v)
 	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.FeatureSubType)
+	mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, wispFamiliarUpdate, FamiliarVariant.WISP)
 end
 
 return Wooden_Key
