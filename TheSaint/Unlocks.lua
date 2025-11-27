@@ -102,10 +102,7 @@ local function preSpawnCleanAward(_, rng, spawnPos)
 			if (mark.Floor) then
 				-- no floor-check for Greed(ier) Mode
 				-- this shouldn't normally happen, but just to make sure
-				if ((game.Difficulty == Difficulty.DIFFICULTY_GREED) or
-					(game.Difficulty == Difficulty.DIFFICULTY_GREEDIER) or
-					(game:GetLevel():GetAbsoluteStage() ~= mark.Floor)
-				) then return end
+				if (game:IsGreedMode() or (game:GetLevel():GetAbsoluteStage() ~= mark.Floor)) then return end
 			end
 			awardCompletionMarks(mark.Mark, game.Difficulty)
 		end

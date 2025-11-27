@@ -223,7 +223,7 @@ local function effectSpawnItem(rng, player, extraEffect)
     -- if a Devil Deal has been taken before, spawn either from Devil pool or an empty pedestal (50% chance)
     local ddTaken = ddTracking:HasDevilDealBeenTaken()
     local poolAngelOrDevil = ((ddTaken and ItemPoolType.POOL_DEVIL) or ItemPoolType.POOL_ANGEL)
-    if (game.Difficulty == Difficulty.DIFFICULTY_GREED or game.Difficulty == Difficulty.DIFFICULTY_GREEDIER) then
+    if (game:IsGreedMode()) then
         poolAngelOrDevil = ((ddTaken and ItemPoolType.POOL_GREED_DEVIL) or ItemPoolType.POOL_GREED_ANGEL)
     end
     collectibles[1] = pool:GetCollectible(poolAngelOrDevil, false, rng:RandomInt(math.maxinteger))
