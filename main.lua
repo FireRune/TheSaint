@@ -30,7 +30,4 @@ if (type(imports) == "table") then
     imports:Init(TheSaint)
 end
 
--- Mod integration
-include("TheSaint.EIDRegistry")
-
 print("[The Saint] Type 'thesaint_help' for a list of commands")

@@ -23,6 +23,7 @@ local features = {
     include("TheSaint.Items.Trinkets.Holy_Penny"),
     include("TheSaint.Items.PocketItems.Library_Card"),
     include("TheSaint.Items.PocketItems.Soul_Saint"),
+    include("TheSaint.EIDRegistry"),
 }
 
 --- initialize all features of this mod

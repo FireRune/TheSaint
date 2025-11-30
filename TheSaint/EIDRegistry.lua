@@ -1,4 +1,7 @@
-if EID then
+--- @class EIDRegistry : TheSaint_Feature
+local EIDRegistry = {}
+
+local function AddRegistry()
 
 	local enums = require("TheSaint.Enums")
 	local ddTracking = require("TheSaint.DevilDealTracking")
@@ -72,8 +75,10 @@ if EID then
 
 	local desc = ""
 
-	-- Collectibles BEGIN
-	-- Almanach
+	--#region Collectibles
+
+	--#region Almanach
+
 	local almanach = enums.CollectibleType.COLLECTIBLE_ALMANACH
 	desc = "Invokes the effects of 2 random 'book'-items#Can also invoke Books that haven't been unlocked yet"
 	EID:addCollectible(almanach, desc)
@@ -83,36 +88,19 @@ if EID then
 
 	desc = "Book effects doubled"
 	EID:addCarBatteryCondition(almanach, desc)
+	--#endregion
 
-	-- Mending Heart
+	--#region Mending Heart
+
 	local mendingHeart = enums.CollectibleType.COLLECTIBLE_MENDING_HEART
 	desc = "Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#Will replace 2 instead, if no damage was taken on the previous floor#↑ +0.25 Damage per heart restored"
 	EID:addCollectible(mendingHeart, desc)
+	--#endregion
 
-	-- -- Devout Prayer (old)
-	-- local devoutPrayer = enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER
-	-- desc = "Charges by killing enemies#Effects depend on charges used (never takes more charges than needed)#{{EternalHeart}} Consumes an Eternal Heart for extra effects#↑ 1+ charges: +0.1 Luck ({{EternalHeart}} and +0.25 Damage) for the floor per charge spent#3+ charges: Spawns an {{EternalHeart}} Eternal Heart ({{EternalHeart}} and grants a {{HolyMantleSmall}} Holy Mantle shield)#6+ charges: Spawns an {{HolyChest}} Eternal Chest ({{EternalHeart}} and {{AngelChanceSmall}}+10% Angel Room chance)#12 charges: Spawns 2 items (1 from current pool, 1 from Angel pool). Only 1 can be taken ({{EternalHeart}} both can be taken)"
-	-- -- local descArray = {
-	-- -- 	"Charges by killing enemies",
-	-- -- 	"Effects depend on charges used (never takes more charges than needed)",
-	-- -- 	"{{EternalHeart}} Consumes an Eternal Heart for extra effects",
-	-- -- 	"↑ 1+ charges: +0.1 Luck ({{EternalHeart}} and +0.25 Damage) for the floor per charge spent",
-	-- -- 	"3+ charges: Spawns an {{EternalHeart}} Eternal Heart ({{EternalHeart}} and grants a {{HolyMantleSmall}} Holy Mantle shield)",
-	-- -- 	"6+ charges: Spawns an {{HolyChest}} Eternal Chest ({{EternalHeart}} and {{AngelChanceSmall}}+10% Angel Room chance)",
-	-- -- 	"12 charges: Spawns 2 items (1 from current pool, 1 from Angel pool). Only 1 can be taken ({{EternalHeart}} both can be taken)"
-	-- -- }
-	-- EID:addCollectible(devoutPrayer, desc)
-
-	-- desc = "Spawns 1 - 4 wisp(s), depending on charges spent ({{EternalHeart}} spawns {{Collectible"..CollectibleType.COLLECTIBLE_BIBLE.."}} Bible wisp(s) instead)"
-	-- addWispData(devoutPrayer, 2, 1, 3, 0.1, 1, 0.75, 42, 1, true, 0, {2}, {-1}, desc)
-
-	-- desc = "No Effect"
-	-- EID:addCarBatteryCondition(devoutPrayer, desc)
-
-	-- Devout Prayer (rework)
+	--#region Devout Prayer
 
 	local devoutPrayer = enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER
-	desc = "Can be used with 1+ charge(s)#Charges by killing enemies#Better effects while having an {{EternalHeart}} Eternal Heart#↑ +0.1 Luck for the floor per charge spent#Grants an additional effect at 3+, 6+ or 12 charges"
+	desc = "Can be used with 1+ charge(s)#Charges by killing enemies#{{EternalHeart}} Better effects while having an Eternal Heart#↑ +0.1 Luck for the floor per charge spent#Grants an additional effect at 3+, 6+ or 12 charges"
 	EID:addCollectible(devoutPrayer, desc)
 
 	desc = "Spawns 1 - 4 wisp(s), depending on charges spent ({{EternalHeart}} spawns {{Collectible"..CollectibleType.COLLECTIBLE_BIBLE.."}} Bible wisp(s) instead)"
@@ -121,7 +109,10 @@ if EID then
 	desc = "No Effect"
 	EID:addCarBatteryCondition(devoutPrayer, desc)
 
-	-- TODO: make this modifier work
+	--#region Devout Prayer - modifiers
+
+	--#region getChargeBasedEffect
+
 	local DevoutPrayer_currentCharge = 0
 
 	--- @param descObj EID_DescObj
@@ -133,37 +124,62 @@ if EID then
 			--- @cast player EntityPlayer?
 			if (player) then
 				local slot = ActiveSlot.SLOT_PRIMARY
-				if (EID.ItemReminderSelectedCategory == 5) then
-					-- Category 5 is "Actives"
+				if (EID.ItemReminderSelectedCategory == 4) then
+					-- Category 4 is "Actives"
 					if (player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) ~= devoutPrayer) then
 						slot = ActiveSlot.SLOT_SECONDARY
 					end
-				elseif (EID.ItemReminderSelectedCategory == 6) then
-					-- Category 6 is "Pockets"
+				elseif (EID.ItemReminderSelectedCategory == 5) then
+					-- Category 5 is "Pockets"
 					slot = ActiveSlot.SLOT_POCKET
 				end
 				DevoutPrayer_currentCharge = player:GetActiveCharge(slot)
 				if (DevoutPrayer_currentCharge >= 3) then return true end
 			end
 		end
+		DevoutPrayer_currentCharge = 0
 	end
 	--- @param descObj EID_DescObj
 	--- @return EID_DescObj
 	local function DevoutPrayer_getChargeBasedEffectCallback(descObj)
 		local addDesc = nil
 
+		-- descriptions added from this modifier aren't altered by the hasEternalHeart modifier, so it's done here instead
+		local hasEternalHeart = false
+		local player = EID.ItemReminderPlayerEntity
+		--- @cast player EntityPlayer?
+		if (player) then
+			hasEternalHeart = (player:GetEternalHearts() == 1)
+		end
+
 		local currentCharge = DevoutPrayer_currentCharge
 		if ((currentCharge >= 3) and (currentCharge < 6)) then
-			addDesc = "3+ charges: Spawns an {{EternalHeart}} Eternal Heart"
+			if (not hasEternalHeart) then
+				addDesc = "3+ charges: Spawns an {{EternalHeart}} Eternal Heart"
+			else
+				addDesc = "3+ charges: Spawns an {{EternalHeart}} Eternal Heart and grants a {{HolyMantleSmall}} Holy Mantle shield"
+			end
 		elseif ((currentCharge >= 6) and (currentCharge < 12)) then
-			addDesc = "6+ charges: Spawns an {{HolyChest}} Eternal Chest"
+			if (not hasEternalHeart) then
+				addDesc = "6+ charges: Spawns an {{HolyChest}} Eternal Chest"
+			else
+				addDesc = "6+ charges: Spawns an {{HolyChest}} Eternal Chest and {{AngelChanceSmall}} +10% Angel Room chance"
+			end
 		elseif (currentCharge >= 12) then
 			local ddTaken = ddTracking:HasDevilDealBeenTaken()
 
 			if (ddTaken == false) then
-				addDesc = "12 charges: Spawns 2 items (1 from current pool, 1 from Angel pool). Only 1 can be taken"
+				if (not hasEternalHeart) then
+					addDesc = "12 charges: Spawns 2 items (1 from current pool, 1 from Angel pool). Only 1 can be taken"
+				else
+					addDesc = "12 charges: Spawns 2 items (1 from current pool, 1 from Angel pool)"
+				end
 			else
-				addDesc = "12 charges: Spawns 2 items (1 from current pool, 1 from Devil pool (50% chance to be nothing)). Only 1 can be taken"
+				if (not hasEternalHeart) then
+					addDesc = "12 charges: Spawns 2 items (1 from current pool, 1 from Devil pool (50% chance to be nothing)). Only 1 can be taken"
+				else
+					addDesc = "12 charges: Spawns 2 items (1 from current pool, 1 from Devil pool). Only 1 can be taken"
+				end
 			end
 		end
 		if (addDesc) then
@@ -172,6 +188,9 @@ if EID then
 		return descObj
 	end
 	EID:addDescriptionModifier("TheSaint_DevoutPrayer_getChargeBasedEffect", DevoutPrayer_getChargeBasedEffectCondition, DevoutPrayer_getChargeBasedEffectCallback)
+	--#endregion
+
+	--#region hasEternalHeart
 
 	--- @param descObj EID_DescObj
 	--- @return boolean?
@@ -188,63 +207,27 @@ if EID then
 	--- @param descObj EID_DescObj
 	--- @return EID_DescObj
 	local function DevoutPrayer_hasEternalHeartCallback(descObj)
-		local alterDesc = descObj.Description
 		-- effectAddLuck is always displayed
-		alterDesc = alterDesc:gsub("+0.1 Luck for the floor per charge spent", "+0.1 Luck and +0.25 Damage for the floor per charge spent", 1)
+		descObj.Description = (descObj.Description):gsub("+0.1 Luck for the floor per charge spent", "+0.1 Luck and +0.25 Damage for the floor per charge spent", 1)
 
-		-- additional effect based on charge
-		if (alterDesc:find("3+ charges: Spawns an {{EternalHeart}} Eternal Heart", 1, true)) then
-			alterDesc = alterDesc:gsub("3+ charges: Spawns an {{EternalHeart}} Eternal Heart", "3+ charges: Spawns an {{EternalHeart}} Eternal Heart and grants a {{HolyMantleSmall}} Holy Mantle shield", 1)
-		elseif (alterDesc:find("6+ charges: Spawns an {{HolyChest}} Eternal Chest", 1, true)) then
-			alterDesc = alterDesc:gsub("6+ charges: Spawns an {{HolyChest}} Eternal Chest", "6+ charges: Spawns an {{HolyChest}} Eternal Chest and {{AngelChanceSmall}} +10% Angel Room chance", 1)
-		elseif (alterDesc:find("12 charges: Spawns 2 items (1 from current pool, 1 from Angel pool). Only 1 can be taken", 1, true)) then
-			alterDesc = alterDesc:gsub("12 charges: Spawns 2 items (1 from current pool, 1 from Angel pool). Only 1 can be taken", "12 charges: Spawns 2 items (1 from current pool, 1 from Angel pool)", 1)
-		elseif (alterDesc:find("12 charges: Spawns 2 items (1 from current pool, 1 from Devil pool (50% chance to be nothing)). Only 1 can be taken", 1, true)) then
-			alterDesc = alterDesc:gsub("12 charges: Spawns 2 items (1 from current pool, 1 from Devil pool (50% chance to be nothing)). Only 1 can be taken", "12 charges: Spawns 2 items (1 from current pool, 1 from Devil pool). Only 1 can be taken", 1)
-		end
-
-		descObj.Description = alterDesc
 		return descObj
 	end
 	EID:addDescriptionModifier("TheSaint_DevoutPrayer_hasEternalHeart", DevoutPrayer_hasEternalHeartCondition, DevoutPrayer_hasEternalHeartCallback)
-	-- local descArrayRework = {
-	-- 	-- base description
-	-- 	"Charges by killing enemies and can be used with 1+ charge(s)",
-	-- 	"Better effects while having an {{EternalHeart}} Eternal Heart",
-	-- 	{
-	-- 		"↑ +0.1 Luck for the floor per charge spent",					-- w/o Eternal Heart
-	-- 		"↑ +0.1 Luck and +0.25 Damage for the floor per charge spent"	-- w/ Eternal Heart
-	-- 	},
-	-- 	"Grants an additional effect at 3+, 6+ or 12 charges",
-	-- 	-- only display 1 of the following, if applicable
-	-- 	{
-	-- 		"3+ charges: Spawns an {{EternalHeart}} Eternal Heart",														-- w/o Eternal Heart
-	-- 		"3+ charges: Spawns an {{EternalHeart}} Eternal Heart and grants a {{HolyMantleSmall}} Holy Mantle shield"	-- w/ Eternal Heart
-	-- 	},
-	-- 	{
-	-- 		"6+ charges: Spawns an {{HolyChest}} Eternal Chest",												-- w/o Eternal Heart
-	-- 		"6+ charges: Spawns an {{HolyChest}} Eternal Chest and {{AngelChanceSmall}} +10% Angel Room chance"	-- w/ Eternal Heart
-	-- 	},
-	-- 	{
-	-- 		-- no devil deal has been taken this run
-	-- 		{
-	-- 			"12 charges: Spawns 2 items (1 from current pool, 1 from Angel pool). Only 1 can be taken",	-- w/o Eternal Heart
-	-- 			"12 charges: Spawns 2 items (1 from current pool, 1 from Angel pool)."						-- w/ Eternal Heart
-	-- 		},
-	-- 		-- devil deal has been taken this run
-	-- 		{
-	-- 			"12 charges: Spawns 2 items (1 from current pool, 1 from Devil pool (50% chance to be nothing)). Only 1 can be taken",	-- w/o Eternal Heart
-	-- 			"12 charges: Spawns 2 items (1 from current pool, 1 from Devil pool). Only 1 can be taken"								-- w/ Eternal Heart
-	-- 		}
-	-- 	}
-	-- }
+	--#endregion
 
-	-- Divine Bombs
+	--#endregion
+
+	--#endregion
+
+	--#region Divine Bombs
+
 	local divineBombs = enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS
 	desc = "{{Bomb}} +5 Bombs#{{Collectible"..CollectibleType.COLLECTIBLE_HOLY_LIGHT.."}} Isaac's bombs release a beam of light that hits nearby enemies"
 	EID:addCollectible(divineBombs, desc)
+	--#endregion
 
-	-- Wooden Key
+	--#region Wooden Key
+
 	local woodenKey = enums.CollectibleType.COLLECTIBLE_WOODEN_KEY
 	desc = "Chooses a random door in the current room and opens it if it is closed#Can open locked doors#Can open {{SecretRoom}}{{SuperSecretRoom}} Secret Rooms/Super Secret Rooms#{{Collectible"..CollectibleType.COLLECTIBLE_RED_KEY.."}} Can also create Red Room Doors"
 	EID:addCollectible(woodenKey, desc)
@@ -253,8 +236,10 @@ if EID then
 	addWispData(woodenKey, 2, 0, 0, 0, 0, 0, 0, 1, false, 1, {-1}, {-1}, desc)
 
 	EID:addCarBatteryCondition(woodenKey, {"a random door", "opens it if it is", "2{{CR}} random doors", "opens them if they are"})
+	--#endregion
 
-	-- Holy Hand Grenade
+	--#region Holy Hand Grenade
+
 	local holyHandGrenade = enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE
 	desc = "Using the item and firing in a direction throws the grenade#The grenade explodes after some time and releases a shockwave that kills every enemy in the room"
 	EID:addCollectible(holyHandGrenade, desc)
@@ -265,17 +250,20 @@ if EID then
 	EID.SingleUseCollectibles[holyHandGrenade] = true
 	EID:AddSynergyConditional(holyHandGrenade, CollectibleType.COLLECTIBLE_VOID, "Void Single Use")
 	EID:AddSynergyConditional(holyHandGrenade, "5.300.48", "? Card Single Use")
-	-- Collectibles END
+	--#endregion
+	--#endregion
 
-	-- Trinkets BEGIN
+	--#region Trinkets
+
 	-- Holy Penny
 	local holyPenny = enums.TrinketType.TRINKET_HOLY_PENNY
 	desc = "{{EternalHeart}} Picking up a coin has a 17% chance to spawn an Eternal Heart#Higher chance from nickels and dimes"
 	EID:addTrinket(holyPenny, desc)
 	EID:addGoldenTrinketMetadataAdditive(holyPenny, nil, 17, {8, 13})
-	-- Trinkets END
+	--#endregion
 
-	-- PocketItems BEGIN
+	--#region PocketItems
+
 	-- Pocket Item icons
 	local pocketIcons = Sprite()
 	pocketIcons:Load("gfx/EID/eid_cardspills.anm2")
@@ -291,9 +279,10 @@ if EID then
 	EID:addIcon("Card"..soulOfTheSaint, "soulofthesaint", 0, 32, 32, 4, 7, pocketIcons)
 	desc = "{{AngelDevilChance}} Teleports Isaac to the Devil or Angel Room#{{AngelRoom}} Guarantees an Angel Room if it hasn't been generated yet#{{AngelRoom}} If Isaac hasn't taken any Devil Deal, allows all items to be taken"
 	EID:addCard(soulOfTheSaint, desc)
-	-- PocketItems END
+	--#endregion
 
-	-- Characters BEGIN
+	--#region Characters
+
 	-- Character Icons
 	local charIcons = Sprite()
 	charIcons:Load("gfx/EID/eid_player_icons.anm2", true)
@@ -318,6 +307,18 @@ if EID then
 	-- Abaddon interaction
 	desc = "{1} is left with half a heart and turns all other Heart Containers into Broken Hearts"
 	EID:addPlayerCondition(CollectibleType.COLLECTIBLE_ABADDON, tSaint, desc)
-	-- Characters END
+	--#endregion
 
 end
+
+--- @param mod ModReference
+function EIDRegistry:Init(mod)
+	-- make sure EIDRegistry occurs regardless of mod loading order
+	if EID then
+		AddRegistry()
+	else
+		mod:AddCallback("EID_POST_LOAD", AddRegistry)
+	end
+end
+
+return EIDRegistry
