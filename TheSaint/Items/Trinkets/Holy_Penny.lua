@@ -6,6 +6,7 @@ local game = Game()
 --- - picking up coins has a chance to spawn an Eternal Heart
 --- @class TheSaint.Items.Trinkets.Holy_Penny : TheSaint_Feature
 local Holy_Penny = {
+    IsInitialized = false,
     FeatureSubType = enums.TrinketType.TRINKET_HOLY_PENNY,
 }
 
@@ -30,6 +31,8 @@ end
 --- Initialize this item's functionality
 --- @param mod ModReference
 function Holy_Penny:Init(mod)
+    if (self.IsInitialized) then return end
+
     mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, onPickup)
 end
 

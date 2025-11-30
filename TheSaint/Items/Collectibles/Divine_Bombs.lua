@@ -5,6 +5,7 @@ local enums = require("TheSaint.Enums")
 --- - Bombs spawn "Holy Light" beams upon exploding
 --- @class TheSaint.Items.Collectibles.Divine_Bombs : TheSaint_Feature
 local Divine_Bombs = {
+    IsInitialized = false,
     FeatureSubType = enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS,
     SaveDataKey = "Divine_Bombs",
 }
@@ -131,6 +132,8 @@ end
 --- Initialize the item's functionality.
 --- @param mod ModReference
 function Divine_Bombs:Init(mod)
+    if (self.IsInitialized) then return end
+
 	mod:saveDataManager(self.SaveDataKey, v)
     mod:AddCallback(ModCallbacks.MC_POST_BOMB_INIT, postBombInit)
     mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, postBombUpdate)

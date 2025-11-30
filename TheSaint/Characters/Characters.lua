@@ -2,7 +2,9 @@ local enums = require("TheSaint.Enums")
 local stats = include("TheSaint.stats")
 
 --- @class TheSaint.Characters.Characters : TheSaint_Feature
-local Characters = {}
+local Characters = {
+    IsInitialized = false,
+}
 
 -- Fields
 
@@ -184,6 +186,8 @@ end
 
 --- @param mod ModReference
 function Characters:Init(mod)
+    if (self.IsInitialized) then return end
+
 	mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_INIT, function(_, player)
 	    if (not isContinue) then postPlayerInitLate(player) end

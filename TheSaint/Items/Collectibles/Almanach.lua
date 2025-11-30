@@ -12,6 +12,7 @@ local config = Isaac.GetItemConfig()
 --- - Cannot activate itself
 --- @class TheSaint.Items.Collectibles.Almanach : TheSaint_Feature
 local Almanach = {
+    IsInitialized = false,
     FeatureSubType = enums.CollectibleType.COLLECTIBLE_ALMANACH,
 }
 
@@ -169,6 +170,8 @@ end
 --- initialize the item's functionality
 --- @param mod ModReference
 function Almanach:Init(mod)
+    if (self.IsInitialized) then return end
+
     addItemToBookBlacklist(mod.Name, {CollectibleType.COLLECTIBLE_HOW_TO_JUMP, self.FeatureSubType})
     mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, getBooks)
     mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, getWispName, FamiliarVariant.ITEM_WISP)

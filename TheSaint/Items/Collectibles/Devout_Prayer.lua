@@ -14,6 +14,7 @@ local hud = game:GetHUD()
 --- - using while having an Eternal Heart will consume it for extra effects
 --- @class TheSaint.Items.Collectibles.Devout_Prayer : TheSaint_Feature
 local Devout_Prayer = {
+    IsInitialized = false,
     FeatureSubType = enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER,
     SaveDataKey = "Devout_Prayer",
 }
@@ -297,6 +298,8 @@ end
 --- Initialize the item's functionality.
 --- @param mod ModReference
 function Devout_Prayer:Init(mod)
+    if (self.IsInitialized) then return end
+
     mod:saveDataManager(self.SaveDataKey, v)
     mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, postEntityKill)
     mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, preSpawnCleanAward)

@@ -1,10 +1,12 @@
---- @class EIDRegistry : TheSaint_Feature
-local EIDRegistry = {}
+local enums = require("TheSaint.Enums")
+local ddTracking = require("TheSaint.DevilDealTracking")
+
+--- @class TheSaint.ModIntegration.EIDRegistry : TheSaint_Feature
+local EIDRegistry = {
+	IsInitialized = false,
+}
 
 local function AddRegistry()
-
-	local enums = require("TheSaint.Enums")
-	local ddTracking = require("TheSaint.DevilDealTracking")
 
 	--#region EID classes
 
@@ -330,6 +332,8 @@ end
 
 --- @param mod ModReference
 function EIDRegistry:Init(mod)
+	if (self.IsInitialized) then return end
+
 	-- make sure EIDRegistry occurs regardless of mod loading order
 	if EID then
 		AddRegistry()

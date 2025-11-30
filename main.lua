@@ -27,7 +27,8 @@ TheSaint:addConsoleCommand("thesaint_help", thesaint_help)
 -- feature initialization
 local imports = include("TheSaint.imports")
 if (type(imports) == "table") then
-    imports:Init(TheSaint)
+    --- @diagnostic disable-next-line
+    imports:LoadFeatures(TheSaint)
 end
 
 print("[The Saint] Type 'thesaint_help' for a list of commands")

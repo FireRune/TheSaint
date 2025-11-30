@@ -8,6 +8,7 @@ local game = Game()
 --- - Can also create "Red Room"-doors
 --- @class TheSaint.Items.Collectibles.Wooden_Key : TheSaint_Feature
 local Wooden_Key = {
+	IsInitialized = false,
 	FeatureSubType = enums.CollectibleType.COLLECTIBLE_WOODEN_KEY,
 	SaveDataKey = "Wooden_Key",
 }
@@ -119,6 +120,8 @@ end
 --- Initialize the item's functionality
 --- @param mod ModReference
 function Wooden_Key:Init(mod)
+	if (self.IsInitialized) then return end
+
 	mod:saveDataManager(self.SaveDataKey, v)
 	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.FeatureSubType)
 	mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, wispFamiliarUpdate, FamiliarVariant.WISP)

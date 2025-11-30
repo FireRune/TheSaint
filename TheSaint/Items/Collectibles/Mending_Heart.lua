@@ -1,8 +1,6 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 
-local taintedChar = enums.PlayerType.PLAYER_THE_SAINT_B
-
 local game = Game()
 
 --- "Mending Heart"
@@ -11,6 +9,7 @@ local game = Game()
 --- - +0.25 damage per heart replaced
 --- @class TheSaint.Items.Collectibles.Mending_Heart : TheSaint_Feature
 local Mending_Heart = {
+    IsInitialized = false,
     FeatureSubType = enums.CollectibleType.COLLECTIBLE_MENDING_HEART,
     SaveDataKey = "Mending_Heart",
 }
@@ -34,7 +33,7 @@ local playMovie = -1
 --- @return integer @ number of "Mending Heart" copies that `player` has
 local function hasMendingHeart(player)
     local numMendingHeart = player:GetCollectibleNum(Mending_Heart.FeatureSubType)
-    if (player:GetPlayerType() == taintedChar) then
+    if (player:GetPlayerType() == enums.PlayerType.PLAYER_THE_SAINT_B) then
         numMendingHeart = numMendingHeart + 1
     end
     return (numMendingHeart > 0), numMendingHeart
@@ -126,6 +125,8 @@ end
 --- Initialize the item's functionality
 --- @param mod ModReference
 function Mending_Heart:Init(mod)
+    if (self.IsInitialized) then return end
+
     mod:saveDataManager(self.SaveDataKey, v)
     mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_LEVEL_REORDERED, postNewLevelReordered)
     mod:AddCallback(ModCallbacks.MC_POST_RENDER, postRender)

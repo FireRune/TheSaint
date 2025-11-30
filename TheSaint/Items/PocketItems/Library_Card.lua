@@ -7,6 +7,7 @@ local game = Game()
 --- - random teleport otherwise
 --- @class TheSaint.Items.PocketItems.Library_Card : TheSaint_Feature
 local Library_Card = {
+	IsInitialized = false,
 	FeatureSubType = enums.Card.CARD_LIBRARY,
 }
 
@@ -44,6 +45,8 @@ end
 --- Initialize this item's functionality
 --- @param mod ModReference
 function Library_Card:Init(mod)
+	if (self.IsInitialized) then return end
+
 	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard, self.FeatureSubType)
 end
 

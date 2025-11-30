@@ -4,10 +4,9 @@ local game = Game()
 
 --- @class TheSaint.DevilDealTracking : TheSaint_Feature
 local DevilDealTracking = {
+	IsInitialized = false,
 	SaveDataKey = "DevilDealTracking",
 }
-
-local firstInit = true
 
 local v = {
 	run = {
@@ -46,15 +45,13 @@ local function pickupGet(_, player, pickup)
 	end
 end
 
---- Initialize this feature only once
 --- @param mod ModReference
 function DevilDealTracking:Init(mod)
-	if (firstInit == true) then
-		mod:saveDataManager(self.SaveDataKey, v)
-		mod:AddCallbackCustom(isc.ModCallbackCustom.PRE_GET_PEDESTAL, pickupGet)
-		mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_COLLECT, pickupGet)
-		firstInit = false
-	end
+	if (self.IsInitialized) then return end
+
+	mod:saveDataManager(self.SaveDataKey, v)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.PRE_GET_PEDESTAL, pickupGet)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_COLLECT, pickupGet)
 end
 
 --- Returns wether a Devil Deal has been taken in the current run. (i.e. any purchase that causes Angel Room chance to be displayed as 0%)<br>

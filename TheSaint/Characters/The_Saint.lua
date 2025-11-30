@@ -5,6 +5,7 @@ local game = Game()
 
 --- @class TheSaint.Characters.The_Saint : TheSaint_Feature
 local The_Saint = {
+    IsInitialized = false,
     FeatureSubType = enums.PlayerType.PLAYER_THE_SAINT,
     SaveDataKey = "The_Saint",
 }
@@ -33,6 +34,8 @@ end
 
 --- @param mod ModReference
 function The_Saint:Init(mod)
+    if (self.IsInitialized) then return end
+
     mod:saveDataManager(self.SaveDataKey, v)
     mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_ROOM_REORDERED, postNewRoomReordered_Saint_Birthright, RoomType.ROOM_ANGEL)
 end

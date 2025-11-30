@@ -8,6 +8,7 @@ local Debug_UnlockAll = true
 
 --- @class TheSaint.UnlockManager : TheSaint_Feature
 local UnlockManager = {
+	IsInitialized = false,
 	SaveDataKey = "UnlockManager",
 }
 
@@ -443,6 +444,8 @@ end
 
 --- @param mod ModReference
 function UnlockManager:Init(mod)
+	if (self.IsInitialized) then return end
+
 	mod:saveDataManager(self.SaveDataKey, v)
 	-- awarding completion marks
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_AMBUSH_FINISHED, postAmbushFinished, isc.AmbushType.BOSS_RUSH)

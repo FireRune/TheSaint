@@ -11,6 +11,7 @@ local game = Game()
 --- - only kills one phase of multi-phase bosses like "Mega Satan", "Mother", etc.
 --- @class TheSaint.Items.Collectibles.Holy_Hand_Grenade : TheSaint_Feature
 local Holy_Hand_Grenade = {
+	IsInitialized = false,
 	FeatureSubType = enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE,
 	SaveDataKey = "Holy_Hand_Grenade",
 }
@@ -169,6 +170,8 @@ end
 --- Initialize this item's functionality
 --- @param mod ModReference
 function Holy_Hand_Grenade:Init(mod)
+	if (self.IsInitialized) then return end
+
 	mod:saveDataManager(self.SaveDataKey, v)
 	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.FeatureSubType)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate, 0)

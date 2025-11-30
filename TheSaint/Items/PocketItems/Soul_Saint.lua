@@ -11,6 +11,7 @@ local game = Game()
 ---   - forces an Angel Room if the Devil/Angel Room hasn't been generated yet
 --- @class TheSaint.Items.PocketItems.Soul_Saint : TheSaint_Feature
 local Soul_Saint = {
+	IsInitialized = false,
 	FeatureSubType = enums.Card.CARD_SOUL_SAINT,
 	SaveDataKey = "Soul_Saint",
 }
@@ -63,6 +64,8 @@ end
 --- Initialize this item's functionality
 --- @param mod ModReference
 function Soul_Saint:Init(mod)
+	if (self.IsInitialized) then return end
+
 	mod:saveDataManager(self.SaveDataKey, v)
 	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard, self.FeatureSubType)
 	mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, postNewRoom)

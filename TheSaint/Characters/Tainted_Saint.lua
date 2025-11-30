@@ -5,6 +5,7 @@ local game = Game()
 
 --- @class TheSaint.Characters.Tainted_Saint : TheSaint_Feature
 local Tainted_Saint = {
+    IsInitialized = false,
     FeatureSubType = enums.PlayerType.PLAYER_THE_SAINT_B,
 }
 
@@ -151,6 +152,8 @@ end
 
 --- @param mod ModReference
 function Tainted_Saint:Init(mod)
+    if (self.IsInitialized) then return end
+
 	mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, onDmgTaken, EntityType.ENTITY_PLAYER)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate_TSaint_Hearts, 0)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.PRE_GET_PEDESTAL, preGetPedestal_TSaint_BrokenHearts, 0, self.FeatureSubType)
