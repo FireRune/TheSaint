@@ -29,11 +29,15 @@ local v = {
 --- animation state flag
 local playMovie = -1
 
---- Returns true if the player has "Mending Heart" or is "Tainted Saint"
 --- @param player EntityPlayer
---- @return boolean
+--- @return boolean @ `true` if the player has "Mending Heart" or is "Tainted Saint", otherwise `false`
+--- @return integer @ number of "Mending Heart" copies that `player` has
 local function hasMendingHeart(player)
-    return (player:HasCollectible(Mending_Heart.FeatureSubType) or (player:GetPlayerType() == taintedChar))
+    local numMendingHeart = player:GetCollectibleNum(Mending_Heart.FeatureSubType)
+    if (player:GetPlayerType() == taintedChar) then
+        numMendingHeart = numMendingHeart + 1
+    end
+    return (numMendingHeart > 0), numMendingHeart
 end
 
 --- @param player EntityPlayer
@@ -58,12 +62,15 @@ local function postNewLevelReordered(_, stage, stageType)
     else
         for i = 0, game:GetNumPlayers() - 1 do
             local player = Isaac.GetPlayer(i)
-            if (hasMendingHeart(player)) then
+            local hasCollectible, collectibleNum = hasMendingHeart(player)
+            if (hasCollectible) then
                 local brokenHearts = player:GetBrokenHearts()
                 if (brokenHearts > 0) then
                     -- set how many broken hearts to replace
                     local amount = 1
                     if (game:GetStagesWithoutDamage() > 0) then amount = 2 end
+                    -- multiply amount of hearts to restore by number of copies of "Mending Heart"
+                    amount = (amount * collectibleNum)
                     -- replace broken hearts
                     player:AddBrokenHearts(-amount)
                     player:AddMaxHearts(2 * amount)

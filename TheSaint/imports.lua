@@ -9,7 +9,9 @@ local imports = {}
 
 ---- @type TheSaint_Feature[]
 local features = {
+    -- 'require'-features should be initialized first
     require("TheSaint.DevilDealTracking"),
+    -- 'include'-features only need to be initialized once
     include("TheSaint.Unlocks"),
     include("TheSaint.Characters.Characters"),
     include("TheSaint.Characters.The_Saint"),
@@ -23,7 +25,8 @@ local features = {
     include("TheSaint.Items.Trinkets.Holy_Penny"),
     include("TheSaint.Items.PocketItems.Library_Card"),
     include("TheSaint.Items.PocketItems.Soul_Saint"),
-    include("TheSaint.EIDRegistry"),
+    -- perform mod integration last
+    include("TheSaint.ModIntegration.EIDRegistry"),
 }
 
 --- initialize all features of this mod

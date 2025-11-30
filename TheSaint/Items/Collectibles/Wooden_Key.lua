@@ -1,4 +1,3 @@
-local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 
 local game = Game()

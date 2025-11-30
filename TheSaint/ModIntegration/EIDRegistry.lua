@@ -95,6 +95,9 @@ local function AddRegistry()
 	local mendingHeart = enums.CollectibleType.COLLECTIBLE_MENDING_HEART
 	desc = "Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#Will replace 2 instead, if no damage was taken on the previous floor#↑ +0.25 Damage per heart restored"
 	EID:addCollectible(mendingHeart, desc)
+
+	desc = "Increases amount of Broken Hearts to replace"
+	EID:addCondition(mendingHeart, {mendingHeart, CollectibleType.COLLECTIBLE_DIPLOPIA, CollectibleType.COLLECTIBLE_CROOKED_PENNY}, desc)
 	--#endregion
 
 	--#region Devout Prayer

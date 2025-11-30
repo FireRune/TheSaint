@@ -35,7 +35,7 @@
 	- [x] Boss Rush + Hush (Soul of the Saint)
 	- [ ] Satan + Isaac + The Lamb + ??? (Trinket)
 	- [ ] Greedier Mode (Card)
-	- [x] Delirium (Unbreaking Heart)
+	- [x] Delirium (Mending Heart)
 	- [ ] Mother (Trinket)
 	- [ ] The Beast (Item)
 	- [ ] Mega Satan (Pickup or Object)
