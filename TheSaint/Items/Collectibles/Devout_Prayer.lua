@@ -205,7 +205,8 @@ end
 --- @param extraEffect boolean
 local function effectSpawnItem(rng, player, extraEffect)
     local optionIndex = getOptionIndex()
-    if (extraEffect == true) then
+    local ddTaken = ddTracking:HasDevilDealBeenTaken()
+    if ((extraEffect == true) and (ddTaken == false)) then
         optionIndex = 0
     end
     local pool = game:GetItemPool()
@@ -220,15 +221,14 @@ local function effectSpawnItem(rng, player, extraEffect)
     Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, collectibles[0], room:FindFreePickupSpawnPosition(player.Position, 0, true), Vector.Zero, nil):ToPickup().OptionsPickupIndex = optionIndex
 
     -- 2nd item from Angel pool
-    -- if a Devil Deal has been taken before, spawn either from Devil pool or an empty pedestal (50% chance)
-    local ddTaken = ddTracking:HasDevilDealBeenTaken()
+    -- if a Devil Deal has been taken before, spawn either from Devil pool (w/o an Eternal Heart has a 50% chance to be an empty pedestal instead)
     local poolAngelOrDevil = ((ddTaken and ItemPoolType.POOL_DEVIL) or ItemPoolType.POOL_ANGEL)
     if (game:IsGreedMode()) then
         poolAngelOrDevil = ((ddTaken and ItemPoolType.POOL_GREED_DEVIL) or ItemPoolType.POOL_GREED_ANGEL)
     end
     collectibles[1] = pool:GetCollectible(poolAngelOrDevil, false, rng:RandomInt(math.maxinteger))
     local pos = room:FindFreePickupSpawnPosition(player.Position, 0, true)
-    if (ddTaken == true and (rng:RandomInt(math.maxinteger) % 2) == 1) then
+    if ((ddTaken == true) and (extraEffect == false) and (rng:RandomInt(math.maxinteger) % 2) == 1) then
         isc:spawnEmptyCollectible(pos, rng)
     else
         Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, collectibles[1], pos, Vector.Zero, nil):ToPickup().OptionsPickupIndex = optionIndex
@@ -249,32 +249,31 @@ local function useItem(_, collectible, rng, player, flags, slot)
 
     local extraEffect = false
     if (player:GetEternalHearts() == 1) then
-        player:AddEternalHearts(-1)
+        --player:AddEternalHearts(-1)
         extraEffect = true
     end
-    local charge = (isVoid and 1) or (player:GetActiveCharge(slot) + player:GetBatteryCharge(slot))
+    local charge = ((isVoid and 1) or (player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)))
 
     if (charge >= 1) then
+        -- only remove up to 12 charges
+        local chargeSpent = (((charge > 12) and 12) or charge)
+
         -- 1+ charge(s)
-        local chargeSpent, numWisps = 1, 1
-        -- effectLuck applies after these checks,
-        -- as it depends on total charges spent.
-        if (charge >= 3) then
-            -- 3+ charges
-            chargeSpent, numWisps = 3, 2
-            effectSpawnHeart(player, extraEffect)
-            if (charge >= 6) then
-                -- 6+ charges
-                chargeSpent, numWisps = 6, 3
-                effectSpawnChest(player, extraEffect)
-                if (charge >= 12) then
-                    -- 12 charges
-                    chargeSpent, numWisps = 12, 4
-                    effectSpawnItem(rng, player, extraEffect)
-                end
-            end
-        end
+        local numWisps = 1
         effectAddLuck(chargeSpent, player, extraEffect)
+        if ((charge >= 3) and (charge < 6)) then
+            -- 3-5 charges
+            numWisps = 2
+            effectSpawnHeart(player, extraEffect)
+        elseif ((charge >= 6) and (charge < 12)) then
+            -- 6-11 charges
+            numWisps = 3
+            effectSpawnChest(player, extraEffect)
+        elseif (charge >= 12) then
+            -- 12 charges
+            numWisps = 4
+            effectSpawnItem(rng, player, extraEffect)
+        end
 
         -- manually remove charges, except when used through "Void"
         if (not isVoid) then player:SetActiveCharge(charge - chargeSpent, slot) end

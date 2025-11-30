@@ -2,7 +2,6 @@
 
 local isc = require("TheSaint.lib.isaacscript-common")
 local stats = include("TheSaint.stats")
-include("TheSaint.EIDRegistry")
 
 -- Init
 
@@ -30,5 +29,8 @@ local imports = include("TheSaint.imports")
 if (type(imports) == "table") then
     imports:Init(TheSaint)
 end
+
+-- Mod integration
+include("TheSaint.EIDRegistry")
 
 print("[The Saint] Type 'thesaint_help' for a list of commands")
