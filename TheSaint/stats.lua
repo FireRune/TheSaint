@@ -50,7 +50,7 @@ local character = {
 --- Tainted Character
 --- @type TheSaint.stats.Character
 local tainted = {
-    name = "The Saint B",
+    name = "The Saint",
     items = {},
     stats = {
         damage = 0.0,

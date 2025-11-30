@@ -25,7 +25,7 @@
         * Starts with inherent 'Mending Heart'.
         * Starts with 'Devout Prayer' as their Pocket Active Item.
     -->
-    <player name="The Saint B"
+    <player name="The Saint"
             bSkinParent="The Saint"
             skin="character_saint_b.png"
             hp="2" broken="2" bombs="1" keys="1"

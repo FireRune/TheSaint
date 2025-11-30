@@ -258,11 +258,14 @@ local function AddRegistry()
 
 	--#region Trinkets
 
-	-- Holy Penny
+	--#region Holy Penny
+
 	local holyPenny = enums.TrinketType.TRINKET_HOLY_PENNY
 	desc = "{{EternalHeart}} Picking up a coin has a 17% chance to spawn an Eternal Heart#Higher chance from nickels and dimes"
 	EID:addTrinket(holyPenny, desc)
 	EID:addGoldenTrinketMetadataAdditive(holyPenny, nil, 17, {8, 13})
+	--#endregion
+
 	--#endregion
 
 	--#region PocketItems
@@ -271,17 +274,22 @@ local function AddRegistry()
 	local pocketIcons = Sprite()
 	pocketIcons:Load("gfx/EID/eid_cardspills.anm2")
 
-	-- Library Card
+	--#region Library Card
+
 	local libraryCard = enums.Card.CARD_LIBRARY
 	EID:addIcon("Card"..libraryCard, "librarycard", 0, 16, 24, 4, 7, pocketIcons)
 	desc = "{{Library}} Teleports Isaac to the Library"
 	EID:addCard(libraryCard, desc)
+	--#endregion
 
-	-- Soul of the Saint
+	--#region Soul of the Saint
+
 	local soulOfTheSaint = enums.Card.CARD_SOUL_SAINT
 	EID:addIcon("Card"..soulOfTheSaint, "soulofthesaint", 0, 32, 32, 4, 7, pocketIcons)
 	desc = "{{AngelDevilChance}} Teleports Isaac to the Devil or Angel Room#{{AngelRoom}} Guarantees an Angel Room if it hasn't been generated yet#{{AngelRoom}} If Isaac hasn't taken any Devil Deal, allows all items to be taken"
 	EID:addCard(soulOfTheSaint, desc)
+	--#endregion
+
 	--#endregion
 
 	--#region Characters
@@ -290,26 +298,32 @@ local function AddRegistry()
 	local charIcons = Sprite()
 	charIcons:Load("gfx/EID/eid_player_icons.anm2", true)
 
-	-- The Saint
+	--#region The Saint
+
 	local saint = enums.PlayerType.PLAYER_THE_SAINT
 	EID:addIcon("Player"..saint, "Players", 0, 16, 16, 0, 0, charIcons)
 
 	desc = "{{AngelRoom}} Entering an Angel Room for the first time each floor has the following effects:#↑{{IND}} Increases one of the following stats, whichever is lowest:#↑{{IND}}{{IND}} +1 Damage#↑{{IND}}{{IND}} +0.5 Fire Rate#↑{{IND}}{{IND}} +0.2 Speed#↑{{IND}}{{IND}} +2.5 Range#{{IND}} Spawns either 3 {{Coin}} coins, 1 {{Bomb}} bomb or 1 {{Key}} key depending on what you have the least of"
-	EID:addBirthright(saint, desc, "The Saint")
+	EID:addBirthright(saint, desc)
+	--#endregion
 
-	-- Tainted Saint
+	--#region Tainted Saint
+
 	local tSaint = enums.PlayerType.PLAYER_THE_SAINT_B
 	EID:addIcon("Player"..tSaint, "Players", 1, 16, 16, 0, 0, charIcons)
 
-	desc = "Can't use {{SoulHeart}} Soul Hearts#When you take damage, turns all {{EmptyHeart}} empty Heart Containers into {{BrokenHeart}} Broken Hearts (doesn't apply to self-damage)#{{Collectible"..mendingHeart.."}} Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#{{Collectible"..mendingHeart.."}} Will replace 2 instead, if no damage was taken on the previous floor#{{Collectible"..mendingHeart.."}} ↑ +0.25 Damage per heart restored"
-	EID:addCharacterInfo(tSaint, desc, "The Saint")
+	desc = "Can't use {{SoulHeart}} Soul Hearts#When you take damage, turns all {{EmptyHeart}} empty Heart Containers into {{BrokenHeart}} Broken Hearts (doesn't apply to self-damage)"
+	desc = desc.."#{{Collectible"..mendingHeart.."}} Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#{{Collectible"..mendingHeart.."}} Will replace 2 instead, if no damage was taken on the previous floor#{{Collectible"..mendingHeart.."}} ↑ +0.25 Damage per heart restored"
+	EID:addCharacterInfo(tSaint, desc)
 
 	desc = "Taking damage that causes penalties will only turn 1{{EmptyHeart}} empty Heart Container into a {{BrokenHeart}} Broken Heart"
-	EID:addBirthright(tSaint, desc, "The Saint")
+	EID:addBirthright(tSaint, desc)
 
 	-- Abaddon interaction
 	desc = "{1} is left with half a heart and turns all other Heart Containers into Broken Hearts"
 	EID:addPlayerCondition(CollectibleType.COLLECTIBLE_ABADDON, tSaint, desc)
+	--#endregion
+
 	--#endregion
 
 end
