@@ -26,6 +26,8 @@ Feature load order:
 local features = {
     require("TheSaint.DevilDealTracking"),
 
+    require("TheSaint.ModIntegration.MCM"),
+
     include("TheSaint.Unlocks"),
     include("TheSaint.Characters.Characters"),
     include("TheSaint.Characters.The_Saint"),

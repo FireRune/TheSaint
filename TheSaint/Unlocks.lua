@@ -1,10 +1,8 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
+local mcm = require("TheSaint.ModIntegration.MCM")
 
 local game = Game()
-
--- Debug Flag to simulate everything being unlocked (temp. workaround until MC_EXECUTE_CMD works again)
-local Debug_UnlockAll = true
 
 --- @class TheSaint.UnlockManager : TheSaint_Feature
 local UnlockManager = {
@@ -162,8 +160,7 @@ end
 --- Automatically reroll any item/pickup that hasn't been unlocked yet
 --- @param pickup EntityPickup
 local function postPickupInitFirst(_, pickup)
-	-- if flag is set, no automatic re-rolls
-	if (Debug_UnlockAll) then return end
+	if (mcm:getSetting("UnlockAll")) then return end
 
 	local marks_saint = v.persistent.characterMarks["Saint"]
 	local marks_tSaint = v.persistent.characterMarks["T_Saint"]
