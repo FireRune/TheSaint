@@ -15,6 +15,9 @@ Using [IsaacScript](https://isaacscript.github.io) (version 87.8.0)
 - 6 new collectibles
 - 1 new trinket
 - 2 new cards/runes
-- integration for [External Item Descriptions](https://github.com/wofsauge/External-Item-Descriptions)
+- integration for the following mods
+	- [External Item Descriptions](https://github.com/wofsauge/External-Item-Descriptions)
+	- [Mod Config Menu Pure](https://github.com/Zamiell/isaac-mod-config-menu)
+
 
 For a list of planned features, see [here](https://github.com/FireRune/TheSaint/blob/main/TODO.md)

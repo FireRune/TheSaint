@@ -92,3 +92,7 @@ add front/back sprites + anims for:
 	- on reaching the number 3, throws the grenade entity in the stored direction (allows the player to reposition)
 	- grenade entity can bounce once when colliding with the ground, a wall or a grid entity and explode on the second collision
 		- if first collision is with an enemy, will explode immedeately instead
+
+## Mod integration
+
+- [ ] Repentogon support
