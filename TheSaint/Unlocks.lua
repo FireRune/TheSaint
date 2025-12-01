@@ -88,25 +88,31 @@ local function awardCompletionMarks(targetMark, difficulty)
 end
 
 --- Boss Rush
-local function postAmbushFinished(_, ambush)
-	awardCompletionMarks("BossRush", game.Difficulty)
+--- @param mod ModUpgraded
+local function postAmbushFinished(mod, ambush)
+	if (mod:canRunUnlockAchievements()) then
+		awardCompletionMarks("BossRush", game.Difficulty)
+	end
 end
 
 --- All other Completion Marks
+--- @param mod ModUpgraded
 --- @param rng RNG
 --- @param spawnPos Vector
-local function preSpawnCleanAward(_, rng, spawnPos)
-	local bossId = isc:getBossID()
-	if (bossId) then
-		local mark = bossMarks[bossId]
-		if (mark) then
-			-- to obtain the Boss Mark, check wether the current floor is valid
-			if (mark.Floor) then
-				-- no floor-check for Greed(ier) Mode
-				-- this shouldn't normally happen, but just to make sure
-				if (game:IsGreedMode() or (game:GetLevel():GetAbsoluteStage() ~= mark.Floor)) then return end
+local function preSpawnCleanAward(mod, rng, spawnPos)
+	if (mod:canRunUnlockAchievements()) then
+		local bossId = isc:getBossID()
+		if (bossId) then
+			local mark = bossMarks[bossId]
+			if (mark) then
+				-- to obtain the Boss Mark, check wether the current floor is valid
+				if (mark.Floor) then
+					-- no floor-check for Greed(ier) Mode
+					-- this shouldn't normally happen, but just to make sure
+					if (game:IsGreedMode() or (game:GetLevel():GetAbsoluteStage() ~= mark.Floor)) then return end
+				end
+				awardCompletionMarks(mark.Mark, game.Difficulty)
 			end
-			awardCompletionMarks(mark.Mark, game.Difficulty)
 		end
 	end
 end
