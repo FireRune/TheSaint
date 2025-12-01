@@ -330,7 +330,7 @@ local function AddRegistry()
 
 end
 
---- @param mod ModReference
+--- @param mod ModUpgraded
 function EIDRegistry:Init(mod)
 	if (self.IsInitialized) then return end
 

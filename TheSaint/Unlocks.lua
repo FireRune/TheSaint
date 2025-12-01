@@ -439,7 +439,7 @@ local function thesaint_marks(params)
 end
 --#endregion
 
---- @param mod ModReference
+--- @param mod ModUpgraded
 function UnlockManager:Init(mod)
 	if (self.IsInitialized) then return end
 

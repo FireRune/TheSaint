@@ -123,7 +123,7 @@ local function evaluateStats(_, player, flag)
 end
 
 --- Initialize the item's functionality
---- @param mod ModReference
+--- @param mod ModUpgraded
 function Mending_Heart:Init(mod)
     if (self.IsInitialized) then return end
 

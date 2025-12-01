@@ -118,7 +118,7 @@ local function wispFamiliarUpdate(_, wisp)
 end
 
 --- Initialize the item's functionality
---- @param mod ModReference
+--- @param mod ModUpgraded
 function Wooden_Key:Init(mod)
 	if (self.IsInitialized) then return end
 

@@ -150,7 +150,7 @@ local function postItemPickup_Abaddon(_, player, _)
 	end
 end
 
---- @param mod ModReference
+--- @param mod ModUpgraded
 function Tainted_Saint:Init(mod)
     if (self.IsInitialized) then return end
 

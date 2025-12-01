@@ -130,7 +130,7 @@ local function postEffectUpdate(_, effect)
 end
 
 --- Initialize the item's functionality.
---- @param mod ModReference
+--- @param mod ModUpgraded
 function Divine_Bombs:Init(mod)
     if (self.IsInitialized) then return end
 

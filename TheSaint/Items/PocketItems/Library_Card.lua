@@ -43,7 +43,7 @@ local function useCard(_, card, player, flags)
 end
 
 --- Initialize this item's functionality
---- @param mod ModReference
+--- @param mod ModUpgraded
 function Library_Card:Init(mod)
 	if (self.IsInitialized) then return end
 

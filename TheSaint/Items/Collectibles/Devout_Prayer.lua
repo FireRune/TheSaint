@@ -296,7 +296,7 @@ local function useItem(_, collectible, rng, player, flags, slot)
 end
 
 --- Initialize the item's functionality.
---- @param mod ModReference
+--- @param mod ModUpgraded
 function Devout_Prayer:Init(mod)
     if (self.IsInitialized) then return end
 

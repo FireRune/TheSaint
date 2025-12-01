@@ -62,7 +62,7 @@ local function postNewRoom()
 end
 
 --- Initialize this item's functionality
---- @param mod ModReference
+--- @param mod ModUpgraded
 function Soul_Saint:Init(mod)
 	if (self.IsInitialized) then return end
 

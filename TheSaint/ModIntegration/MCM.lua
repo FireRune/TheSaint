@@ -48,7 +48,7 @@ local function modConfigMenu_Init()
 	isLoaded = true
 end
 
---- @param mod ModReference
+--- @param mod ModUpgraded
 function MCM:Init(mod)
 	if (self.IsInitialized) then return end
 

@@ -45,7 +45,7 @@ local function pickupGet(_, player, pickup)
 	end
 end
 
---- @param mod ModReference
+--- @param mod ModUpgraded
 function DevilDealTracking:Init(mod)
 	if (self.IsInitialized) then return end
 

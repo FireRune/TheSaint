@@ -168,7 +168,7 @@ local function thesaint_reloadbooks()
 end
 
 --- initialize the item's functionality
---- @param mod ModReference
+--- @param mod ModUpgraded
 function Almanach:Init(mod)
     if (self.IsInitialized) then return end
 

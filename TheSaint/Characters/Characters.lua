@@ -184,7 +184,7 @@ local function postPlayerInitLate(player)
     end
 end
 
---- @param mod ModReference
+--- @param mod ModUpgraded
 function Characters:Init(mod)
     if (self.IsInitialized) then return end
 

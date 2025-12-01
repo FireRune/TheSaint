@@ -168,7 +168,7 @@ local function postEntityKill(_, entity)
 end
 
 --- Initialize this item's functionality
---- @param mod ModReference
+--- @param mod ModUpgraded
 function Holy_Hand_Grenade:Init(mod)
 	if (self.IsInitialized) then return end
 

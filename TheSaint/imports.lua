@@ -1,6 +1,6 @@
 --- Base class for this mod's features
 --- @class TheSaint_Feature
---- @field protected Init fun(self: TheSaint_Feature, mod: ModReference) @ this function should only run once, so include this line at the top of the function body:<br>```if (self.IsInitialized) then return end```
+--- @field protected Init fun(self: TheSaint_Feature, mod: ModUpgraded) @ this function should only run once, so include this line at the top of the function body:<br>```if (self.IsInitialized) then return end```
 --- @field protected IsInitialized boolean @ must be set to false when class is instantiated
 --- @field protected FeatureSubType integer? @ the SubType this feature is for
 --- @field protected SaveDataKey string? @ key to use for the `saveDataManager`-function
@@ -47,7 +47,7 @@ local features = {
 
 --- @private
 --- initialize all features of this mod
---- @param mod ModReference
+--- @param mod ModUpgraded
 function TheSaint_Feature:LoadFeatures(mod)
     if (self.IsInitialized) then return end
 

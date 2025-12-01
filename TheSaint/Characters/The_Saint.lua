@@ -32,7 +32,7 @@ local function postNewRoomReordered_Saint_Birthright(_, room)
     end
 end
 
---- @param mod ModReference
+--- @param mod ModUpgraded
 function The_Saint:Init(mod)
     if (self.IsInitialized) then return end
 
