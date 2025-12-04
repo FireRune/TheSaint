@@ -72,7 +72,11 @@ local function getBooks()
     if (#books > 0) then return end
     local counter = 0
     Isaac.DebugString("[The Saint] (INFO) <Almanach> generate list of items with 'book'-tag (except blacklisted items)")
-    for i = 0, config:GetCollectibles().Size - 1 do
+    --- API says that `GetCollectibles()` returns `userdata`, but it's actually `ItemConfigList`
+    --- @type ItemConfigList
+    --- @diagnostic disable-next-line
+    local collectibles = config:GetCollectibles()
+    for i = 0, collectibles.Size - 1 do
         local collectible = config:GetCollectible(i)
         if collectible then
             if (collectible:HasTags(ItemConfig.TAG_BOOK)) then
