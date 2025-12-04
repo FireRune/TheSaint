@@ -207,6 +207,7 @@ local features = {
     isc.ISCFeature.SAVE_DATA_MANAGER,
     isc.ISCFeature.EXTRA_CONSOLE_COMMANDS,
     isc.ISCFeature.UNLOCK_ACHIEVEMENTS_DETECTION,
+    isc.ISCFeature.PLAYER_COLLECTIBLE_TRACKING,
 }
 --- @type ModUpgraded
 local TheSaint = isc:upgradeMod(TheSaintVanilla, features)

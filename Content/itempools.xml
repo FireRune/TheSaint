@@ -16,7 +16,9 @@
         <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Holy Hand Grenade" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
-    <!-- <Pool Name="secret"></Pool> -->
+    <Pool Name="secret">
+        <Item Name="Ominous Incantation" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+    </Pool>
     <Pool Name="library">
         <Item Name="Almanach" Weight="1.0" DecreaseBy="0.1" RemoveOn="0.1" />
     </Pool>
@@ -49,7 +51,9 @@
         <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Holy Hand Grenade" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
-    <!-- <Pool Name="greedSecret"></Pool> -->
+    <Pool Name="greedSecret">
+        <Item Name="Ominous Incantation" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+    </Pool>
     <!-- <Pool Name="craneGame"></Pool> -->
     <!-- <Pool Name="ultraSecret"></Pool> -->
     <Pool Name="bombBum">
