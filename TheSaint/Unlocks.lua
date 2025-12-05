@@ -10,6 +10,9 @@ local UnlockManager = {
 	SaveDataKey = "UnlockManager",
 }
 
+--- @type ModUpgraded
+local thisMod
+
 --- Character Completion Marks.<br>
 --- Each field represents a completion mark, with the value being the completion difficulty.<br>
 --- `nil` for not completed, `false` for normal/greed mode and `true` for hard/greedier mode
@@ -88,19 +91,17 @@ local function awardCompletionMarks(targetMark, difficulty)
 end
 
 --- Boss Rush
---- @param mod ModUpgraded
-local function postAmbushFinished(mod, ambush)
-	if (mod:canRunUnlockAchievements()) then
+local function postAmbushFinished(_, ambush)
+	if (thisMod:canRunUnlockAchievements()) then
 		awardCompletionMarks("BossRush", game.Difficulty)
 	end
 end
 
 --- All other Completion Marks
---- @param mod ModUpgraded
 --- @param rng RNG
 --- @param spawnPos Vector
-local function preSpawnCleanAward(mod, rng, spawnPos)
-	if (mod:canRunUnlockAchievements()) then
+local function preSpawnCleanAward(_, rng, spawnPos)
+	if (thisMod:canRunUnlockAchievements()) then
 		local bossId = isc:getBossID()
 		if (bossId) then
 			local mark = bossMarks[bossId]
@@ -448,6 +449,8 @@ end
 --- @param mod ModUpgraded
 function UnlockManager:Init(mod)
 	if (self.IsInitialized) then return end
+
+	thisMod = mod
 
 	mod:saveDataManager(self.SaveDataKey, v)
 	-- awarding completion marks
