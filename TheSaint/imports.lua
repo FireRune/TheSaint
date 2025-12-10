@@ -4,6 +4,7 @@
 --- @field protected IsInitialized boolean @ must be set to false when class is instantiated
 --- @field protected FeatureSubType integer? @ the SubType this feature is for
 --- @field protected SaveDataKey string? @ key to use for the `saveDataManager`-function
+--- @field protected ThisMod ModUpgraded? @ Reference to this mod, because the 1st parameter in callbacks is of type `ModReference`
 --- @field private CurrentFeature TheSaint_Feature?
 local TheSaint_Feature = {
     IsInitialized = false,
@@ -60,6 +61,7 @@ function TheSaint_Feature:LoadFeatures(mod)
         end
     end
     self.CurrentFeature = nil
+    self.IsInitialized = true
 end
 
 return TheSaint_Feature
