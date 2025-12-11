@@ -345,7 +345,7 @@ local function isValidMark(mark)
 		"TheLamb", "BlueBaby", "MegaSatan", "GreedMode",
 		"Hush", "Delirium", "Mother", "TheBeast", "all",
 	}
-	local retVal = isc:find(validMarks, function (value) return (value == mark) end) --- @cast retVal boolean
+	local retVal = isc:find(validMarks, function (_, value) return (value == mark) end) --- @cast retVal boolean
 	if (retVal == false) then
 		print("[The Saint] invalid argument <completion mark>")
 	end

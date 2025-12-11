@@ -224,6 +224,9 @@ local function thesaint_help()
 end
 TheSaint:addConsoleCommand("thesaint_help", thesaint_help)
 
+-- class registration
+require("TheSaint.classes.PlayerLoadout").register(TheSaint)
+
 -- feature initialization
 local imports = include("TheSaint.imports")
 if (type(imports) == "table") then
