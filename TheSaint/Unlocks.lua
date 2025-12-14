@@ -251,8 +251,14 @@ local function postPickupInitFirst(_, pickup)
 			return
 		end
 	end
-	-- (Mother with T.Saint)
-
+	-- "Rite of Rebirth" (Mother with T.Saint)
+	if ((pickup.Variant == PickupVariant.PICKUP_COLLECTIBLE)
+	and (pickup.SubType == enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH)) then
+		if (marks_tSaint["Mother"] == nil) then
+			rerollItem(pickup, "collectible", enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH)
+			return
+		end
+	end
 	-- (The Beast with T.Saint)
 
 	-- (Mega Satan with T.Saint)

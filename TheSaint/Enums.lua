@@ -15,7 +15,7 @@ local Enums = {
 
 		COLLECTIBLE_MENDING_HEART = Isaac.GetItemIdByName("Mending Heart"),
 		COLLECTIBLE_DIVINE_BOMBS = Isaac.GetItemIdByName("Divine Bombs"),
-		COLLECTIBLE_OMINOUS_INCANTATION = Isaac.GetItemIdByName("Ominous Incantation"),
+		COLLECTIBLE_RITE_OF_REBIRTH = Isaac.GetItemIdByName("Rite of Rebirth"),
 	},
 
 	--- @enum TheSaint.Enums.TrinketType
