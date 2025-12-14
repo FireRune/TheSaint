@@ -208,6 +208,7 @@ local features = {
     isc.ISCFeature.EXTRA_CONSOLE_COMMANDS,
     isc.ISCFeature.UNLOCK_ACHIEVEMENTS_DETECTION,
     isc.ISCFeature.PLAYER_COLLECTIBLE_TRACKING,
+    isc.ISCFeature.TAINTED_LAZARUS_PLAYERS,
 }
 --- @type ModUpgraded
 local TheSaint = isc:upgradeMod(TheSaintVanilla, features)

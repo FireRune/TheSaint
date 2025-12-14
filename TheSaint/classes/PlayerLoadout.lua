@@ -10,9 +10,13 @@ local isc = require("TheSaint.lib.isaacscript-common")
 --- @field GigaBombs integer
 --- @field Charges integer @ soul/blood charges
 
+--- @class PlayerActiveItem
+--- @field ID CollectibleType
+--- @field Charge integer
+
 --- @class PlayerLoadoutBase
 --- @field Pickups PlayerPickups
---- @field Collectibles { Active: CollectibleType[], Passive: CollectibleType[] }
+--- @field Collectibles { Active: PlayerActiveItem[], Passive: CollectibleType[] }
 --- @field Trinkets TrinketType[]
 --- @field Cards Card[]
 --- @field Pills PillColor[]
@@ -92,7 +96,8 @@ function PlayerLoadout.createFromPlayer(player)
 	local loadout = PlayerLoadout.constuctor()
 
 	loadout:setPickupsFromPlayer(player)
-	loadout:setCollectiblesFromPlayer(player)
+	loadout:setActiveCollectiblesFromPlayer(player)
+	loadout:setPassiveCollectiblesFromPlayer(player)
 	loadout:setTrinketsFromPlayer(player)
 	loadout:setCardsFromPlayer(player)
 	loadout:setPillsFromPlayer(player)
@@ -142,18 +147,28 @@ function PlayerLoadout:serialize()
 	for k, v in pairs(self.Pickups) do
 		serializableLoadout.Pickups[k] = v
 	end
+	--- @param activeItem PlayerActiveItem
 	isc:forEach(self.Collectibles.Active, function (_, activeItem)
-		table.insert(serializableLoadout.Collectibles.Active, activeItem)
+		--- @type PlayerActiveItem
+		local newItem = {
+			ID = activeItem.ID,
+			Charge = activeItem.Charge,
+		}
+		table.insert(serializableLoadout.Collectibles.Active, newItem)
 	end)
+	--- @param passiveItem CollectibleType
 	isc:forEach(self.Collectibles.Passive, function (_, passiveItem)
 		table.insert(serializableLoadout.Collectibles.Passive, passiveItem)
 	end)
+	--- @param trinket TrinketType
 	isc:forEach(self.Trinkets, function (_, trinket)
 		table.insert(serializableLoadout.Trinkets, trinket)
 	end)
+	--- @param card Card
 	isc:forEach(self.Cards, function (_, card)
 		table.insert(serializableLoadout.Cards, card)
 	end)
+	--- @param pill PillColor
 	isc:forEach(self.Pills, function (_, pill)
 		table.insert(serializableLoadout.Pills, pill)
 	end)
@@ -210,29 +225,15 @@ function PlayerLoadout:setPickupsFromPlayer(player)
 	self:setPickups(player:GetNumCoins(), bombs, player:GetNumKeys(), gigaBombs, charges)
 end
 
---- @package
---- @param activePassive "Active" | "Passive"
---- @param collectibles CollectibleType | CollectibleType[]
-function PlayerLoadout:setCollectibles(activePassive, collectibles)
-	if (type(collectibles) ~= "table") then collectibles = {collectibles} end
-	self.Collectibles[activePassive] = collectibles
-end
-
---- @package
---- @param player EntityPlayer
-function PlayerLoadout:setCollectiblesFromPlayer(player)
-	self:setActiveCollectiblesFromPlayer(player)
-	self:setPassiveCollectiblesFromPlayer(player)
-end
-
---- @param collectibles CollectibleType | CollectibleType[]
-function PlayerLoadout:setActiveCollectibles(collectibles)
-	self:setCollectibles("Active", collectibles)
+--- @param activeItems PlayerActiveItem | PlayerActiveItem[]
+function PlayerLoadout:setActiveCollectibles(activeItems)
+	if (type(activeItems) ~= "table") then activeItems = {activeItems} end
+	self.Collectibles.Active = activeItems
 end
 
 --- @param player EntityPlayer
 function PlayerLoadout:setActiveCollectiblesFromPlayer(player)
-	--- @type CollectibleType[]
+	--- @type PlayerActiveItem[]
 	local actives = {}
 
 	--- @type ActiveSlot[]
@@ -243,8 +244,14 @@ function PlayerLoadout:setActiveCollectiblesFromPlayer(player)
 
 	--- @param slot ActiveSlot
 	isc:forEach(activeSlots, function (_, slot)
-		local activeItem = player:GetActiveItem(slot)
-		if (activeItem ~= CollectibleType.COLLECTIBLE_NULL) then
+		local collectible = player:GetActiveItem(slot)
+		if ((collectible ~= CollectibleType.COLLECTIBLE_NULL) and (isc:isQuestCollectible(collectible) == false)) then
+			local charge = (player:GetActiveCharge(slot) + player:GetBatteryCharge(slot))
+			--- @type PlayerActiveItem
+			local activeItem = {
+				ID = collectible,
+				Charge = charge,
+			}
 			table.insert(actives, activeItem)
 		end
 	end)
@@ -254,12 +261,23 @@ end
 
 --- @param collectibles CollectibleType | CollectibleType[]
 function PlayerLoadout:setPassiveCollectibles(collectibles)
-	self:setCollectibles("Passive", collectibles)
+	if (type(collectibles) ~= "table") then collectibles = {collectibles} end
+	self.Collectibles.Passive = collectibles
 end
 
 --- @param player EntityPlayer
 function PlayerLoadout:setPassiveCollectiblesFromPlayer(player)
-	self.Collectibles.Passive = thisMod:getPlayerCollectibleTypes(player, false)
+	--- @type CollectibleType[]
+	local passives = {}
+
+	--- @param collectible CollectibleType
+	isc:forEach(thisMod:getPlayerCollectibleTypes(player, false), function (_, collectible)
+		if (isc:isQuestCollectible(collectible) == false) then
+			table.insert(passives, collectible)
+		end
+	end)
+
+	self.Collectibles.Passive = passives
 end
 
 --- @param trinkets TrinketType | TrinketType[]

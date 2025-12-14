@@ -155,6 +155,9 @@
 		run = {
 			--- @type table<string, SerializablePlayerLoadout>
 			PlayerLoadouts = {},
+		},
+		level = {
+			NextPickupPosition_Index = 1,
 		}
 	}
 
@@ -221,13 +224,13 @@
 			end
 
 			-- Collectibles
-			--- @param activeItem CollectibleType
+			--- @param activeItem PlayerActiveItem
 			isc:forEach(loadout.Collectibles.Active, function (_, activeItem)
-				player:RemoveCollectible(activeItem)
+				player:RemoveCollectible(activeItem.ID, nil, nil, false)
 			end)
 			--- @param passiveItem CollectibleType
 			isc:forEach(loadout.Collectibles.Passive, function (_, passiveItem)
-				player:RemoveCollectible(passiveItem)
+				player:RemoveCollectible(passiveItem, nil, nil, false)
 			end)
 
 			-- Trinkets
@@ -237,8 +240,12 @@
 			end)
 
 			-- Cards/Pills
-			player:SetCard(0, Card.CARD_NULL)
-			player:SetCard(1, Card.CARD_NULL)
+			--- @param pocketItem { slot: integer, type: integer, subType: integer }
+			isc:forEach(isc:getPocketItems(player), function (_, pocketItem)
+				if (pocketItem.type ~= isc.PocketItemType.ACTIVE_ITEM) then
+					player:SetCard(pocketItem.slot, Card.CARD_NULL)
+				end
+			end)
 		end
 	end
 
@@ -258,6 +265,38 @@
 			clearInventory(player)
 		end
 		player:AnimateCollectible(Ominous_Incantation.FeatureSubType)
+	end
+
+	--[[
+	starting from grid idx 17, goes clockwise
+	### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
+	### ---  17  18  19  20  21 ---  23  24  25  26  27 --- ###
+	###  31 --- --- --- --- --- --- --- --- --- --- ---  43 ###
+	###  46 ---  48  49  50  51 ---  53  54  55  56 ---  58 ###
+	### --- --- ---  64  65 --- --- ---  69  70 --- --- --- ###
+	###  76 ---  78  79  80  81 ---  83  84  85  86 ---  88 ###
+	###  91 --- --- --- --- --- --- --- --- --- --- --- 103 ###
+	### --- 107 108 109 110 111 --- 113 114 115 116 117 --- ###
+	### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
+	]]
+	local pickupPositionGridIndexes = {
+		17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 43, 58,
+		88, 103, 117, 116, 115, 114, 113, 111, 110, 109, 108, 107,
+		91, 76, 46, 31, 48, 49, 50, 51, 53, 54, 55, 56,
+		86, 85, 84, 83, 81, 80, 79, 78, 64, 65, 69, 70
+	}
+	--- @return Vector
+	local function getNextPickupPosition()
+		local index = v.level.NextPickupPosition_Index
+		local room = game:GetRoom()
+
+		if ((index < 1) or (index > #pickupPositionGridIndexes)) then
+			return room:FindFreePickupSpawnPosition(room:GetCenterPos(), nil, true)
+		end
+
+		local gridIndex = pickupPositionGridIndexes[index]
+		v.level.NextPickupPosition_Index = (index + 1)
+		return room:GetGridPosition(gridIndex)
 	end
 
 	--- @param player EntityPlayer
@@ -281,24 +320,68 @@
 			player:AddBloodCharge(pickups.Charges)
 		end
 
-		-- Collectibles
-		local room = game:GetRoom()
 		local pos = Vector.Zero
 
+		-- Collectibles
 		-- passives must be granted first, in case of items that give additional active/trinket/pocket slots
-		--- @param passiveItem CollectibleType
-		isc:forEach(loadout.Collectibles.Passive, function (_, passiveItem)
-			player:AddCollectible(passiveItem)
-		end)
+		local passives = loadout.Collectibles.Passive
+
+		--- @type EntityPickup?
+		local entCollectible = nil
+
+		-- special handling for Tainted Isaac's passive limit of 8 slots (or 12 with "Birthright")
+		local isTaintedIsaac = (player:GetPlayerType() == PlayerType.PLAYER_ISAAC_B)
+		local hasBirthright = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
+
+		if (isTaintedIsaac) then
+			local numCurrentPassives = #(Ominous_Incantation.ThisMod:getPlayerCollectibleTypes(player, false))
+			if (hasBirthright == true) then
+				numCurrentPassives = (numCurrentPassives - 1)
+			end
+
+			--- @param collectible CollectibleType
+			if (isc:find(passives, function (_, collectible) return (collectible == CollectibleType.COLLECTIBLE_BIRTHRIGHT) end) == true) then
+				if (hasBirthright == false) then
+					player:AddCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT, nil, false)
+					hasBirthright = true
+				end
+				passives = isc:filter(passives, function (_, collectible)
+					return (collectible ~= CollectibleType.COLLECTIBLE_BIRTHRIGHT)
+				end)
+			end
+
+			local maxPassives = ((hasBirthright and 12) or 8)
+			--- @param passiveItem CollectibleType
+			isc:forEach(passives, function (_, passiveItem)
+				if (numCurrentPassives < maxPassives) then
+					player:AddCollectible(passiveItem, nil, false)
+					numCurrentPassives = (numCurrentPassives + 1)
+				else
+					pos = getNextPickupPosition()
+					entCollectible = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, passiveItem, pos, Vector.Zero, player):ToPickup()
+					if (entCollectible) then
+						isc:preventCollectibleRotation(entCollectible)
+					end
+				end
+			end)
+		else
+			--- @param passiveItem CollectibleType
+			isc:forEach(passives, function (_, passiveItem)
+				player:AddCollectible(passiveItem, nil, false)
+			end)
+		end
 
 		-- next come actives
-		--- @param activeItem CollectibleType
+		--- @param activeItem PlayerActiveItem
 		isc:forEach(loadout.Collectibles.Active, function (_, activeItem)
 			if (isc:hasOpenActiveItemSlot(player)) then
-				player:AddCollectible(activeItem)
+				player:AddCollectible(activeItem.ID, activeItem.Charge, false)
 			else
-				pos = room:FindFreePickupSpawnPosition(player.Position, 0, true)
-				Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, activeItem, pos, Vector.Zero, player)
+				pos = getNextPickupPosition()
+				entCollectible = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, activeItem.ID, pos, Vector.Zero, player):ToPickup()
+				if (entCollectible) then
+					isc:preventCollectibleRotation(entCollectible)
+				end
 			end
 		end)
 
@@ -306,9 +389,9 @@
 		--- @param trinket TrinketType
 		isc:forEach(loadout.Collectibles, function (_, trinket)
 			if (isc:hasOpenTrinketSlot(player)) then
-				player:AddTrinket(trinket)
+				player:AddTrinket(trinket, false)
 			else
-				pos = room:FindFreePickupSpawnPosition(player.Position, 0, true)
+				pos = getNextPickupPosition()
 				Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TRINKET, trinket, pos, Vector.Zero, player)
 			end
 		end)
@@ -335,7 +418,7 @@
 				end
 			else
 				local variant = ((pocketItem.IsCard and PickupVariant.PICKUP_TAROTCARD) or PickupVariant.PICKUP_PILL)
-				pos = room:FindFreePickupSpawnPosition(player.Position, 0, true)
+				pos = getNextPickupPosition()
 				Isaac.Spawn(EntityType.ENTITY_PICKUP, variant, pocketItem.ID, pos, Vector.Zero, player)
 			end
 		end)
@@ -344,15 +427,27 @@
 	--- @param stage LevelStage
 	--- @param stageType StageType
 	local function postNewLevelReordered(_, stage, stageType)
+		--- @type EntityPlayer[]
+		local players = {}
 		for i = 0, game:GetNumPlayers() - 1 do
 			local player = Isaac.GetPlayer(i)
+			table.insert(players, player)
+			local pType = player:GetPlayerType()
+			if ((pType == PlayerType.PLAYER_LAZARUS_B) or (pType == PlayerType.PLAYER_LAZARUS2_B)) then
+				local player2 = Ominous_Incantation.ThisMod:getTaintedLazarusSubPlayer(player)
+				table.insert(players, player2)
+			end
+		end
+
+		--- @param player EntityPlayer
+		isc:forEach(players, function (_, player)
 			local loadout = getLoadout(player)
 			if (loadout) then
 				player:GetEffects():RemoveNullEffect(NullItemID.ID_LOST_CURSE, -1)
 				restoreInventory(player, loadout)
 				clearLoadout(player)
 			end
-		end
+		end)
 	end
 
 	--- @param mod ModUpgraded
