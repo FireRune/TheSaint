@@ -1,3 +1,4 @@
+local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local ddTracking = require("TheSaint.DevilDealTracking")
 
@@ -194,7 +195,6 @@ local function AddRegistry()
 	end
 	EID:addDescriptionModifier("TheSaint_DevoutPrayer_getChargeBasedEffect", DevoutPrayer_getChargeBasedEffectCondition, DevoutPrayer_getChargeBasedEffectCallback)
 	--#endregion
-
 	--#region hasEternalHeart
 
 	--- @param descObj EID_DescObj
@@ -219,9 +219,7 @@ local function AddRegistry()
 	end
 	EID:addDescriptionModifier("TheSaint_DevoutPrayer_hasEternalHeart", DevoutPrayer_hasEternalHeartCondition, DevoutPrayer_hasEternalHeartCallback)
 	--#endregion
-
 	--#endregion
-
 	--#endregion
 
 	--#region Divine Bombs
@@ -255,6 +253,29 @@ local function AddRegistry()
 	EID.SingleUseCollectibles[holyHandGrenade] = true
 	EID:AddSynergyConditional(holyHandGrenade, CollectibleType.COLLECTIBLE_VOID, "Void Single Use")
 	EID:AddSynergyConditional(holyHandGrenade, "5.300.48", "? Card Single Use")
+	--#endregion
+
+	--#region Rite of Rebirth
+
+	local riteOfRebirth = enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH
+	desc = "↑ +1 Life"
+	EID:addCollectible(riteOfRebirth, desc)
+
+	--- @param descObj EID_DescObj
+	--- @return boolean?
+	local function RiteOfRebirth_notInBeastFightCondition(descObj)
+		-- only apply to "Rite of Rebirth"
+		if ((descObj.ObjType == 5) and (descObj.ObjVariant == 100) and (descObj.ObjSubType == riteOfRebirth)) then
+			return (isc:inBeastRoom() == false)
+		end
+	end
+	--- @param descObj EID_DescObj
+	--- @return EID_DescObj
+	local function RiteOfRebirth_notInBeastFightCallback(descObj)
+		EID:appendToDescription(descObj, "#Isaac loses all items and pickups on death and revives in Lost form#Entering the next floor gives back everything that was taken away")
+		return descObj
+	end
+	EID:addDescriptionModifier("TheSaint_RiteOfRebirth_notInBeastFight", RiteOfRebirth_notInBeastFightCondition, RiteOfRebirth_notInBeastFightCallback)
 	--#endregion
 	--#endregion
 
