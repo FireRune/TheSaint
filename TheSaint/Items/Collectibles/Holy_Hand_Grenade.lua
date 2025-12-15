@@ -57,22 +57,16 @@ end
 --- @param inputVector Vector
 --- @return Vector
 local function getAxisAlignedVector(inputVector)
-	--[[
-		The projectile can only be launched in 1 of the 4 cardinal directions, even with "Analog Stick" (tested with "Bob's Rotten Head")
-		Attempting a diagonal input will prefer going North/South over East/West
-	]]
+	--The projectile can only be launched in 1 of the 4 cardinal directions, even with "Analog Stick" (tested with "Bob's Rotten Head")
 	local degrees = inputVector:GetAngleDegrees()
-	local targetDegrees = 0.0
-	if ((degrees >= -135.0) and (degrees <= -45.0)) then
-		targetDegrees = -90.0
-	elseif ((degrees > -45.0) and (degrees < 45.0)) then
-		targetDegrees = 0.0
-	elseif ((degrees >= 45.0) and (degrees <= 135.0)) then
-		targetDegrees = 90.0
-	elseif ((degrees > 135.0) or (degrees < -135.0)) then
-		targetDegrees = 180.0
-	end
-	return Vector.FromAngle(targetDegrees)
+
+	--- @type Direction
+	local targetDirection = isc:angleToDirection(degrees)
+
+	--- @type Vector
+	local directionVector = isc:directionToVector(targetDirection)
+
+	return directionVector
 end
 
 --- launch the grenade in the first pressed shooting direction
@@ -120,30 +114,28 @@ end
 --- Add "Holy Light"-effect to bombs
 --- @param bomb EntityBomb
 local function postBombUpdate(_, bomb)
-    if bomb.SpawnerEntity then
-        local player = bomb.SpawnerEntity:ToPlayer()
-        if player then
-			local ptr = GetPtrHash(bomb)
-            local data = v.room.bombList[ptr]
-            if (data and data["Holy_Hand_Grenade"] == true) then
-                bomb:AddTearFlags(targetFlag)
-                data["Holy_Hand_Grenade"] = nil
-            end
-			if bomb:HasTearFlags(targetFlag) then
-				if bomb:GetSprite():IsPlaying("Explode") then
-					v.room.bigExplosion = true
-					game:GetRoom():MamaMegaExplosion(bomb.Position)
-				end
+	local player = (bomb.SpawnerEntity and bomb.SpawnerEntity:ToPlayer())
+	if player then
+		local ptr = GetPtrHash(bomb)
+		local data = v.room.bombList[ptr]
+		if (data and data["Holy_Hand_Grenade"] == true) then
+			bomb:AddTearFlags(targetFlag)
+			data["Holy_Hand_Grenade"] = nil
+		end
+		if bomb:HasTearFlags(targetFlag) then
+			if bomb:GetSprite():IsPlaying("Explode") then
+				v.room.bigExplosion = true
+				game:GetRoom():MamaMegaExplosion(bomb.Position)
 			end
-        end
-    end
+		end
+	end
 end
 
 --- Spawn a "Holy Light"-beam
 --- @param pos Vector
 --- @param spawner? Entity default: `nil`
 local function spawnHolyLight(pos, spawner)
-    Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.CRACK_THE_SKY, 0, pos, Vector.Zero, spawner)
+	Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.CRACK_THE_SKY, 0, pos, Vector.Zero, spawner)
 end
 
 --- @param entity Entity
@@ -175,9 +167,9 @@ function Holy_Hand_Grenade:Init(mod)
 	mod:saveDataManager(self.SaveDataKey, v)
 	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.FeatureSubType)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate, 0)
-    mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, postBombUpdate, BombVariant.BOMB_GIGA)
+	mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, postBombUpdate, BombVariant.BOMB_GIGA)
 	mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, entityTakeDamage)
-    mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, postEntityKill)
+	mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, postEntityKill)
 end
 
 return Holy_Hand_Grenade

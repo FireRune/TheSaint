@@ -1,5 +1,3 @@
-local isc = require("TheSaint.lib.isaacscript-common")
-
 --- @class TheSaint.ModIntegration.MCM : TheSaint_Feature
 local MCM = {
 	IsInitialized = false,

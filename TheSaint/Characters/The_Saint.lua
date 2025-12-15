@@ -5,39 +5,39 @@ local game = Game()
 
 --- @class TheSaint.Characters.The_Saint : TheSaint_Feature
 local The_Saint = {
-    IsInitialized = false,
-    FeatureSubType = enums.PlayerType.PLAYER_THE_SAINT,
-    SaveDataKey = "The_Saint",
+	IsInitialized = false,
+	FeatureSubType = enums.PlayerType.PLAYER_THE_SAINT,
+	SaveDataKey = "The_Saint",
 }
 
 local v = {
-    level = {
-        angelRoomFirstEntry = true
-    }
+	level = {
+		angelRoomFirstEntry = true
+	}
 }
 
 --- "Birthright": when entering an Angel Room increases lowest stat (by giving and removing "Consolation Prize")
 --- @param room RoomType
 local function postNewRoomReordered_Saint_Birthright(_, room)
-    if (v.level.angelRoomFirstEntry) then
-        for i = 0, game:GetNumPlayers() - 1 do
-            local player = Isaac.GetPlayer(i)
-            if (player:GetPlayerType() == The_Saint.FeatureSubType)
-            and (player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)) then
-                player:AddCollectible(CollectibleType.COLLECTIBLE_CONSOLATION_PRIZE)
-                player:RemoveCollectible(CollectibleType.COLLECTIBLE_CONSOLATION_PRIZE)
-            end
-        end
-        v.level.angelRoomFirstEntry = false
-    end
+	if (v.level.angelRoomFirstEntry) then
+		for i = 0, game:GetNumPlayers() - 1 do
+			local player = Isaac.GetPlayer(i)
+			if (player:GetPlayerType() == The_Saint.FeatureSubType)
+			and (player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)) then
+				player:AddCollectible(CollectibleType.COLLECTIBLE_CONSOLATION_PRIZE)
+				player:RemoveCollectible(CollectibleType.COLLECTIBLE_CONSOLATION_PRIZE)
+			end
+		end
+		v.level.angelRoomFirstEntry = false
+	end
 end
 
 --- @param mod ModUpgraded
 function The_Saint:Init(mod)
-    if (self.IsInitialized) then return end
+	if (self.IsInitialized) then return end
 
-    mod:saveDataManager(self.SaveDataKey, v)
-    mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_ROOM_REORDERED, postNewRoomReordered_Saint_Birthright, RoomType.ROOM_ANGEL)
+	mod:saveDataManager(self.SaveDataKey, v)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_ROOM_REORDERED, postNewRoomReordered_Saint_Birthright, RoomType.ROOM_ANGEL)
 end
 
 return The_Saint

@@ -7,7 +7,7 @@
 --- @field protected ThisMod ModUpgraded? @ Reference to this mod, because the 1st parameter in callbacks is of type `ModReference`
 --- @field private CurrentFeature TheSaint_Feature?
 local TheSaint_Feature = {
-    IsInitialized = false,
+	IsInitialized = false,
 }
 
 --[[
@@ -25,43 +25,43 @@ Feature load order:
 ]]
 --- @type TheSaint_Feature[]
 local features = {
-    require("TheSaint.DevilDealTracking"),
+	require("TheSaint.DevilDealTracking"),
 
-    require("TheSaint.ModIntegration.MCM"),
+	require("TheSaint.ModIntegration.MCM"),
 
-    include("TheSaint.Unlocks"),
-    include("TheSaint.Characters.Characters"),
-    include("TheSaint.Characters.The_Saint"),
-    include("TheSaint.Characters.Tainted_Saint"),
-    include("TheSaint.Items.Collectibles.Almanach"),
-    include("TheSaint.Items.Collectibles.Mending_Heart"),
-    include("TheSaint.Items.Collectibles.Devout_Prayer"),
-    include("TheSaint.Items.Collectibles.Divine_Bombs"),
-    include("TheSaint.Items.Collectibles.Wooden_Key"),
-    include("TheSaint.Items.Collectibles.Holy_Hand_Grenade"),
-    include("TheSaint.Items.Collectibles.Rite_of_Rebirth"),
-    include("TheSaint.Items.Trinkets.Holy_Penny"),
-    include("TheSaint.Items.PocketItems.Library_Card"),
-    include("TheSaint.Items.PocketItems.Soul_Saint"),
+	include("TheSaint.Unlocks"),
+	include("TheSaint.Characters.Characters"),
+	include("TheSaint.Characters.The_Saint"),
+	include("TheSaint.Characters.Tainted_Saint"),
+	include("TheSaint.Items.Collectibles.Almanach"),
+	include("TheSaint.Items.Collectibles.Mending_Heart"),
+	include("TheSaint.Items.Collectibles.Devout_Prayer"),
+	include("TheSaint.Items.Collectibles.Divine_Bombs"),
+	include("TheSaint.Items.Collectibles.Wooden_Key"),
+	include("TheSaint.Items.Collectibles.Holy_Hand_Grenade"),
+	include("TheSaint.Items.Collectibles.Rite_of_Rebirth"),
+	include("TheSaint.Items.Trinkets.Holy_Penny"),
+	include("TheSaint.Items.PocketItems.Library_Card"),
+	include("TheSaint.Items.PocketItems.Soul_Saint"),
 
-    include("TheSaint.ModIntegration.EIDRegistry"),
+	include("TheSaint.ModIntegration.EIDRegistry"),
 }
 
 --- @private
 --- initialize all features of this mod
 --- @param mod ModUpgraded
 function TheSaint_Feature:LoadFeatures(mod)
-    if (self.IsInitialized) then return end
+	if (self.IsInitialized) then return end
 
-    for _, feature in ipairs(features) do
-        self.CurrentFeature = feature
-        self.CurrentFeature:Init(mod)
-        if (self.CurrentFeature.IsInitialized == false) then
-            self.CurrentFeature.IsInitialized = true
-        end
-    end
-    self.CurrentFeature = nil
-    self.IsInitialized = true
+	for _, feature in ipairs(features) do
+		self.CurrentFeature = feature
+		self.CurrentFeature:Init(mod)
+		if (self.CurrentFeature.IsInitialized == false) then
+			self.CurrentFeature.IsInitialized = true
+		end
+	end
+	self.CurrentFeature = nil
+	self.IsInitialized = true
 end
 
 return TheSaint_Feature

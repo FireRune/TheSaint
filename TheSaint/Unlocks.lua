@@ -458,7 +458,7 @@ function UnlockManager:Init(mod)
 	mod:saveDataManager(self.SaveDataKey, v)
 	-- awarding completion marks
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_AMBUSH_FINISHED, postAmbushFinished, isc.AmbushType.BOSS_RUSH)
-    mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, preSpawnCleanAward)
+	mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, preSpawnCleanAward)
 	-- prevent getting things, that aren't unlocked yet
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst)
 	-- console commands

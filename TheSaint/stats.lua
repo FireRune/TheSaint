@@ -26,56 +26,56 @@
 --- Regular Character
 --- @type TheSaint.stats.Character
 local character = {
-    name = "The Saint",
-    items = {},
-    stats = {
-        damage = 0.0,
-        damageMult = 0.85,
-        firedelay = -1.0,
-        shotspeed = -0.2,
-        range = 3.75,
-        speed = 0.2,
-        tearflags = TearFlags.TEAR_NORMAL,
-        tearcolor = Color(1, 1, 1, 1, 0, 0, 0),
-        flying = false,
-        luck = 0,
-    },
-    costume = "character_sainthair",
-    trinket = TrinketType.TRINKET_NULL,
-    card = Card.CARD_NULL,
-    pill = false,
-    charge = -1,
+	name = "The Saint",
+	items = {},
+	stats = {
+		damage = 0.0,
+		damageMult = 0.85,
+		firedelay = -1.0,
+		shotspeed = -0.2,
+		range = 3.75,
+		speed = 0.2,
+		tearflags = TearFlags.TEAR_NORMAL,
+		tearcolor = Color(1, 1, 1, 1, 0, 0, 0),
+		flying = false,
+		luck = 0,
+	},
+	costume = "character_sainthair",
+	trinket = TrinketType.TRINKET_NULL,
+	card = Card.CARD_NULL,
+	pill = false,
+	charge = -1,
 }
 
 --- Tainted Character
 --- @type TheSaint.stats.Character
 local tainted = {
-    name = "The Saint",
-    items = {},
-    stats = {
-        damage = 0.0,
-        damageMult = 1.2,
-        firedelay = 0.0,
-        shotspeed = -0.1,
-        range = 3.0,
-        speed = 0.2,
-        tearflags = TearFlags.TEAR_NORMAL,
-        tearcolor = Color(0.65, 0, 0, 1, 0, 0, 0),
-        flying = false,
-        luck = -1,
-    },
-    costume = "character_sainthair_b",
-    trinket = TrinketType.TRINKET_NULL,
-    card = Card.CARD_NULL,
-    pill = false,
-    charge = -1,
+	name = "The Saint",
+	items = {},
+	stats = {
+		damage = 0.0,
+		damageMult = 1.2,
+		firedelay = 0.0,
+		shotspeed = -0.1,
+		range = 3.0,
+		speed = 0.2,
+		tearflags = TearFlags.TEAR_NORMAL,
+		tearcolor = Color(0.65, 0, 0, 1, 0, 0, 0),
+		flying = false,
+		luck = -1,
+	},
+	costume = "character_sainthair_b",
+	trinket = TrinketType.TRINKET_NULL,
+	card = Card.CARD_NULL,
+	pill = false,
+	charge = -1,
 }
 
 --- @class TheSaint.stats
 local stats = {
-    ModName = "The Saint",
-    saint = character,
-    tSaint = tainted,
+	ModName = "The Saint",
+	saint = character,
+	tSaint = tainted,
 }
 
 return stats

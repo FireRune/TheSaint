@@ -204,11 +204,11 @@ local stats = include("TheSaint.stats")
 --- @type ModReference
 local TheSaintVanilla = RegisterMod(stats.ModName, 1)
 local features = {
-    isc.ISCFeature.SAVE_DATA_MANAGER,
-    isc.ISCFeature.EXTRA_CONSOLE_COMMANDS,
-    isc.ISCFeature.UNLOCK_ACHIEVEMENTS_DETECTION,
-    isc.ISCFeature.PLAYER_COLLECTIBLE_TRACKING,
-    isc.ISCFeature.TAINTED_LAZARUS_PLAYERS,
+	isc.ISCFeature.SAVE_DATA_MANAGER,
+	isc.ISCFeature.EXTRA_CONSOLE_COMMANDS,
+	isc.ISCFeature.UNLOCK_ACHIEVEMENTS_DETECTION,
+	isc.ISCFeature.PLAYER_COLLECTIBLE_TRACKING,
+	isc.ISCFeature.TAINTED_LAZARUS_PLAYERS,
 }
 --- @type ModUpgraded
 local TheSaint = isc:upgradeMod(TheSaintVanilla, features)
@@ -218,10 +218,10 @@ TheSaintAPI = {}
 
 --- Custom commands
 local function thesaint_help()
-    print("[The Saint] list of commands (all commands and their parameters are case-insensitive, unless stated otherwise):")
-    print("[The Saint] - 'thesaint_help': shows this list")
-    print("[The Saint] - 'thesaint_reloadbooks': reloads the cache of 'book'-items for 'Almanach'")
-    print("[The Saint] - 'thesaint_marks': check progress for this mod's characters' completion marks")
+	print("[The Saint] list of commands (all commands and their parameters are case-insensitive, unless stated otherwise):")
+	print("[The Saint] - 'thesaint_help': shows this list")
+	print("[The Saint] - 'thesaint_reloadbooks': reloads the cache of 'book'-items for 'Almanach'")
+	print("[The Saint] - 'thesaint_marks': check progress for this mod's characters' completion marks")
 end
 TheSaint:addConsoleCommand("thesaint_help", thesaint_help)
 
@@ -231,8 +231,8 @@ require("TheSaint.classes.PlayerLoadout").register(TheSaint)
 -- feature initialization
 local imports = include("TheSaint.imports")
 if (type(imports) == "table") then
-    --- @diagnostic disable-next-line
-    imports:LoadFeatures(TheSaint)
+	--- @diagnostic disable-next-line
+	imports:LoadFeatures(TheSaint)
 end
 
 print("[The Saint] Type 'thesaint_help' for a list of commands")
