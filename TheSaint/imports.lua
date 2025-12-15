@@ -10,6 +10,11 @@ local TheSaint_Feature = {
 	IsInitialized = false,
 }
 
+--- @class FeatureTarget
+--- @field Type CollectibleType | TrinketType | Card | PillEffect | PlayerType
+--- @field Familiar FamiliarVariant? @ if that feature spawns a familiar, specify the corresponding `FamiliarVariant` here
+--- @field Character PlayerType[]? @ specifies the player type(s), to which this feature should be applied innately
+
 --[[
 `TheSaint_Feature` and import functions (`include` vs. `require`):
 

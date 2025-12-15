@@ -4,18 +4,14 @@ local stats = include("TheSaint.stats")
 local Enums = {
 	--- @enum TheSaint.Enums.CollectibleType
 	CollectibleType = {
-		-- actives
-
 		COLLECTIBLE_ALMANACH = Isaac.GetItemIdByName("Almanach"),
+		COLLECTIBLE_MENDING_HEART = Isaac.GetItemIdByName("Mending Heart"),
 		COLLECTIBLE_DEVOUT_PRAYER = Isaac.GetItemIdByName("Devout Prayer"),
+		COLLECTIBLE_DIVINE_BOMBS = Isaac.GetItemIdByName("Divine Bombs"),
 		COLLECTIBLE_WOODEN_KEY = Isaac.GetItemIdByName("Wooden Key"),
 		COLLECTIBLE_HOLY_HAND_GRENADE = Isaac.GetItemIdByName("Holy Hand Grenade"),
-
-		-- passives
-
-		COLLECTIBLE_MENDING_HEART = Isaac.GetItemIdByName("Mending Heart"),
-		COLLECTIBLE_DIVINE_BOMBS = Isaac.GetItemIdByName("Divine Bombs"),
 		COLLECTIBLE_RITE_OF_REBIRTH = Isaac.GetItemIdByName("Rite of Rebirth"),
+		COLLECTIBLE_SCORCHED_BABY = Isaac.GetItemIdByName("Scorched Baby"),
 	},
 
 	--- @enum TheSaint.Enums.TrinketType
@@ -33,6 +29,11 @@ local Enums = {
 	PlayerType = {
 		PLAYER_THE_SAINT = Isaac.GetPlayerTypeByName(stats.saint.name, false),
 		PLAYER_THE_SAINT_B = Isaac.GetPlayerTypeByName(stats.tSaint.name, true),
+	},
+
+	--- @enum TheSaint.Enums.FamiliarVariant
+	FamiliarVariant = {
+		SCORCHED_BABY = Isaac.GetEntityVariantByName("Scorched Baby"),
 	},
 }
 

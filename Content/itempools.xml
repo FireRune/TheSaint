@@ -4,6 +4,7 @@
         <Item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Wooden Key" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Scorched Baby" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
     <!-- <Pool Name="shop"></Pool> -->
     <!-- <Pool Name="boss"></Pool> -->
@@ -38,6 +39,7 @@
         <Item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Wooden Key" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Scorched Baby" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
     <!-- <Pool Name="greedBoss"></Pool> -->
     <!-- <Pool Name="greedShop"></Pool> -->
@@ -61,7 +63,9 @@
     </Pool>
     <!-- <Pool Name="planetarium"></Pool> -->
     <!-- <Pool Name="oldChest"></Pool> -->
-    <!-- <Pool Name="babyShop"></Pool> -->
+    <Pool Name="babyShop">
+        <Item Name="Scorched Baby" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+    </Pool>
     <Pool Name="woodenChest">
         <Item Name="Wooden Key" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
