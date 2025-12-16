@@ -277,6 +277,15 @@ local function AddRegistry()
 	end
 	EID:addDescriptionModifier("TheSaint_RiteOfRebirth_notInBeastFight", RiteOfRebirth_notInBeastFightCondition, RiteOfRebirth_notInBeastFightCallback)
 	--#endregion
+
+	--#region Scorched Baby
+
+	local scorchedBaby = enums.CollectibleType.COLLECTIBLE_SCORCHED_BABY
+	desc = "{{Burning}} Shoots fire tears that set enemies ablaze#Deals 3.5 damage per tear"
+	EID:addCollectible(scorchedBaby, desc)
+
+	EID:addBFFSCondition(scorchedBaby, nil, 3.5)
+	--#endregion
 	--#endregion
 
 	--#region Trinkets
