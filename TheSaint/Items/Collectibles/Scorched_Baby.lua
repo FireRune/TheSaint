@@ -27,11 +27,10 @@ local function familiarUpdate(_, familiar)
 	familiar:FollowParent()
 
 	local player = familiar.Player
-	local moveDirection = player:GetMovementDirection()
 	local fireDirection = player:GetFireDirection()
 
-	if (fireDirection == Direction.NO_DIRECTION) then
-		familiar:PlayFloatAnim(moveDirection)
+	if ((fireDirection == Direction.NO_DIRECTION) and (familiar.FireCooldown <= 0)) then
+		familiar:PlayFloatAnim(Direction.DOWN)
 	else
 		--- @type Vector
 		local tearVector = isc:directionToVector(fireDirection)

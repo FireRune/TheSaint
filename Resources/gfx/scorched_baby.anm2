@@ -2,7 +2,7 @@
 	<Info CreatedBy="robot" CreatedOn="06.02.2014 23:57:56" Fps="30" Version="104" />
 	<Content>
 		<Spritesheets>
-			<Spritesheet Id="0" Path="familiar/familiar_shooters_01_brotherbobby.png" />
+			<Spritesheet Id="0" Path="familiar/scorched_baby.png" />
 		</Spritesheets>
 		<Layers>
 			<Layer Id="0" Name="body" SpritesheetId="0" />

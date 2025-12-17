@@ -284,7 +284,7 @@ local function AddRegistry()
 	desc = "{{Burning}} Shoots fire tears that set enemies ablaze#Deals 3.5 damage per tear"
 	EID:addCollectible(scorchedBaby, desc)
 
-	EID:addBFFSCondition(scorchedBaby, nil, 3.5)
+	EID:addBFFSCondition(scorchedBaby, nil, 3.5, 7)
 	--#endregion
 	--#endregion
 
