@@ -1,13 +1,11 @@
---- @diagnostic disable: undefined-doc-name
---- @generic T
+--- @generic T: CollectibleType | TrinketType | Card | PillEffect | PlayerType
 --- @class TheSaint.structures.FeatureTarget<T>
---- @field Type T
+--- @field Type `T`
 --- @field Familiar FamiliarVariant? @ if that feature spawns a familiar, specify the corresponding `FamiliarVariant` here
 --- @field Character PlayerType[]? @ specifies the player type(s), to which this feature should be applied innately
 local FeatureTarget = {}
---- @diagnostic enable: undefined-doc-name
 
---- @generic T
+--- @generic T: CollectibleType | TrinketType | Card | PillEffect | PlayerType
 --- @param targetType T
 --- @param familiar FamiliarVariant?
 --- @param character (PlayerType | PlayerType[])?
