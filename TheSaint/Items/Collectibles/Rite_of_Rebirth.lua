@@ -1,6 +1,7 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local PlayerLoadout = require("TheSaint.classes.PlayerLoadout")
+local featureTarget = require("TheSaint.structures.FeatureTarget")
 
 --#region Repentogon
 -- if REPENTOGON then
@@ -20,10 +21,10 @@ local PlayerLoadout = require("TheSaint.classes.PlayerLoadout")
 -- 	---     - Contains a special enemy.
 -- 	---     - Killing it restores the corresponding player to their normal form and grants everything they've lost.
 -- 	--- - Works as a normal extra life during the "Ascent".
--- 	--- @class TheSaint.Items.Collectibles.Rite_of_Rebirth : TheSaint_Feature
+-- 	--- @class TheSaint.Items.Collectibles.Rite_of_Rebirth : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 -- 	local Rite_of_Rebirth = {
 -- 		IsInitialized = false,
--- 		FeatureSubType = enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH,
+--		Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH),
 -- 		SaveDataKey = "Rite_of_Rebirth",
 -- 	}
 
@@ -48,10 +49,11 @@ local game = Game()
 --- - Entering a new floor will revert the player back to their original form and gives back their lost items.
 ---   - any collectible/trinket that cannot be added to the player will be spawned in instead.
 --- - Works as a normal extra life when fighting "The Beast".
---- @class TheSaint.Items.Collectibles.Rite_of_Rebirth : TheSaint_Feature
+--- @class TheSaint.Items.Collectibles.Rite_of_Rebirth : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Rite_of_Rebirth = {
 	IsInitialized = false,
-	FeatureSubType = enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH,
+	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
+	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH),
 	SaveDataKey = "Rite_of_Rebirth",
 }
 
@@ -89,7 +91,7 @@ local function saveLoadout(player)
 
 	local loadout = PlayerLoadout.createFromPlayer(player)
 	loadout.Collectibles.Passive = isc:filter(loadout.Collectibles.Passive, function (_, passiveItem)
-		return (passiveItem ~= Rite_of_Rebirth.FeatureSubType)
+		return (passiveItem ~= Rite_of_Rebirth.Target.Type)
 	end)
 
 	v.run.PlayerLoadouts[playerIndex] = loadout:serialize()
@@ -99,8 +101,8 @@ end
 
 --- @param player EntityPlayer
 local function preCustomRevive(_, player)
-	if (player:HasCollectible(Rite_of_Rebirth.FeatureSubType)) then
-		return Rite_of_Rebirth.FeatureSubType
+	if (player:HasCollectible(Rite_of_Rebirth.Target.Type)) then
+		return Rite_of_Rebirth.Target.Type
 	end
 	return nil
 end
@@ -156,7 +158,7 @@ end
 --- @param player EntityPlayer
 --- @param revivalType integer
 local function postCustomRevive(_, player, revivalType)
-	player:RemoveCollectible(Rite_of_Rebirth.FeatureSubType)
+	player:RemoveCollectible(Rite_of_Rebirth.Target.Type)
 
 	-- during "The Beast" fight, functions as a simple extra life
 	if (isc:inBeastRoom() == false) then
@@ -168,7 +170,7 @@ local function postCustomRevive(_, player, revivalType)
 
 		clearInventory(player)
 	end
-	player:AnimateCollectible(Rite_of_Rebirth.FeatureSubType)
+	player:AnimateCollectible(Rite_of_Rebirth.Target.Type)
 end
 
 --[[
@@ -365,7 +367,7 @@ function Rite_of_Rebirth:Init(mod)
 
 	-- want to run this callback pretty late, so using priority of 1000
 	mod:AddPriorityCallbackCustom(isc.ModCallbackCustom.PRE_CUSTOM_REVIVE, 1000, preCustomRevive, 0)
-	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_CUSTOM_REVIVE, postCustomRevive, self.FeatureSubType)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_CUSTOM_REVIVE, postCustomRevive, self.Target.Type)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_LEVEL_REORDERED, postNewLevelReordered)
 end
 

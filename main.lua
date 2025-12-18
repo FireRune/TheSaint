@@ -229,9 +229,8 @@ TheSaint:addConsoleCommand("thesaint_help", thesaint_help)
 require("TheSaint.classes.PlayerLoadout").register(TheSaint)
 
 -- feature initialization
-local imports = include("TheSaint.imports")
+local imports = require("TheSaint.imports")
 if (type(imports) == "table") then
-	--- @diagnostic disable-next-line
 	imports:LoadFeatures(TheSaint)
 end
 

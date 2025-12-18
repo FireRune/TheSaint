@@ -1,5 +1,6 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
+local featureTarget = require("TheSaint.structures.FeatureTarget")
 
 local game = Game()
 
@@ -7,10 +8,11 @@ local game = Game()
 --- - At the start of each new floor, replaces 1 Broken Heart with an empty Heart Container
 --- - When no damage was taken on the previous floor, will replace 2 instead
 --- - +0.25 damage per heart replaced
---- @class TheSaint.Items.Collectibles.Mending_Heart : TheSaint_Feature
+--- @class TheSaint.Items.Collectibles.Mending_Heart : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Mending_Heart = {
 	IsInitialized = false,
-	FeatureSubType = enums.CollectibleType.COLLECTIBLE_MENDING_HEART,
+	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
+	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_MENDING_HEART, nil, enums.PlayerType.PLAYER_THE_SAINT_B),
 	SaveDataKey = "Mending_Heart",
 }
 
@@ -32,8 +34,8 @@ local playMovie = -1
 --- @return boolean @ `true` if the player has "Mending Heart" or is "Tainted Saint", otherwise `false`
 --- @return integer @ number of "Mending Heart" copies that `player` has
 local function hasMendingHeart(player)
-	local numMendingHeart = player:GetCollectibleNum(Mending_Heart.FeatureSubType)
-	if (player:GetPlayerType() == enums.PlayerType.PLAYER_THE_SAINT_B) then
+	local numMendingHeart = player:GetCollectibleNum(Mending_Heart.Target.Type)
+	if (isc:isCharacter(player, table.unpack(Mending_Heart.Target.Character))) then
 		numMendingHeart = numMendingHeart + 1
 	end
 	return (numMendingHeart > 0), numMendingHeart

@@ -1,4 +1,5 @@
 local enums = require("TheSaint.Enums")
+local featureTarget = require("TheSaint.structures.FeatureTarget")
 
 local game = Game()
 
@@ -6,10 +7,11 @@ local game = Game()
 --- - 3 Room Charge
 --- - When used, opens a random door of the room (if possible)
 --- - Can also create "Red Room"-doors
---- @class TheSaint.Items.Collectibles.Wooden_Key : TheSaint_Feature
+--- @class TheSaint.Items.Collectibles.Wooden_Key : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Wooden_Key = {
 	IsInitialized = false,
-	FeatureSubType = enums.CollectibleType.COLLECTIBLE_WOODEN_KEY,
+	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
+	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_WOODEN_KEY),
 	SaveDataKey = "Wooden_Key",
 }
 
@@ -109,7 +111,7 @@ end
 --- @param wisp EntityFamiliar
 local function wispFamiliarUpdate(_, wisp)
 	-- only apply to this item's wisp
-	if (wisp.SubType ~= Wooden_Key.FeatureSubType) then return end
+	if (wisp.SubType ~= Wooden_Key.Target.Type) then return end
 
 	-- on wisp death, trigger "Wooden Key" effect
 	if (wisp:HasMortalDamage()) then
@@ -123,7 +125,7 @@ function Wooden_Key:Init(mod)
 	if (self.IsInitialized) then return end
 
 	mod:saveDataManager(self.SaveDataKey, v)
-	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.FeatureSubType)
+	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.Target.Type)
 	mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, wispFamiliarUpdate, FamiliarVariant.WISP)
 end
 

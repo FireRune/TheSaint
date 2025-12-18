@@ -4,7 +4,7 @@ local mcm = require("TheSaint.ModIntegration.MCM")
 
 local game = Game()
 
---- @class TheSaint.UnlockManager : TheSaint_Feature
+--- @class TheSaint.UnlockManager : TheSaint.classes.ModFeature
 local UnlockManager = {
 	IsInitialized = false,
 	SaveDataKey = "UnlockManager",

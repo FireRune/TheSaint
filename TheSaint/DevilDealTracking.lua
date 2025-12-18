@@ -2,7 +2,7 @@ local isc = require("TheSaint.lib.isaacscript-common")
 
 local game = Game()
 
---- @class TheSaint.DevilDealTracking : TheSaint_Feature
+--- @class TheSaint.DevilDealTracking : TheSaint.classes.ModFeature
 local DevilDealTracking = {
 	IsInitialized = false,
 	SaveDataKey = "DevilDealTracking",

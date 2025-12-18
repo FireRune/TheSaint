@@ -1,5 +1,6 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
+local featureTarget = require("TheSaint.structures.FeatureTarget")
 
 local game = Game()
 
@@ -9,10 +10,11 @@ local game = Game()
 --- - while held above the head, press any shooting input to throw the grenade in that direction
 --- - causes a "Mama Mega"-like explosion in the current room that instantly kills any enemy hit by the explosion/shockwave
 --- - only kills one phase of multi-phase bosses like "Mega Satan", "Mother", etc.
---- @class TheSaint.Items.Collectibles.Holy_Hand_Grenade : TheSaint_Feature
+--- @class TheSaint.Items.Collectibles.Holy_Hand_Grenade : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Holy_Hand_Grenade = {
 	IsInitialized = false,
-	FeatureSubType = enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE,
+	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
+	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE),
 	SaveDataKey = "Holy_Hand_Grenade",
 }
 
@@ -45,10 +47,10 @@ local function useItem(_, collectible, rng, player, flags)
 	local playerIndex = "HHG_"..isc:getPlayerIndex(player)
 	if (not v.room.playerItemState[playerIndex]) then
 		v.room.playerItemState[playerIndex] = true
-		player:AnimateCollectible(Holy_Hand_Grenade.FeatureSubType, "LiftItem")
+		player:AnimateCollectible(Holy_Hand_Grenade.Target.Type, "LiftItem")
 	else
 		v.room.playerItemState[playerIndex] = false
-		player:AnimateCollectible(Holy_Hand_Grenade.FeatureSubType, "HideItem")
+		player:AnimateCollectible(Holy_Hand_Grenade.Target.Type, "HideItem")
 	end
 	return retVal
 end
@@ -75,7 +77,7 @@ end
 local function tryThrowGrenade(player)
 	local shootingInput = player:GetShootingInput()
 	if (shootingInput:Length() > 0) then
-		player:AnimateCollectible(Holy_Hand_Grenade.FeatureSubType, "HideItem")
+		player:AnimateCollectible(Holy_Hand_Grenade.Target.Type, "HideItem")
 		local launchVector = getAxisAlignedVector(shootingInput):Resized(15)
 		local grenade = Isaac.Spawn(EntityType.ENTITY_BOMB, BombVariant.BOMB_GIGA, 0, player.Position, Vector.Zero, player):ToBomb()
 		if (grenade) then
@@ -86,7 +88,7 @@ local function tryThrowGrenade(player)
 			v.room.bombList[ptr] = {["Holy_Hand_Grenade"] = true}
 			player:TryHoldEntity(grenade)
 			player:ThrowHeldEntity(launchVector)
-			player:RemoveCollectible(Holy_Hand_Grenade.FeatureSubType)
+			player:RemoveCollectible(Holy_Hand_Grenade.Target.Type)
 		end
 		return true
 	end
@@ -165,7 +167,7 @@ function Holy_Hand_Grenade:Init(mod)
 	if (self.IsInitialized) then return end
 
 	mod:saveDataManager(self.SaveDataKey, v)
-	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.FeatureSubType)
+	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.Target.Type)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate, 0)
 	mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, postBombUpdate, BombVariant.BOMB_GIGA)
 	mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, entityTakeDamage)

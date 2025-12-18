@@ -2,7 +2,7 @@ local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local ddTracking = require("TheSaint.DevilDealTracking")
 
---- @class TheSaint.ModIntegration.EIDRegistry : TheSaint_Feature
+--- @class TheSaint.ModIntegration.EIDRegistry : TheSaint.classes.ModFeature
 local EIDRegistry = {
 	IsInitialized = false,
 }

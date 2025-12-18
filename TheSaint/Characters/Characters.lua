@@ -2,7 +2,7 @@ local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local stats = include("TheSaint.stats")
 
---- @class TheSaint.Characters.Characters : TheSaint_Feature
+--- @class TheSaint.Characters.Characters : TheSaint.classes.ModFeature
 local Characters = {
 	IsInitialized = false,
 }

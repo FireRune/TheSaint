@@ -1,6 +1,7 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local ddTracking = require("TheSaint.DevilDealTracking")
+local featureTarget = require("TheSaint.structures.FeatureTarget")
 
 local game = Game()
 local hud = game:GetHUD()
@@ -12,10 +13,11 @@ local hud = game:GetHUD()
 --- - can be used with 1+ charges (like "Larnyx" or "Everything Jar")
 --- - Effect depends on the amount of charges spent (1, 3, 6 or 12; see functions below for effect details)
 --- - using while having an Eternal Heart will consume it for extra effects
---- @class TheSaint.Items.Collectibles.Devout_Prayer : TheSaint_Feature
+--- @class TheSaint.Items.Collectibles.Devout_Prayer : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Devout_Prayer = {
 	IsInitialized = false,
-	FeatureSubType = enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER,
+	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
+	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER),
 	SaveDataKey = "Devout_Prayer",
 }
 
@@ -37,7 +39,7 @@ local otherPocketItemUsed = false
 local function chargeDevoutPrayer(pointValue)
 	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
-		if player:HasCollectible(Devout_Prayer.FeatureSubType) then
+		if player:HasCollectible(Devout_Prayer.Target.Type) then
 			if (player:GetEternalHearts() == 1) then
 				pointValue = pointValue * 2
 			end
@@ -45,7 +47,7 @@ local function chargeDevoutPrayer(pointValue)
 			v.run[playerIndex] = (v.run[playerIndex] and (v.run[playerIndex] + pointValue)) or pointValue
 			while (v.run[playerIndex] >= 10) do
 				v.run[playerIndex] = v.run[playerIndex] - 10
-				for _, slot in ipairs(isc:getActiveItemSlots(player, Devout_Prayer.FeatureSubType)) do
+				for _, slot in ipairs(isc:getActiveItemSlots(player, Devout_Prayer.Target.Type)) do
 					local currentCharge = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
 					if (player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY) and (currentCharge < 24))
 					or (currentCharge < 12) then
@@ -85,19 +87,19 @@ end
 --- check wether "Devout Prayer" should be used when corresponding action is triggered
 --- @param player EntityPlayer
 local function postPlayerUpdate(_, player)
-	if ((player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == Devout_Prayer.FeatureSubType)
+	if ((player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == Devout_Prayer.Target.Type)
 	and (Input.IsActionTriggered(ButtonAction.ACTION_ITEM, player.ControllerIndex))) then
 		local charge = player:GetActiveCharge(ActiveSlot.SLOT_PRIMARY)
 		if (charge > 0) and (charge < 12) then
-			player:UseActiveItem(Devout_Prayer.FeatureSubType, UseFlag.USE_OWNED, ActiveSlot.SLOT_PRIMARY)
+			player:UseActiveItem(Devout_Prayer.Target.Type, UseFlag.USE_OWNED, ActiveSlot.SLOT_PRIMARY)
 		end
 	else
-		if ((player:GetActiveItem(ActiveSlot.SLOT_POCKET) == Devout_Prayer.FeatureSubType)
+		if ((player:GetActiveItem(ActiveSlot.SLOT_POCKET) == Devout_Prayer.Target.Type)
 		and (Input.IsActionTriggered(ButtonAction.ACTION_PILLCARD, player.ControllerIndex))) then
 			if (not otherPocketItemUsed) then
 				local charge = player:GetActiveCharge(ActiveSlot.SLOT_POCKET)
 				if (charge > 0) and (charge < 12) then
-					player:UseActiveItem(Devout_Prayer.FeatureSubType, UseFlag.USE_OWNED, ActiveSlot.SLOT_POCKET)
+					player:UseActiveItem(Devout_Prayer.Target.Type, UseFlag.USE_OWNED, ActiveSlot.SLOT_POCKET)
 				end
 			else
 				otherPocketItemUsed = false
@@ -281,7 +283,7 @@ local function useItem(_, collectible, rng, player, flags, slot)
 
 		-- if holding "Book of Virtues", spawn wisps
 		if (player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES)) then
-			local wispType = ((extraEffect and CollectibleType.COLLECTIBLE_BIBLE) or Devout_Prayer.FeatureSubType)
+			local wispType = ((extraEffect and CollectibleType.COLLECTIBLE_BIBLE) or Devout_Prayer.Target.Type)
 			for _ = 1, numWisps do
 				player:AddWisp(wispType, player.Position, true)
 			end
@@ -306,7 +308,7 @@ function Devout_Prayer:Init(mod)
 	mod:AddCallback(ModCallbacks.MC_USE_CARD, useOtherPocketItem)
 	mod:AddCallback(ModCallbacks.MC_USE_PILL, useOtherPocketItem)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate, 0)
-	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.FeatureSubType)
+	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.Target.Type)
 	mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, postNewLevel_resetCounters)
 	mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats, CacheFlag.CACHE_DAMAGE)
 	mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats, CacheFlag.CACHE_LUCK)

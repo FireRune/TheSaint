@@ -1,12 +1,14 @@
 local enums = require("TheSaint.Enums")
+local featureTarget = require("TheSaint.structures.FeatureTarget")
 
 --- "Divine Bombs"
 --- - +5 bombs
 --- - Bombs spawn "Holy Light" beams upon exploding
---- @class TheSaint.Items.Collectibles.Divine_Bombs : TheSaint_Feature
+--- @class TheSaint.Items.Collectibles.Divine_Bombs : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Divine_Bombs = {
 	IsInitialized = false,
-	FeatureSubType = enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS,
+	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
+	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS),
 	SaveDataKey = "Divine_Bombs",
 }
 
@@ -61,7 +63,7 @@ local function postBombUpdate(_, bomb)
 		local ptr = GetPtrHash(bomb)
 		local data = v.room[ptr]
 		if (data and data["firstFrame"] == true) then
-			if player:HasCollectible(Divine_Bombs.FeatureSubType) then
+			if player:HasCollectible(Divine_Bombs.Target.Type) then
 				bomb:AddTearFlags(targetFlag)
 			end
 			data["firstFrame"] = nil
@@ -108,7 +110,7 @@ local function postEffectUpdate(_, effect)
 		if (data and data["firstFrame"] == true) then
 			local player = data["spawnerPlayer"]
 			if player:HasCollectible(CollectibleType.COLLECTIBLE_HOLY_LIGHT)
-			or player:HasCollectible(Divine_Bombs.FeatureSubType) then
+			or player:HasCollectible(Divine_Bombs.Target.Type) then
 				local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_EPIC_FETUS)
 				local chance = (30 + (5 * player.Luck))
 				if ((rng:RandomInt(100) + 1) <= chance) then

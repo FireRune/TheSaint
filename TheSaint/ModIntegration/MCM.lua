@@ -1,4 +1,4 @@
---- @class TheSaint.ModIntegration.MCM : TheSaint_Feature
+--- @class TheSaint.ModIntegration.MCM : TheSaint.classes.ModFeature
 local MCM = {
 	IsInitialized = false,
 	SaveDataKey = "MCM",

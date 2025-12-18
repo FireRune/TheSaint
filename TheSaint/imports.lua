@@ -1,19 +1,25 @@
+--#region typedef
+
+--- @diagnostic disable: undefined-doc-name
+
 --- Base class for this mod's features
---- @class TheSaint_Feature
---- @field protected Init fun(self: TheSaint_Feature, mod: ModUpgraded) @ this function should only run once, so include this line at the top of the function body:<br>```if (self.IsInitialized) then return end```
+--- @class TheSaint.classes.ModFeature
+--- @field protected Init fun(self: TheSaint.classes.ModFeature, mod: ModUpgraded) @ this function should only run once, so include this line at the top of the function body:<br>```if (self.IsInitialized) then return end```
 --- @field protected IsInitialized boolean @ must be set to false when class is instantiated
---- @field protected FeatureSubType integer? @ the SubType this feature is for
 --- @field protected SaveDataKey string? @ key to use for the `saveDataManager`-function
---- @field protected ThisMod ModUpgraded? @ Reference to this mod, because the 1st parameter in callbacks is of type `ModReference`
---- @field private CurrentFeature TheSaint_Feature?
-local TheSaint_Feature = {
+--- @field protected ThisMod ModUpgraded? @ Must be set in the `Init` function! Reference to this mod, because the 1st parameter in callbacks is of type `ModReference`
+
+--- @generic T: CollectibleType | TrinketType | Card | PillEffect | PlayerType
+--- @class TheSaint.classes.ModFeatureTargeted<T> : TheSaint.classes.ModFeature
+--- @field protected Target TheSaint.structures.FeatureTarget<T>
+
+--- @diagnostic enable: undefined-doc-name
+--#endregion
+
+--- @class TheSaint.imports : TheSaint.classes.ModFeature
+local imports = {
 	IsInitialized = false,
 }
-
---- @class FeatureTarget
---- @field Type CollectibleType | TrinketType | Card | PillEffect | PlayerType
---- @field Familiar FamiliarVariant? @ if that feature spawns a familiar, specify the corresponding `FamiliarVariant` here
---- @field Character PlayerType[]? @ specifies the player type(s), to which this feature should be applied innately
 
 --[[
 `TheSaint_Feature` and import functions (`include` vs. `require`):
@@ -28,7 +34,7 @@ Feature load order:
 - `include` features
 - `include` mod integration
 ]]
---- @type TheSaint_Feature[]
+--- @type TheSaint.classes.ModFeature[]
 local features = {
 	require("TheSaint.DevilDealTracking"),
 
@@ -53,21 +59,17 @@ local features = {
 	include("TheSaint.ModIntegration.EIDRegistry"),
 }
 
---- @private
 --- initialize all features of this mod
 --- @param mod ModUpgraded
-function TheSaint_Feature:LoadFeatures(mod)
+function imports:LoadFeatures(mod)
 	if (self.IsInitialized) then return end
 
 	for _, feature in ipairs(features) do
-		self.CurrentFeature = feature
-		self.CurrentFeature:Init(mod)
-		if (self.CurrentFeature.IsInitialized == false) then
-			self.CurrentFeature.IsInitialized = true
-		end
+		feature:Init(mod)
+		feature.IsInitialized = true
 	end
-	self.CurrentFeature = nil
+
 	self.IsInitialized = true
 end
 
-return TheSaint_Feature
+return imports

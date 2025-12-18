@@ -1,14 +1,16 @@
 local enums = require("TheSaint.Enums")
+local featureTarget = require("TheSaint.structures.FeatureTarget")
 
 local game = Game()
 
 --- "Library Card"
 --- - teleports Isaac to the Library if one exists on the current floor
 --- - random teleport otherwise
---- @class TheSaint.Items.PocketItems.Library_Card : TheSaint_Feature
+--- @class TheSaint.Items.PocketItems.Library_Card : TheSaint.classes.ModFeatureTargeted<Card>
 local Library_Card = {
 	IsInitialized = false,
-	FeatureSubType = enums.Card.CARD_LIBRARY,
+	--- @type TheSaint.structures.FeatureTarget<Card>
+	Target = featureTarget:new(enums.Card.CARD_LIBRARY),
 }
 
 --- @param card Card
@@ -47,7 +49,7 @@ end
 function Library_Card:Init(mod)
 	if (self.IsInitialized) then return end
 
-	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard, self.FeatureSubType)
+	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard, self.Target.Type)
 end
 
 return Library_Card

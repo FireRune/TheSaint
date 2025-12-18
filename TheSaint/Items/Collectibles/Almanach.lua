@@ -1,5 +1,6 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
+local featureTarget = require("TheSaint.structures.FeatureTarget")
 
 local game = Game()
 local config = Isaac.GetItemConfig()
@@ -10,10 +11,11 @@ local config = Isaac.GetItemConfig()
 ---   items with the `book`-tag (modded items included)
 --- - Can also activate books that have not been unlocked yet
 --- - Cannot activate itself
---- @class TheSaint.Items.Collectibles.Almanach : TheSaint_Feature
+--- @class TheSaint.Items.Collectibles.Almanach : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Almanach = {
 	IsInitialized = false,
-	FeatureSubType = enums.CollectibleType.COLLECTIBLE_ALMANACH,
+	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
+	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_ALMANACH),
 }
 
 -- table containing all items with the `book`-tag, except those on the blacklist
@@ -176,10 +178,10 @@ end
 function Almanach:Init(mod)
 	if (self.IsInitialized) then return end
 
-	addItemToBookBlacklist(mod.Name, {CollectibleType.COLLECTIBLE_HOW_TO_JUMP, self.FeatureSubType})
+	addItemToBookBlacklist(mod.Name, {CollectibleType.COLLECTIBLE_HOW_TO_JUMP, self.Target.Type})
 	mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, getBooks)
 	mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, getWispName, FamiliarVariant.ITEM_WISP)
-	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.FeatureSubType)
+	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.Target.Type)
 	mod:AddCallback(ModCallbacks.MC_USE_ITEM, spawnAlmanachBookWisp)
 	mod:addConsoleCommand("thesaint_reloadbooks", thesaint_reloadbooks)
 end

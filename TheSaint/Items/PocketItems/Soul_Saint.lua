@@ -1,6 +1,7 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local ddTracking = require("TheSaint.DevilDealTracking")
+local featureTarget = require("TheSaint.structures.FeatureTarget")
 
 local game = Game()
 
@@ -9,10 +10,11 @@ local game = Game()
 --- - if a Devil Deal has been taken during the run:
 ---   - acts like "Joker"
 ---   - forces an Angel Room if the Devil/Angel Room hasn't been generated yet
---- @class TheSaint.Items.PocketItems.Soul_Saint : TheSaint_Feature
+--- @class TheSaint.Items.PocketItems.Soul_Saint : TheSaint.classes.ModFeatureTargeted<Card>
 local Soul_Saint = {
 	IsInitialized = false,
-	FeatureSubType = enums.Card.CARD_SOUL_SAINT,
+	--- @type TheSaint.structures.FeatureTarget<Card>
+	Target = featureTarget:new(enums.Card.CARD_SOUL_SAINT),
 	SaveDataKey = "Soul_Saint",
 }
 
@@ -67,7 +69,7 @@ function Soul_Saint:Init(mod)
 	if (self.IsInitialized) then return end
 
 	mod:saveDataManager(self.SaveDataKey, v)
-	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard, self.FeatureSubType)
+	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard, self.Target.Type)
 	mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, postNewRoom)
 end
 

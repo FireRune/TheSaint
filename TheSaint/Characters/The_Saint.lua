@@ -1,12 +1,14 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
+local featureTarget = require("TheSaint.structures.FeatureTarget")
 
 local game = Game()
 
---- @class TheSaint.Characters.The_Saint : TheSaint_Feature
+--- @class TheSaint.Characters.The_Saint : TheSaint.classes.ModFeatureTargeted<PlayerType>
 local The_Saint = {
 	IsInitialized = false,
-	FeatureSubType = enums.PlayerType.PLAYER_THE_SAINT,
+	--- @type TheSaint.structures.FeatureTarget<PlayerType>
+	Target = featureTarget:new(enums.PlayerType.PLAYER_THE_SAINT),
 	SaveDataKey = "The_Saint",
 }
 
@@ -22,7 +24,7 @@ local function postNewRoomReordered_Saint_Birthright(_, room)
 	if (v.level.angelRoomFirstEntry) then
 		for i = 0, game:GetNumPlayers() - 1 do
 			local player = Isaac.GetPlayer(i)
-			if (player:GetPlayerType() == The_Saint.FeatureSubType)
+			if (player:GetPlayerType() == The_Saint.Target.Type)
 			and (player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)) then
 				player:AddCollectible(CollectibleType.COLLECTIBLE_CONSOLATION_PRIZE)
 				player:RemoveCollectible(CollectibleType.COLLECTIBLE_CONSOLATION_PRIZE)
