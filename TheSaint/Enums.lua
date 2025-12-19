@@ -35,6 +35,22 @@ local Enums = {
 	FamiliarVariant = {
 		SCORCHED_BABY = Isaac.GetEntityVariantByName("Scorched Baby"),
 	},
+
+	--- @enum TheSaint.Enums.CompletionMarks
+	CompletionMarks = {
+		BOSS_RUSH = "BossRush",
+		MOMS_HEART = "MomsHeart",
+		SATAN = "Satan",
+		ISAAC = "Isaac",
+		THE_LAMB = "TheLamb",
+		BLUE_BABY = "BlueBaby",
+		MEGA_SATAN = "MegaSatan",
+		GREED_MODE = "GreedMode",
+		HUSH = "Hush",
+		DELIRIUM = "Delirium",
+		MOTHER = "Mother",
+		THE_BEAST = "TheBeast",
+	},
 }
 
 return Enums

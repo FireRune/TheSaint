@@ -40,7 +40,7 @@ local features = {
 
 	require("TheSaint.ModIntegration.MCM"),
 
-	include("TheSaint.Unlocks"),
+	include("TheSaint.UnlockManager"),
 	include("TheSaint.Characters.Characters"),
 	include("TheSaint.Characters.The_Saint"),
 	include("TheSaint.Characters.Tainted_Saint"),
