@@ -52,7 +52,7 @@ end
 
 --- Creates a new `PlayerLoadout` instance
 --- @return PlayerLoadout
-function PlayerLoadout.constuctor()
+function PlayerLoadout.constructor()
 	checkIsRegistered()
 
 	--- @type PlayerLoadout
@@ -93,7 +93,7 @@ end
 --- @param player EntityPlayer
 --- @return PlayerLoadout
 function PlayerLoadout.createFromPlayer(player)
-	local loadout = PlayerLoadout.constuctor()
+	local loadout = PlayerLoadout.constructor()
 
 	loadout:setPickupsFromPlayer(player)
 	loadout:setActiveCollectiblesFromPlayer(player)
@@ -108,7 +108,7 @@ end
 --- @param serializableLoadout SerializablePlayerLoadout
 --- @return PlayerLoadout
 function PlayerLoadout.fromSerializable(serializableLoadout)
-	local loadout = PlayerLoadout.constuctor()
+	local loadout = PlayerLoadout.constructor()
 
 	loadout:setPickups(serializableLoadout.Pickups)
 	loadout:setActiveCollectibles(serializableLoadout.Collectibles.Active)
