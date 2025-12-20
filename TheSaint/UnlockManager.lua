@@ -61,6 +61,8 @@ local UnlockManager = {
 
 --#endregion
 
+--#region fields
+
 local saint = enums.PlayerType.PLAYER_THE_SAINT
 local tSaint = enums.PlayerType.PLAYER_THE_SAINT_B
 
@@ -117,6 +119,61 @@ local bossMarks = {
 		Mark = enums.CompletionMarks.THE_BEAST,
 	},
 }
+--#endregion
+
+--#region Unlocks
+
+--- @param player TheSaint.UnlockManager.UnlockPlayer
+--- @param marks TheSaint.Enums.CompletionMarks[]
+--- @param difficulty TheSaint.UnlockManager.UnlockDifficulty
+--- @param typeOfPickup TheSaint.UnlockManager.TypeOfPickup
+--- @param unlockable integer
+--- @return TheSaint.UnlockManager.Unlock
+local function createUnlock(player, marks, difficulty, typeOfPickup, unlockable)
+	return {
+		Player = player,
+		Marks = marks,
+		Difficulty = difficulty,
+		PickupType = typeOfPickup,
+		Unlockable = unlockable,
+	}
+end
+
+--- @type TheSaint.UnlockManager.Unlock[]
+local unlocksTable = {
+	-- (Boss Rush with Saint)
+	-- "Almanach" (Mom's Heart on Hard Mode with Saint)
+	createUnlock("Saint", {enums.CompletionMarks.MOMS_HEART}, "hard", "collectible", enums.CollectibleType.COLLECTIBLE_ALMANACH),
+	-- "Scorched Baby" (Satan with Saint)
+	createUnlock("Saint", {enums.CompletionMarks.SATAN}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_SCORCHED_BABY),
+	-- "Divine Bombs" (Isaac with Saint)
+	createUnlock("Saint", {enums.CompletionMarks.ISAAC}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS),
+	-- "Wooden Key" (The Lamb with Saint)
+	createUnlock("Saint", {enums.CompletionMarks.THE_LAMB}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_WOODEN_KEY),
+	-- "Holy Penny" (??? with Saint)
+	createUnlock("Saint", {enums.CompletionMarks.BLUE_BABY}, "normal", "trinket", enums.TrinketType.TRINKET_HOLY_PENNY),
+	-- (Mega Satan with Saint)
+	-- "Library Card" (Greed Mode with Saint)
+	createUnlock("Saint", {enums.CompletionMarks.GREED_MODE}, "normal", "card", enums.Card.CARD_LIBRARY),
+	-- (Hush with Saint)
+	-- (Greedier Mode with Saint)
+	-- (Delirium with Saint)
+	-- (Mother with Saint)
+	-- "Holy Hand Grenade" (The Beast with Saint)
+	createUnlock("Saint", {enums.CompletionMarks.THE_BEAST}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE),
+	-- "Soul of the Saint" (Boss Rush + Hush with T.Saint)
+	createUnlock("T_Saint", {enums.CompletionMarks.BOSS_RUSH, enums.CompletionMarks.HUSH}, "normal", "rune", enums.Card.CARD_SOUL_SAINT),
+	-- (Satan + Isaac + The Lamb + ??? with T.Saint)
+	-- (Greedier Mode with T.Saint)
+	-- "Mending Heart" (Delirium with T.Saint)
+	createUnlock("T_Saint", {enums.CompletionMarks.DELIRIUM}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_MENDING_HEART),
+	-- "Rite of Rebirth" (Mother with T.Saint)
+	createUnlock("T_Saint", {enums.CompletionMarks.MOTHER}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH),
+	-- (The Beast with T.Saint)
+	-- (Mega Satan with T.Saint)
+}
+
+--#endregion
 
 local v = {
 	persistent = {
@@ -207,57 +264,42 @@ local function preSpawnCleanAward(_, rng, spawnPos)
 	end
 end
 
---- @param player TheSaint.UnlockManager.UnlockPlayer
---- @param marks TheSaint.Enums.CompletionMarks[]
---- @param difficulty TheSaint.UnlockManager.UnlockDifficulty
---- @param typeOfPickup TheSaint.UnlockManager.TypeOfPickup
---- @param unlockable integer
---- @return TheSaint.UnlockManager.Unlock
-local function createUnlock(player, marks, difficulty, typeOfPickup, unlockable)
-	return {
-		Player = player,
-		Marks = marks,
-		Difficulty = difficulty,
-		PickupType = typeOfPickup,
-		Unlockable = unlockable,
-	}
+--#region Handling of locked stuff
+
+--- @param pickup EntityPickup
+--- @param variant PickupVariant
+--- @param unlockableSubType integer
+--- @return boolean
+local function pickupCheck(pickup, variant, unlockableSubType)
+	if (pickup.Variant == variant) then
+		if (variant == PickupVariant.PICKUP_TRINKET) then
+			return ((pickup.SubType % TrinketType.TRINKET_GOLDEN_FLAG) == unlockableSubType)
+		else
+			return (pickup.SubType == unlockableSubType)
+		end
+	end
+	return false
 end
 
---- @type TheSaint.UnlockManager.Unlock[]
-local unlocksTable = {
-	-- (Boss Rush with Saint)
-	-- "Almanach" (Mom's Heart on Hard Mode with Saint)
-	createUnlock("Saint", {enums.CompletionMarks.MOMS_HEART}, "hard", "collectible", enums.CollectibleType.COLLECTIBLE_ALMANACH),
-	-- "Scorched Baby" (Satan with Saint)
-	createUnlock("Saint", {enums.CompletionMarks.SATAN}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_SCORCHED_BABY),
-	-- "Divine Bombs" (Isaac with Saint)
-	createUnlock("Saint", {enums.CompletionMarks.ISAAC}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS),
-	-- "Wooden Key" (The Lamb with Saint)
-	createUnlock("Saint", {enums.CompletionMarks.THE_LAMB}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_WOODEN_KEY),
-	-- "Holy Penny" (??? with Saint)
-	createUnlock("Saint", {enums.CompletionMarks.BLUE_BABY}, "normal", "trinket", enums.TrinketType.TRINKET_HOLY_PENNY),
-	-- (Mega Satan with Saint)
-	-- "Library Card" (Greed Mode with Saint)
-	createUnlock("Saint", {enums.CompletionMarks.GREED_MODE}, "normal", "card", enums.Card.CARD_LIBRARY),
-	-- (Hush with Saint)
-	-- (Greedier Mode with Saint)
-	-- (Delirium with Saint)
-	-- (Mother with Saint)
-	-- "Holy Hand Grenade" (The Beast with Saint)
-	createUnlock("Saint", {enums.CompletionMarks.THE_BEAST}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE),
-	-- "Soul of the Saint" (Boss Rush + Hush with T.Saint)
-	createUnlock("T_Saint", {enums.CompletionMarks.BOSS_RUSH, enums.CompletionMarks.HUSH}, "normal", "rune", enums.Card.CARD_SOUL_SAINT),
-	-- (Satan + Isaac + The Lamb + ??? with T.Saint)
-	-- (Greedier Mode with T.Saint)
-	-- "Mending Heart" (Delirium with T.Saint)
-	createUnlock("T_Saint", {enums.CompletionMarks.DELIRIUM}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_MENDING_HEART),
-	-- "Rite of Rebirth" (Mother with T.Saint)
-	createUnlock("T_Saint", {enums.CompletionMarks.MOTHER}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH),
-	-- (The Beast with T.Saint)
-	-- (Mega Satan with T.Saint)
-}
+--- @param states TheSaint.UnlockManager.CompletionState[] @ current completion status
+--- @param unlockDifficulty TheSaint.UnlockManager.UnlockDifficulty @ required completion status
+--- @return boolean
+local function stateCheck(states, unlockDifficulty)
+	local retVal = true
 
---#region Unlocks
+	--- @param state TheSaint.UnlockManager.CompletionState
+	isc:forEach(states, function (_, state)
+		-- no need to further check states once `retVal` is set to `false`
+		if (retVal == false) then return end
+
+		if ((state == "none")
+		or ((state == "normal") and (unlockDifficulty == "hard"))) then
+			retVal = false
+		end
+	end)
+
+	return retVal
+end
 
 --- @param pickup EntityPickup
 --- @param typeOfPickup TheSaint.UnlockManager.TypeOfPickup
@@ -300,41 +342,6 @@ local function rerollItem(pickup, typeOfPickup, lockedSubType)
 	if (variant ~= PickupVariant.PICKUP_NULL) then
 		pickup:Morph(EntityType.ENTITY_PICKUP, variant, newSubType, true)
 	end
-end
-
---- @param pickup EntityPickup
---- @param variant PickupVariant
---- @param unlockableSubType integer
---- @return boolean
-local function pickupCheck(pickup, variant, unlockableSubType)
-	if (pickup.Variant == variant) then
-		if (variant == PickupVariant.PICKUP_TRINKET) then
-			return ((pickup.SubType % TrinketType.TRINKET_GOLDEN_FLAG) == unlockableSubType)
-		else
-			return (pickup.SubType == unlockableSubType)
-		end
-	end
-	return false
-end
-
---- @param states TheSaint.UnlockManager.CompletionState[] @ current completion status
---- @param unlockDifficulty TheSaint.UnlockManager.UnlockDifficulty @ required completion status
---- @return boolean
-local function stateCheck(states, unlockDifficulty)
-	local retVal = true
-
-	--- @param state TheSaint.UnlockManager.CompletionState
-	isc:forEach(states, function (_, state)
-		-- no need to further check states once `retVal` is set to `false`
-		if (retVal == false) then return end
-
-		if ((state == "none")
-		or ((state == "normal") and (unlockDifficulty == "hard"))) then
-			retVal = false
-		end
-	end)
-
-	return retVal
 end
 
 --- @param pickup EntityPickup
