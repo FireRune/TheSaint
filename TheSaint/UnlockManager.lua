@@ -148,14 +148,14 @@ local unlocksTable = {
 	createUnlock("Saint", {enums.CompletionMarks.SATAN}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_SCORCHED_BABY),
 	-- "Divine Bombs" (Isaac with Saint)
 	createUnlock("Saint", {enums.CompletionMarks.ISAAC}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS),
-	-- "Wooden Key" (The Lamb with Saint)
-	createUnlock("Saint", {enums.CompletionMarks.THE_LAMB}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_WOODEN_KEY),
-	-- "Holy Penny" (??? with Saint)
-	createUnlock("Saint", {enums.CompletionMarks.BLUE_BABY}, "normal", "trinket", enums.TrinketType.TRINKET_HOLY_PENNY),
+	-- "Scattered Pages" (The Lamb with Saint)
+	createUnlock("Saint", {enums.CompletionMarks.THE_LAMB}, "normal", "trinket", enums.TrinketType.TRINKET_SCATTERED_PAGES),
+	-- (??? with Saint)
 	-- (Mega Satan with Saint)
 	-- "Library Card" (Greed Mode with Saint)
 	createUnlock("Saint", {enums.CompletionMarks.GREED_MODE}, "normal", "card", enums.Card.CARD_LIBRARY),
-	-- (Hush with Saint)
+	-- "Wooden Key" (Hush with Saint)
+	createUnlock("Saint", {enums.CompletionMarks.HUSH}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_WOODEN_KEY),
 	-- (Greedier Mode with Saint)
 	-- (Delirium with Saint)
 	-- (Mother with Saint)
@@ -167,9 +167,10 @@ local unlocksTable = {
 	-- (Greedier Mode with T.Saint)
 	-- "Mending Heart" (Delirium with T.Saint)
 	createUnlock("T_Saint", {enums.CompletionMarks.DELIRIUM}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_MENDING_HEART),
-	-- "Rite of Rebirth" (Mother with T.Saint)
-	createUnlock("T_Saint", {enums.CompletionMarks.MOTHER}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH),
-	-- (The Beast with T.Saint)
+	-- "Holy Penny" (Mother with T.Saint)
+	createUnlock("T_Saint", {enums.CompletionMarks.MOTHER}, "normal", "trinket", enums.TrinketType.TRINKET_HOLY_PENNY),
+	-- "Rite of Rebirth" (The Beast with T.Saint)
+	createUnlock("T_Saint", {enums.CompletionMarks.THE_BEAST}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH),
 	-- (Mega Satan with T.Saint)
 }
 
