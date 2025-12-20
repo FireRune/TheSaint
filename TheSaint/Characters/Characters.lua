@@ -1,4 +1,3 @@
-local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local stats = include("TheSaint.stats")
 
@@ -176,7 +175,8 @@ local function postPlayerInitLate(player)
 
 	local pType = player:GetPlayerType()
 	if (pType == char) then
-		isc:setActiveItem(player, enums.CollectibleType.COLLECTIBLE_ALMANACH)
+		pool:RemoveCollectible(enums.CollectibleType.COLLECTIBLE_ALMANACH)
+		player:AddCollectible(enums.CollectibleType.COLLECTIBLE_ALMANACH, -1) -- -1 for full charge
 	end
 	if (pType == taintedChar) then
 		pool:RemoveCollectible(enums.CollectibleType.COLLECTIBLE_MENDING_HEART)

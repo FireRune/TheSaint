@@ -14,4 +14,6 @@
     <familiar id="8" name="Scorched Baby" description="Who left the oven open!?" gfx="scorched_baby.png" tags="baby monstermanual offensive summonable" quality="2" />
 
     <trinket name="Holy Penny" description="Wealth of faith" gfx="holy_penny.png" />
+    <!-- TODO: replace gfx -->
+    <trinket name="Scattered Pages" description="Who ripped these out?" gfx="sprite_missing.png" />
 </items>

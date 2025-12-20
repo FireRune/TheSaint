@@ -17,6 +17,7 @@ local Enums = {
 	--- @enum TheSaint.Enums.TrinketType
 	TrinketType = {
 		TRINKET_HOLY_PENNY = Isaac.GetTrinketIdByName("Holy Penny"),
+		TRINKET_SCATTERED_PAGES = Isaac.GetTrinketIdByName("Scattered Pages"),
 	},
 
 	--- @enum TheSaint.Enums.Card
@@ -50,6 +51,12 @@ local Enums = {
 		DELIRIUM = "Delirium",
 		MOTHER = "Mother",
 		THE_BEAST = "TheBeast",
+	},
+
+	--- @enum TheSaint.Enums.Almanach_CustomVarData
+	CustomVarData_Almanach = {
+		NORMAL = 0,
+		SCATTERED_PAGES = 1,
 	},
 }
 

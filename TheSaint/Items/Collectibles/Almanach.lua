@@ -18,7 +18,12 @@ local Almanach = {
 	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_ALMANACH),
 }
 
+--- @class TheSaint.Items.Collectibles.Almanach.Book
+--- @field ID integer
+--- @field Name string
+
 -- table containing all items with the `book`-tag, except those on the blacklist
+--- @type TheSaint.Items.Collectibles.Almanach.Book[]
 local books = {}
 
 --- Blacklist of items with the `book`-tag.<br>
@@ -29,15 +34,11 @@ local books_blacklist = {}
 -- flag to check wether the used item was "Lemegeton"
 local almanachLemegeton = false
 -- name of the item granted by the spawned "Lemegeton"-wisp(s)
+--- @type string[]
 local wispNames = {}
 
 -- flag to check wether the item used was invoked from "Almanach"
 local calledFromAlmanach = false
--- table containing the names of the invoked items
-local itemNames = {
-	[0] = "",
-	[1] = ""
-}
 
 --- Adds the given items to the book-blacklist if not already set
 --- @param modName string
@@ -72,7 +73,6 @@ end
 --- caches all items with the `book`-tag
 local function getBooks()
 	if (#books > 0) then return end
-	local counter = 0
 	Isaac.DebugString("[The Saint] (INFO) <Almanach> generate list of items with 'book'-tag (except blacklisted items)")
 	--- API says that `GetCollectibles()` returns `userdata`, but it's actually `ItemConfigList`
 	--- @type ItemConfigList
@@ -85,8 +85,7 @@ local function getBooks()
 				local id = collectible.ID
 				local name = isc:getCollectibleName(id)
 				if (isBlacklisted(id) == false) then
-					counter = counter + 1
-					table.insert(books, counter, {ID = id, Name = name})
+					table.insert(books, {ID = id, Name = name})
 					Isaac.DebugString("[The Saint] (INFO) <Almanach> add ["..id.."] '"..name.."'")
 				else
 					local modName = books_blacklist[id]
@@ -97,71 +96,126 @@ local function getBooks()
 	end
 end
 
---- when invoking the effect of "Lemegeton" caches the name of the item granted by the spawned wisp
+--- (REP only) when invoking the effect of "Lemegeton" caches the name of the item granted by the spawned wisp
 --- @param itemWisp EntityFamiliar
 local function getWispName(_, itemWisp)
-	if almanachLemegeton then
+	if (almanachLemegeton == true) then
 		table.insert(wispNames, isc:getCollectibleName(itemWisp.SubType))
+	end
+end
+
+--- @param texts { Text1: string, Text2: string? }
+local function showHUDText(texts)
+	if (texts.Text2 ~= nil) then
+		texts.Text1 = texts.Text1.."..."
+		texts.Text2 = "... and "..texts.Text2
+	end
+
+	local hud = game:GetHUD()
+	if REPENTANCE_PLUS then
+		-- (REP+) stack up text in case of multiple activations, to see what effects were granted
+		hud:ShowItemText(texts.Text1, texts.Text2, false, false)
+	else
+		hud:ShowItemText(texts.Text1, texts.Text2, false)
 	end
 end
 
 --- on use, invoke the effects of 2 items from the books-table (can be the same item twice)
 --- and displays the names of the chosen items ("Lemegeton" also shows which item it grants)
+--- @param collectible CollectibleType
 --- @param rng RNG
 --- @param player EntityPlayer
 --- @param flag UseFlag
-local function useItem(_, _, rng, player, flag)
+--- @param slot ActiveSlot
+--- @param varData integer
+local function useItem(_, collectible, rng, player, flag, slot, varData)
 	-- "Car Battery" should boost the triggered items instead of using "Almanach" twice
 	if (flag & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return false end
 	local hasCarBattery = isc:hasCollectible(player, CollectibleType.COLLECTIBLE_CAR_BATTERY)
+	local itemUses = ((hasCarBattery and 2) or 1)
 
-	for i = 0, 1 do
-		local randInt = rng:RandomInt(#books) + 1
-		itemNames[i] = books[randInt].Name
-		if (books[randInt].Name == "Book of Virtues") then
-			player:AddWisp(0, player.Position, true)
-			if (hasCarBattery) then
+	--- @type string[]
+	local bookNames = {}
+	--- @type CollectibleType[]
+	local bookIDs = {}
+
+	local texts = {
+		Text1 = "",
+		Text2 = nil,
+	}
+
+	local scatteredPagesActivation = (varData == enums.CustomVarData_Almanach.SCATTERED_PAGES)
+	local limit = ((scatteredPagesActivation and 1) or 2)
+
+	--- @type TheSaint.Items.Collectibles.Almanach.Book[]
+	local bookExceptions = {}
+	-- First get the items to activate
+	for i = 1, limit do
+		--- @type TheSaint.Items.Collectibles.Almanach.Book
+		local book = isc:getRandomArrayElement(books, rng, bookExceptions)
+
+		table.insert(bookIDs, i, book.ID)
+		table.insert(bookNames, i, book.Name)
+		texts["Text"..i] = book.Name
+
+		table.insert(bookExceptions, book)
+	end
+
+	-- (REP+ only) show HUD text now, so that Lemegeton item wisp names are displayed below
+	if REPENTANCE_PLUS then showHUDText(texts) end
+
+	-- next, activate the items
+	for i = 1, limit do
+		if (bookNames[i] == "Lemegeton") then
+			almanachLemegeton = true
+		end
+		for j = 1, itemUses do
+			local newFlags = UseFlag.USE_NOANIM
+			if (j > 1) then
+				newFlags = (newFlags | UseFlag.USE_CARBATTERY)
+			end
+			--- @cast newFlags UseFlag
+
+			if (bookNames[i] == "Book of Virtues") then
 				player:AddWisp(0, player.Position, true)
+			else
+				calledFromAlmanach = true
+				player:UseActiveItem(bookIDs[i], newFlags)
+				calledFromAlmanach = false
 			end
-		else
-			if (itemNames[i] == "Lemegeton") then
-				almanachLemegeton = true
-			end
-			calledFromAlmanach = true
-			player:UseActiveItem(books[randInt].ID, UseFlag.USE_NOANIM)
-			if (hasCarBattery) then
-				player:UseActiveItem(books[randInt].ID, UseFlag.USE_NOANIM)
-			end
-			calledFromAlmanach = false
 		end
-		if (itemNames[i] == "Lemegeton") then
-			local wisps = ""
-			for _, wispName in pairs(wispNames) do
-				wisps = wisps..((wisps ~= "" and " / "..wispName) or wispName)
+		if (bookNames[i] == "Lemegeton") then
+			-- not necessary with Rep+, due to the "stack up text"-feature
+			if not REPENTANCE_PLUS then
+				local wisps = ""
+				for _, wispName in ipairs(wispNames) do
+					wisps = wisps..((wisps ~= "" and " / "..wispName) or wispName)
+				end
+				bookNames[i] = bookNames[i].." ("..wisps..")"
+				wispNames = {}
 			end
-			itemNames[i] = itemNames[i].." ("..wisps..")"
 			almanachLemegeton = false
-			wispNames = {}
 		end
+		texts["Text"..i] = bookNames[i]
 	end
-	if REPENTANCE_PLUS then
-		-- stack up text in case of multiple activations, to see what effects were granted
-		game:GetHUD():ShowItemText(itemNames[0].."...", "... and "..itemNames[1], false, false)
-	else
-		game:GetHUD():ShowItemText(itemNames[0].."...", "... and "..itemNames[1], false)
-	end
+
+	-- (REP only) show HUD text now, so that it will be on top
+	if not REPENTANCE_PLUS then showHUDText(texts) end
+
 	return true
 end
 
 --- if player holds "Book of Virtues" spawns the respective wisps of the invoked items (except "Lemegeton")
 --- @param book CollectibleType
+--- @param rng RNG
 --- @param player EntityPlayer
-local function spawnAlmanachBookWisp(_, book, _, player)
+--- @param flag UseFlag
+--- @param slot ActiveSlot
+--- @param varData integer
+local function spawnAlmanachBookWisp(_, book, rng, player, flag, slot, varData)
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
-		if calledFromAlmanach then
-			if not almanachLemegeton then
-				player:AddWisp(book, player.Position, true)
-			end
+		if ((calledFromAlmanach == true) and (almanachLemegeton == false)) then
+			player:AddWisp(book, player.Position, true)
 		end
 	end
 end
@@ -180,7 +234,10 @@ function Almanach:Init(mod)
 
 	addItemToBookBlacklist(mod.Name, {CollectibleType.COLLECTIBLE_HOW_TO_JUMP, self.Target.Type})
 	mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, getBooks)
-	mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, getWispName, FamiliarVariant.ITEM_WISP)
+	if not REPENTANCE_PLUS then
+		-- not needed with Rep+
+		mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, getWispName, FamiliarVariant.ITEM_WISP)
+	end
 	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.Target.Type)
 	mod:AddCallback(ModCallbacks.MC_USE_ITEM, spawnAlmanachBookWisp)
 	mod:addConsoleCommand("thesaint_reloadbooks", thesaint_reloadbooks)

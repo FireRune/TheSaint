@@ -298,6 +298,13 @@ local function AddRegistry()
 	EID:addGoldenTrinketMetadataAdditive(holyPenny, nil, 17, {8, 13})
 	--#endregion
 
+	--#region Scattered Pages
+
+	local scatteredPages = enums.TrinketType.TRINKET_SCATTERED_PAGES
+	desc = "Using an active item has a 15% chance to trigger a random book item"
+	EID:addTrinket(scatteredPages, desc)
+	EID:addGoldenTrinketMetadataAdditive(scatteredPages, nil, 15, {10, 18})
+	--#endregion
 	--#endregion
 
 	--#region PocketItems
