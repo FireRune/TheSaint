@@ -12,8 +12,8 @@ Using [IsaacScript](https://isaacscript.github.io) (version 87.8.0)
 ## Current list of features
 
 - 2 new characters: "The Saint" and "Tainted Saint"
-- 6 new collectibles
-- 1 new trinket
+- 8 new collectibles
+- 2 new trinkets
 - 2 new cards/runes
 - integration for the following mods
 	- [External Item Descriptions](https://github.com/wofsauge/External-Item-Descriptions)

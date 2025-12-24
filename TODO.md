@@ -20,12 +20,12 @@
 - The Saint:
 	- [ ] Boss Rush
 	- [x] Mom's Heart on Hard Mode (Almanach)
-	- [ ] Satan
+	- [x] Satan (Scorched Baby)
 	- [x] Isaac (Divine Bombs)
-	- [x] The Lamb (Wooden Key)
-	- [x] ??? (Holy Penny)
+	- [x] The Lamb (Scattered Pages)
+	- [ ] ???
 	- [ ] Mega Satan (maybe co-op baby?)
-	- [ ] Hush
+	- [x] Hush (Wooden Key)
 	- [x] Greed Mode (Library Card)
 	- [ ] Greedier Mode
 	- [ ] Delirium
@@ -36,8 +36,8 @@
 	- [ ] Satan + Isaac + The Lamb + ??? (Trinket)
 	- [ ] Greedier Mode (Card)
 	- [x] Delirium (Mending Heart)
-	- [ ] Mother (Trinket)
-	- [ ] The Beast (Item)
+	- [x] Mother (Holy Penny)
+	- [x] The Beast (Rite of Rebirth)
 	- [ ] Mega Satan (Pickup or Object)
 
 ### Almanach.lua
