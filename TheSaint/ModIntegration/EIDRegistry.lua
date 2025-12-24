@@ -301,9 +301,9 @@ local function AddRegistry()
 	--#region Scattered Pages
 
 	local scatteredPages = enums.TrinketType.TRINKET_SCATTERED_PAGES
-	desc = "Using an active item has a 15% chance to trigger a random book item"
+	desc = "Using an active item has a 33% chance to trigger a random book item#Can only happen once per room"
 	EID:addTrinket(scatteredPages, desc)
-	EID:addGoldenTrinketMetadataAdditive(scatteredPages, nil, 15, {10, 18})
+	EID:addGoldenTrinketMetadataAdditive(scatteredPages, nil, 33, {33, 67})
 	--#endregion
 	--#endregion
 
