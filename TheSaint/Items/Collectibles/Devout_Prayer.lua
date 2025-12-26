@@ -2,6 +2,7 @@ local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local ddTracking = require("TheSaint.DevilDealTracking")
 local featureTarget = require("TheSaint.structures.FeatureTarget")
+local utils = include("TheSaint.utils")
 
 local game = Game()
 local hud = game:GetHUD()
@@ -140,11 +141,11 @@ end
 local function evaluateStats(_, player, flag)
 	local counters = getPlayerCounters(player)
 
-	if (flag & CacheFlag.CACHE_DAMAGE == CacheFlag.CACHE_DAMAGE) then
+	if (flag == CacheFlag.CACHE_DAMAGE) then
 		player.Damage = player.Damage + (0.25 * counters.damage)
 	end
 
-	if (flag & CacheFlag.CACHE_LUCK == CacheFlag.CACHE_LUCK) then
+	if (flag == CacheFlag.CACHE_LUCK) then
 		player.Luck = player.Luck + (0.1 * counters.luck)
 	end
 end
@@ -310,8 +311,7 @@ function Devout_Prayer:Init(mod)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate, 0)
 	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.Target.Type)
 	mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, postNewLevel_resetCounters)
-	mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats, CacheFlag.CACHE_DAMAGE)
-	mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats, CacheFlag.CACHE_LUCK)
+	utils:AddTargetedCallback(mod, ModCallbacks.MC_EVALUATE_CACHE, evaluateStats, {CacheFlag.CACHE_DAMAGE, CacheFlag.CACHE_LUCK})
 end
 
 return Devout_Prayer

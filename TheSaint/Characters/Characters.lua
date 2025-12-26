@@ -56,39 +56,29 @@ local function evaluateStats(_, player, flag)
 	if (not IsChar(player)) then return end
 
 	local playerStat = GetPlayerStatTable(player).stats
-	if (flag & CacheFlag.CACHE_DAMAGE == CacheFlag.CACHE_DAMAGE) then
+	if (flag == CacheFlag.CACHE_DAMAGE) then
 		player.Damage = (player.Damage * playerStat.damageMult) + playerStat.damage
-	end
-	if (flag & CacheFlag.CACHE_FIREDELAY == CacheFlag.CACHE_FIREDELAY) then
+	elseif (flag == CacheFlag.CACHE_FIREDELAY) then
 		player.MaxFireDelay = player.MaxFireDelay + playerStat.firedelay
-	end
-
-	if (flag & CacheFlag.CACHE_SHOTSPEED == CacheFlag.CACHE_SHOTSPEED) then
+	elseif (flag == CacheFlag.CACHE_SHOTSPEED) then
 		player.ShotSpeed = player.ShotSpeed + playerStat.shotspeed
-	end
-
-	if (flag & CacheFlag.CACHE_RANGE == CacheFlag.CACHE_RANGE) then
+	elseif (flag == CacheFlag.CACHE_RANGE) then
 		player.TearRange = player.TearRange + playerStat.range
-	end
-
-	if (flag & CacheFlag.CACHE_SPEED == CacheFlag.CACHE_SPEED) then
+	elseif (flag == CacheFlag.CACHE_SPEED) then
 		player.MoveSpeed = player.MoveSpeed + playerStat.speed
-	end
-
-	if (flag & CacheFlag.CACHE_LUCK == CacheFlag.CACHE_LUCK) then
-		player.Luck = player.Luck + playerStat.luck
-	end
-
-	if (flag & CacheFlag.CACHE_FLYING == CacheFlag.CACHE_FLYING) and playerStat.flying then
-		player.CanFly = true
-	end
-
-	if (flag & CacheFlag.CACHE_TEARFLAG == CacheFlag.CACHE_TEARFLAG) then
+	elseif (flag == CacheFlag.CACHE_TEARFLAG) then
 		player.TearFlags = player.TearFlags | playerStat.tearflags
-	end
-
-	if (flag & CacheFlag.CACHE_TEARCOLOR == CacheFlag.CACHE_TEARCOLOR) then
+	elseif (flag == CacheFlag.CACHE_TEARCOLOR) then
 		player.TearColor = playerStat.tearcolor
+	elseif (flag == CacheFlag.CACHE_FLYING) and playerStat.flying then
+		player.CanFly = true
+	-- elseif (flag == CacheFlag.CACHE_WEAPON) then
+	-- elseif (flag == CacheFlag.CACHE_FAMILIARS) then
+	elseif (flag == CacheFlag.CACHE_LUCK) then
+		player.Luck = player.Luck + playerStat.luck
+	-- elseif (flag == CacheFlag.CACHE_SIZE) then
+	-- elseif (flag == CacheFlag.CACHE_COLOR) then
+	-- elseif (flag == CacheFlag.CACHE_PICKUP_VISION) then
 	end
 end
 

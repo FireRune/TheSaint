@@ -118,7 +118,7 @@ local function evaluateStats(_, player, flag)
 	if (hasMendingHeart(player)) then
 		local counters = getPlayerCounters(player)
 
-		if (flag & CacheFlag.CACHE_DAMAGE == CacheFlag.CACHE_DAMAGE) then
+		if (flag == CacheFlag.CACHE_DAMAGE) then
 			player.Damage = player.Damage + (0.25 * counters.heartsRestored)
 		end
 	end
