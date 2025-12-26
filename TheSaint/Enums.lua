@@ -53,10 +53,12 @@ local Enums = {
 		THE_BEAST = "TheBeast",
 	},
 
-	--- @enum TheSaint.Enums.Almanach_CustomVarData
-	CustomVarData_Almanach = {
-		NORMAL = 0,
-		SCATTERED_PAGES = 1,
+	CustomVarData = {
+		--- @enum TheSaint.Enums.CustomVarData.Almanach
+		Almanach = {
+			NORMAL = 0,
+			SCATTERED_PAGES = 1,
+		},
 	},
 
 	--- @enum TheSaint.Enums.Setting

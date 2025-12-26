@@ -144,7 +144,7 @@ local function useItem(_, collectible, rng, player, flag, slot, varData)
 		Text2 = nil,
 	}
 
-	local scatteredPagesActivation = (varData == enums.CustomVarData_Almanach.SCATTERED_PAGES)
+	local scatteredPagesActivation = (varData == enums.CustomVarData.Almanach.SCATTERED_PAGES)
 	local limit = ((scatteredPagesActivation and 1) or 2)
 
 	--- @type TheSaint.Items.Collectibles.Almanach.Book[]

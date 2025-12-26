@@ -30,13 +30,13 @@ local function useItem(_, collectible, rng, player, flags)
 	local trinketMult = math.min(3, player:GetTrinketMultiplier(Scattered_Pages.Target.Type))
 	if ((v.room.EffectTriggered == false) and (effectIsRunning == false) and (trinketMult > 0)) then
 		effectIsRunning = true
-		v.room.EffectTriggered = true
 
 		-- at this point `trinketMult` can only have 1, 2 or 3 as its value
 		local chance = (trinketMult / 3)
 
 		local effectTriggers = (rng:RandomFloat() < chance)
 		if (effectTriggers == true) then
+			v.room.EffectTriggered = true
 			local useFromCarBattery = false
 			if (flags & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then
 				useFromCarBattery = true
@@ -50,7 +50,7 @@ local function useItem(_, collectible, rng, player, flags)
 
 			--- necessary until the `Binding of Isaac Lua API` VSCode extension adds the `customVarData` parameter to this function
 			--- @diagnostic disable-next-line: param-type-mismatch
-			player:UseActiveItem(enums.CollectibleType.COLLECTIBLE_ALMANACH, newFlags, -1, enums.CustomVarData_Almanach.SCATTERED_PAGES)
+			player:UseActiveItem(enums.CollectibleType.COLLECTIBLE_ALMANACH, newFlags, -1, enums.CustomVarData.Almanach.SCATTERED_PAGES)
 		end
 
 		effectIsRunning = false
