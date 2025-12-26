@@ -388,7 +388,7 @@ end
 --- Automatically reroll any item/pickup that hasn't been unlocked yet
 --- @param pickup EntityPickup
 local function postPickupInitFirst(_, pickup)
-	if (mcm:getSetting("UnlockAll")) then return end
+	if (mcm:getSetting(enums.Setting.UNLOCK_ALL) == true) then return end
 
 	for _, unlock in ipairs(unlocksTable) do
 		local pickupFound = rerollIfLocked(pickup, unlock.Player, unlock.Marks, unlock.Difficulty, unlock.PickupType, unlock.Unlockable)

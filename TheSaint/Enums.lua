@@ -58,6 +58,12 @@ local Enums = {
 		NORMAL = 0,
 		SCATTERED_PAGES = 1,
 	},
+
+	--- @enum TheSaint.Enums.Setting
+	Setting = {
+		--- setting value is `boolean`
+		UNLOCK_ALL = "UnlockAll",
+	},
 }
 
 return Enums

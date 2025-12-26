@@ -1,3 +1,5 @@
+local enums = require("TheSaint.Enums")
+
 --- @class TheSaint.ModIntegration.MCM : TheSaint.classes.ModFeature
 local MCM = {
 	IsInitialized = false,
@@ -6,7 +8,7 @@ local MCM = {
 
 local v = {
 	persistent = {
-		UnlockAll = false,
+		[enums.Setting.UNLOCK_ALL] = false,
 	},
 }
 
@@ -25,20 +27,24 @@ local function modConfigMenu_Init()
 	ModConfigMenu.AddSpace(MOD_NAME, "Info")
 	ModConfigMenu.AddText(MOD_NAME, "Info", function() return "by " .. MOD_CREATOR end)
 
+	local settingName = ""
+
+	-- setting "UnlockAll"
+	settingName = enums.Setting.UNLOCK_ALL
 	local everythingUnlockedSetting = {
 		Type = ModConfigMenu.OptionType.BOOLEAN,
-		Attribute = "UnlockAll",
+		Attribute = settingName,
 		Display = function ()
-			local settingValue = ((v.persistent.UnlockAll and "True") or "False")
+			local settingValue = ((v.persistent[settingName] and "True") or "False")
 			return "Grant all unlocks: "..settingValue
 		end,
 		Default = false,
 		CurrentSetting = function ()
-			return v.persistent.UnlockAll
+			return v.persistent[settingName]
 		end,
 		--- @param currentValue boolean
 		OnChange = function (currentValue)
-			v.persistent.UnlockAll = currentValue
+			v.persistent[settingName] = currentValue
 		end,
 	}
 	ModConfigMenu.AddSetting(MOD_NAME, "Settings", everythingUnlockedSetting)
@@ -56,6 +62,8 @@ function MCM:Init(mod)
 	end)
 end
 
+--- @param setting TheSaint.Enums.Setting
+--- @return any
 function MCM:getSetting(setting)
 	return v.persistent[setting]
 end
