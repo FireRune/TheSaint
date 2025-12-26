@@ -32,10 +32,14 @@ local function familiarUpdate(_, familiar)
 	local fireDirection = player:GetFireDirection()
 
 	if ((fireDirection == Direction.NO_DIRECTION) and (familiar.FireCooldown <= 0)) then
+		familiar.ShootDirection = Direction.NO_DIRECTION
 		familiar:PlayFloatAnim(Direction.DOWN)
 	else
+		if (fireDirection ~= Direction.NO_DIRECTION) then
+			familiar.ShootDirection = fireDirection
+		end
 		--- @type Vector
-		local tearVector = isc:directionToVector(fireDirection)
+		local tearVector = isc:directionToVector(familiar.ShootDirection)
 		if (familiar.FireCooldown <= 0) then
 			local tear = familiar:FireProjectile(tearVector)
 			tear:AddTearFlags(TearFlags.TEAR_BURN)
@@ -54,7 +58,7 @@ local function familiarUpdate(_, familiar)
 				familiar.FireCooldown = 22
 			end
 		end
-		familiar:PlayShootAnim(fireDirection)
+		familiar:PlayShootAnim(familiar.ShootDirection)
 	end
 	familiar.FireCooldown = familiar.FireCooldown - 1
 end
