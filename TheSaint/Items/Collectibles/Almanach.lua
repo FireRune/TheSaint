@@ -130,7 +130,7 @@ end
 --- @param varData integer
 local function useItem(_, collectible, rng, player, flag, slot, varData)
 	-- "Car Battery" should boost the triggered items instead of using "Almanach" twice
-	if (flag & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return false end
+	if (flag & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return end
 	local hasCarBattery = isc:hasCollectible(player, CollectibleType.COLLECTIBLE_CAR_BATTERY)
 	local itemUses = ((hasCarBattery and 2) or 1)
 

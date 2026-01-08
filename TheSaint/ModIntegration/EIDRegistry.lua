@@ -83,7 +83,7 @@ local function AddRegistry()
 	--#region Almanach
 
 	local almanach = enums.CollectibleType.COLLECTIBLE_ALMANACH
-	desc = "Invokes the effects of 2 random 'book'-items#Can also invoke Books that haven't been unlocked yet"
+	desc = "Invokes the effects of 2 random book items#Can also invoke books that haven't been unlocked yet"
 	EID:addCollectible(almanach, desc)
 
 	desc = "Spawns the appropriate wisps of the triggered books"
@@ -303,6 +303,7 @@ local function AddRegistry()
 	local scatteredPages = enums.TrinketType.TRINKET_SCATTERED_PAGES
 	desc = "Using an active item has a 33% chance to trigger a random book item#Can only happen once per room"
 	EID:addTrinket(scatteredPages, desc)
+	EID:addCondition("5.350."..scatteredPages, almanach, "Using Almanach has a 33% chance to trigger 2 random book items instead")
 	EID:addGoldenTrinketMetadataAdditive(scatteredPages, nil, 33, {33, 67})
 	--#endregion
 	--#endregion

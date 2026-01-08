@@ -48,9 +48,15 @@ local function useItem(_, collectible, rng, player, flags)
 			end
 			--- @cast newFlags UseFlag
 
+			local custVarData = enums.CustomVarData.Almanach.SCATTERED_PAGES
+			-- Synergy for using "Almanach" (the actual item) while holding "Scattered Pages": triggers 4 `book`-items
+			if ((collectible == enums.CollectibleType.COLLECTIBLE_ALMANACH) and (flags & UseFlag.USE_OWNED == UseFlag.USE_OWNED)) then
+				custVarData = enums.CustomVarData.Almanach.NORMAL
+			end
+
 			--- necessary until the `Binding of Isaac Lua API` VSCode extension adds the `customVarData` parameter to this function
 			--- @diagnostic disable-next-line: param-type-mismatch
-			player:UseActiveItem(enums.CollectibleType.COLLECTIBLE_ALMANACH, newFlags, -1, enums.CustomVarData.Almanach.SCATTERED_PAGES)
+			player:UseActiveItem(enums.CollectibleType.COLLECTIBLE_ALMANACH, newFlags, -1, custVarData)
 		end
 
 		effectIsRunning = false
