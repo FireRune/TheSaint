@@ -20,47 +20,21 @@ end
 --- @param familiar EntityFamiliar
 local function familiarInit(_, familiar)
 	familiar:AddToFollowers()
-	familiar.FireCooldown = 2
-	familiar:PlayFloatAnim(Direction.DOWN)
 end
 
 --- @param familiar EntityFamiliar
 local function familiarUpdate(_, familiar)
-	familiar:FollowParent()
-
-	local player = familiar.Player
-	local fireDirection = player:GetFireDirection()
-
-	if ((fireDirection == Direction.NO_DIRECTION) and (familiar.FireCooldown <= 0)) then
-		familiar.ShootDirection = Direction.NO_DIRECTION
-		familiar:PlayFloatAnim(Direction.DOWN)
-	else
-		if (fireDirection ~= Direction.NO_DIRECTION) then
-			familiar.ShootDirection = fireDirection
-		end
-		--- @type Vector
-		local tearVector = isc:directionToVector(familiar.ShootDirection)
-		if (familiar.FireCooldown <= 0) then
-			local tear = familiar:FireProjectile(tearVector)
+	familiar:Shoot()
+	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_TEAR, TearVariant.BLUE, 0)) do
+		if ((ent.SpawnerType == EntityType.ENTITY_FAMILIAR)
+		and (ent.SpawnerVariant == Scorched_Baby.Target.Familiar)
+		and (ent.FrameCount == 0)) then
+			local tear = ent:ToTear() --- @cast tear EntityTear
 			tear:AddTearFlags(TearFlags.TEAR_BURN)
 			tear:ChangeVariant(TearVariant.FIRE_MIND)
-			if (player:HasCollectible(CollectibleType.COLLECTIBLE_BFFS)) then
-				tear.CollisionDamage = 7
-				tear.Scale = 1.15
-			else
-				tear.CollisionDamage = 3.5
-				tear.Scale = 0.7
-			end
-
-			if (player:HasTrinket(TrinketType.TRINKET_FORGOTTEN_LULLABY)) then
-				familiar.FireCooldown = 11
-			else
-				familiar.FireCooldown = 22
-			end
 		end
-		familiar:PlayShootAnim(familiar.ShootDirection)
 	end
-	familiar.FireCooldown = familiar.FireCooldown - 1
+	familiar:FollowParent()
 end
 
 --- @param mod ModUpgraded
