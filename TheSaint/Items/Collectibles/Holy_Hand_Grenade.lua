@@ -30,19 +30,26 @@ local v = {
 	}
 }
 
+-- flag to check if "Holy Hand Grenade" is triggered from "? Card"
+local questionMarkCardUsed = false
+
+--- @param card Card
+--- @param player EntityPlayer
+--- @param flags UseFlag
+local function useCard_QuestionMark(_, card, player, flags)
+	if (player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == Holy_Hand_Grenade.Target.Type) then
+		questionMarkCardUsed = true
+	end
+end
+
 --- Toggle between holding the item above Isaac's head and putting it away
 --- @param collectible CollectibleType
 --- @param rng RNG
 --- @param player EntityPlayer
 --- @param flags UseFlag
 local function useItem(_, collectible, rng, player, flags)
-	local retVal = {
-		Discharge = false,
-		Remove = false,
-		ShowAnim = false,
-	}
 	-- prevent "Car Battery"
-	if (flags & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return retVal end
+	if (flags & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return end
 
 	local playerIndex = "HHG_"..isc:getPlayerIndex(player)
 	if (not v.room.playerItemState[playerIndex]) then
@@ -52,7 +59,11 @@ local function useItem(_, collectible, rng, player, flags)
 		v.room.playerItemState[playerIndex] = false
 		player:AnimateCollectible(Holy_Hand_Grenade.Target.Type, "HideItem")
 	end
-	return retVal
+	return {
+		Discharge = false,
+		Remove = false,
+		ShowAnim = false,
+	}
 end
 
 --- Returns a normalized `Vector` (Length = 1) that corresponds to the major cardinal direction of `inputVector`
@@ -88,7 +99,11 @@ local function tryThrowGrenade(player)
 			v.room.bombList[ptr] = {["Holy_Hand_Grenade"] = true}
 			player:TryHoldEntity(grenade)
 			player:ThrowHeldEntity(launchVector)
-			player:RemoveCollectible(Holy_Hand_Grenade.Target.Type)
+			if (questionMarkCardUsed) then
+				questionMarkCardUsed = false
+			else
+				player:RemoveCollectible(Holy_Hand_Grenade.Target.Type)
+			end
 		end
 		return true
 	end
@@ -167,6 +182,7 @@ function Holy_Hand_Grenade:Init(mod)
 	if (self.IsInitialized) then return end
 
 	mod:saveDataManager(self.SaveDataKey, v)
+	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard_QuestionMark, Card.CARD_QUESTIONMARK)
 	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.Target.Type)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate, 0)
 	mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, postBombUpdate, BombVariant.BOMB_GIGA)

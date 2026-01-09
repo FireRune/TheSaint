@@ -35,6 +35,10 @@ local v = {
 -- flag to check wether any Pocket Item other than "Devout Prayer" was used
 local otherPocketItemUsed = false
 
+-- flag to check if "Devout Prayer" is triggered from "? Card"
+-- (should never happen because "Devout Prayer" has the "hidden"-attribute in items.xml and should only be accessible as a Pocket Active)
+local questionMarkCardUsed = false
+
 --- charge mechanic
 --- @param pointValue integer
 local function chargeDevoutPrayer(pointValue)
@@ -79,9 +83,21 @@ local function preSpawnCleanAward(_, rng, spawnPos)
 	end
 end
 
---- if any Pocket Item other than "Devout Prayer" is used, set flag to prevent accidental activation.<br>
---- used both in MC_USE_CARD and MC_USE_PILL
-local function useOtherPocketItem()
+--- If any Pocket Item other than "Devout Prayer" is used, set flag to prevent accidental activation
+--- @param card Card
+--- @param player EntityPlayer
+--- @param flags UseFlag
+local function useCard(_, card, player, flags)
+	if ((card == Card.CARD_QUESTIONMARK) and (player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == Devout_Prayer.Target.Type)) then
+		questionMarkCardUsed = true
+	end
+	otherPocketItemUsed = true
+end
+--- If any Pocket Item other than "Devout Prayer" is used, set flag to prevent accidental activation
+--- @param pillEffect PillEffect
+--- @param player EntityPlayer
+--- @param flags UseFlag
+local function usePill(_, pillEffect, player, flags)
 	otherPocketItemUsed = true
 end
 
@@ -246,7 +262,7 @@ end
 --- @param slot ActiveSlot
 local function useItem(_, collectible, rng, player, flags, slot)
 	-- "Car Battery" has no effect
-	if (flags & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return false end
+	if (flags & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return end
 
 	-- "Void" only invokes the luck up effect
 	local isVoid = (flags & UseFlag.USE_VOID == UseFlag.USE_VOID)
@@ -279,8 +295,12 @@ local function useItem(_, collectible, rng, player, flags, slot)
 			effectSpawnItem(rng, player, extraEffect)
 		end
 
-		-- manually remove charges, except when used through "Void"
-		if (not isVoid) then player:SetActiveCharge(charge - chargeSpent, slot) end
+		-- manually remove charges, except when used through "Void" or "? Card"
+		if (questionMarkCardUsed) then
+			questionMarkCardUsed = false
+		elseif (not isVoid) then
+			player:SetActiveCharge(charge - chargeSpent, slot)
+		end
 
 		-- if holding "Book of Virtues", spawn wisps
 		if (player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES)) then
@@ -306,8 +326,8 @@ function Devout_Prayer:Init(mod)
 	mod:saveDataManager(self.SaveDataKey, v)
 	mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, postEntityKill)
 	mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, preSpawnCleanAward)
-	mod:AddCallback(ModCallbacks.MC_USE_CARD, useOtherPocketItem)
-	mod:AddCallback(ModCallbacks.MC_USE_PILL, useOtherPocketItem)
+	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard)
+	mod:AddCallback(ModCallbacks.MC_USE_PILL, usePill)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate, 0)
 	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.Target.Type)
 	mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, postNewLevel_resetCounters)
