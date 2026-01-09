@@ -96,3 +96,8 @@ add front/back sprites + anims for:
 ## Mod integration
 
 - [ ] Repentogon support
+	- [ ] Devout_Prayer.lua
+		- correctly interact with "? Card" via MC_PRE_USE_CARD
+		- show item as usable even if not fully charged
+	- [ ] Rite_of_Rebirth.lua
+		- rework entirely
