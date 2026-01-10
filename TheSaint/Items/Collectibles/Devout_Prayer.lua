@@ -35,9 +35,9 @@ local v = {
 -- flag to check wether any Pocket Item other than "Devout Prayer" was used
 local otherPocketItemUsed = false
 
--- flag to check if "Devout Prayer" is triggered from "? Card"
+-- if "Devout Prayer" is triggered from "? Card", store the current amount of charge, to restore it later
 -- (should never happen because "Devout Prayer" has the "hidden"-attribute in items.xml and should only be accessible as a Pocket Active)
-local questionMarkCardUsed = false
+local questionMarkCardUsed_CurrentCharge = 0
 
 --- charge mechanic
 --- @param pointValue integer
@@ -89,8 +89,11 @@ end
 --- @param flags UseFlag
 local function useCard(_, card, player, flags)
 	if ((card == Card.CARD_QUESTIONMARK) and (player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == Devout_Prayer.Target.Type)) then
-		questionMarkCardUsed = true
+		-- Due to the way "? Card" works, it will trigger the MC_USE_ITEM callback before this one,
+		-- discharging the item in the process. To prevent that, restore the charge here.
+		player:SetActiveCharge(questionMarkCardUsed_CurrentCharge, ActiveSlot.SLOT_PRIMARY)
 	end
+	questionMarkCardUsed_CurrentCharge = 0
 	otherPocketItemUsed = true
 end
 --- If any Pocket Item other than "Devout Prayer" is used, set flag to prevent accidental activation
@@ -295,10 +298,9 @@ local function useItem(_, collectible, rng, player, flags, slot)
 			effectSpawnItem(rng, player, extraEffect)
 		end
 
-		-- manually remove charges, except when used through "Void" or "? Card"
-		if (questionMarkCardUsed) then
-			questionMarkCardUsed = false
-		elseif (not isVoid) then
+		-- manually remove charges, except when used through "Void"
+		if (not isVoid) then
+			questionMarkCardUsed_CurrentCharge = charge
 			player:SetActiveCharge(charge - chargeSpent, slot)
 		end
 
