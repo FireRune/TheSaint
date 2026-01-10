@@ -56,6 +56,7 @@ local features = {
 	include("TheSaint.Items.Trinkets.Scattered_Pages"),
 	include("TheSaint.Items.PocketItems.Library_Card"),
 	include("TheSaint.Items.PocketItems.Soul_Saint"),
+	include("TheSaint.Items.PocketItems.Red_Joker"),
 
 	include("TheSaint.ModIntegration.EIDRegistry"),
 }

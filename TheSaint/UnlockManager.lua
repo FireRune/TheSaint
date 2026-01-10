@@ -124,12 +124,13 @@ local bossMarks = {
 --#region Unlocks
 
 --- @param player TheSaint.UnlockManager.UnlockPlayer
---- @param marks TheSaint.Enums.CompletionMarks[]
+--- @param marks TheSaint.Enums.CompletionMarks | TheSaint.Enums.CompletionMarks[]
 --- @param difficulty TheSaint.UnlockManager.UnlockDifficulty
 --- @param typeOfPickup TheSaint.UnlockManager.TypeOfPickup
 --- @param unlockable integer
 --- @return TheSaint.UnlockManager.Unlock
 local function createUnlock(player, marks, difficulty, typeOfPickup, unlockable)
+	if (type(marks) ~= "table") then marks = {marks} end
 	return {
 		Player = player,
 		Marks = marks,
@@ -143,34 +144,35 @@ end
 local unlocksTable = {
 	-- (Boss Rush with Saint)
 	-- "Almanach" (Mom's Heart on Hard Mode with Saint)
-	createUnlock("Saint", {enums.CompletionMarks.MOMS_HEART}, "hard", "collectible", enums.CollectibleType.COLLECTIBLE_ALMANACH),
+	createUnlock("Saint", enums.CompletionMarks.MOMS_HEART, "hard", "collectible", enums.CollectibleType.COLLECTIBLE_ALMANACH),
 	-- "Scorched Baby" (Satan with Saint)
-	createUnlock("Saint", {enums.CompletionMarks.SATAN}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_SCORCHED_BABY),
+	createUnlock("Saint", enums.CompletionMarks.SATAN, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_SCORCHED_BABY),
 	-- "Divine Bombs" (Isaac with Saint)
-	createUnlock("Saint", {enums.CompletionMarks.ISAAC}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS),
+	createUnlock("Saint", enums.CompletionMarks.ISAAC, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS),
 	-- "Scattered Pages" (The Lamb with Saint)
-	createUnlock("Saint", {enums.CompletionMarks.THE_LAMB}, "normal", "trinket", enums.TrinketType.TRINKET_SCATTERED_PAGES),
+	createUnlock("Saint", enums.CompletionMarks.THE_LAMB, "normal", "trinket", enums.TrinketType.TRINKET_SCATTERED_PAGES),
 	-- (??? with Saint)
 	-- (Mega Satan with Saint)
 	-- "Library Card" (Greed Mode with Saint)
-	createUnlock("Saint", {enums.CompletionMarks.GREED_MODE}, "normal", "card", enums.Card.CARD_LIBRARY),
+	createUnlock("Saint", enums.CompletionMarks.GREED_MODE, "normal", "card", enums.Card.CARD_LIBRARY),
 	-- "Wooden Key" (Hush with Saint)
-	createUnlock("Saint", {enums.CompletionMarks.HUSH}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_WOODEN_KEY),
+	createUnlock("Saint", enums.CompletionMarks.HUSH, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_WOODEN_KEY),
 	-- (Greedier Mode with Saint)
 	-- (Delirium with Saint)
 	-- (Mother with Saint)
 	-- "Holy Hand Grenade" (The Beast with Saint)
-	createUnlock("Saint", {enums.CompletionMarks.THE_BEAST}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE),
+	createUnlock("Saint", enums.CompletionMarks.THE_BEAST, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE),
 	-- "Soul of the Saint" (Boss Rush + Hush with T.Saint)
 	createUnlock("T_Saint", {enums.CompletionMarks.BOSS_RUSH, enums.CompletionMarks.HUSH}, "normal", "rune", enums.Card.CARD_SOUL_SAINT),
 	-- (Satan + Isaac + The Lamb + ??? with T.Saint)
-	-- (Greedier Mode with T.Saint)
+	-- "Red Joker" (Greedier Mode with T.Saint)
+	createUnlock("T_Saint", enums.CompletionMarks.GREED_MODE, "hard", "card", enums.Card.CARD_RED_JOKER),
 	-- "Mending Heart" (Delirium with T.Saint)
-	createUnlock("T_Saint", {enums.CompletionMarks.DELIRIUM}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_MENDING_HEART),
+	createUnlock("T_Saint", enums.CompletionMarks.DELIRIUM, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_MENDING_HEART),
 	-- "Holy Penny" (Mother with T.Saint)
-	createUnlock("T_Saint", {enums.CompletionMarks.MOTHER}, "normal", "trinket", enums.TrinketType.TRINKET_HOLY_PENNY),
+	createUnlock("T_Saint", enums.CompletionMarks.MOTHER, "normal", "trinket", enums.TrinketType.TRINKET_HOLY_PENNY),
 	-- "Rite of Rebirth" (The Beast with T.Saint)
-	createUnlock("T_Saint", {enums.CompletionMarks.THE_BEAST}, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH),
+	createUnlock("T_Saint", enums.CompletionMarks.THE_BEAST, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH),
 	-- (Mega Satan with T.Saint)
 }
 

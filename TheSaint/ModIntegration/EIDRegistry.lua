@@ -330,6 +330,14 @@ local function AddRegistry()
 	EID:addCard(soulOfTheSaint, desc)
 	--#endregion
 
+	--#region Red Joker
+
+	local redJoker = enums.Card.CARD_RED_JOKER
+	EID:addIcon("Card"..redJoker, "redjoker", 0, 32, 32, 4, 7, pocketIcons)
+	desc = "{{AngelDevilChance}} Teleports Isaac to the Devil or Angel Room#{{DevilRoom}} Guarantees a special Devil Room if it hasn't been generated yet"
+	EID:addCard(redJoker, desc)
+	--#endregion
+
 	--#endregion
 
 	--#region Characters

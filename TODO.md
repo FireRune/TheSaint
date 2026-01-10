@@ -34,7 +34,7 @@
 - Tainted Saint:
 	- [x] Boss Rush + Hush (Soul of the Saint)
 	- [ ] Satan + Isaac + The Lamb + ??? (Trinket)
-	- [ ] Greedier Mode (Card)
+	- [x] Greedier Mode (Red Joker)
 	- [x] Delirium (Mending Heart)
 	- [x] Mother (Holy Penny)
 	- [x] The Beast (Rite of Rebirth)

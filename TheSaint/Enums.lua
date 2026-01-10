@@ -24,6 +24,7 @@ local Enums = {
 	Card = {
 		CARD_LIBRARY = Isaac.GetCardIdByName("librarycard"),
 		CARD_SOUL_SAINT = Isaac.GetCardIdByName("soulofthesaint"),
+		CARD_RED_JOKER = Isaac.GetCardIdByName("redjoker"),
 	},
 
 	--- @enum TheSaint.Enums.PlayerType
