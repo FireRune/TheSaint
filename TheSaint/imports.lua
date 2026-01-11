@@ -29,6 +29,7 @@ If a feature should only be loaded once, import it with `include`.
 If a feature will be imported/used in multiple files, use `require`.
 
 Feature load order:
+- MCM
 - `require` features
 - `require` mod integration
 - `include` features
@@ -36,11 +37,12 @@ Feature load order:
 ]]
 --- @type TheSaint.classes.ModFeature[]
 local features = {
-	require("TheSaint.DevilDealTracking"),
-
+	-- MCM integration MUST be initialized first
 	require("TheSaint.ModIntegration.MCM"),
 
-	include("TheSaint.UnlockManager"),
+	require("TheSaint.DevilDealTracking"),
+	require("TheSaint.UnlockManager"),
+
 	include("TheSaint.Characters.Characters"),
 	include("TheSaint.Characters.The_Saint"),
 	include("TheSaint.Characters.Tainted_Saint"),

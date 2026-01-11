@@ -1,5 +1,5 @@
 <pocketitems>
     <card type="special" pickup="128" description="I hope nothing's overdue..." hud="librarycard" name="Library Card" mimiccharge="2" greedmode="false" />
 	<rune type="rune" pickup="129" description="???" hud="soulofthesaint" name="Soul of the Saint" mimiccharge="2" />
-	<card type="suit" pickup="2" description="???" hud="redjoker" name="Red Joker" mimiccharge="2" />
+	<card type="suit" pickup="2" description="???" hud="redjoker" name="Joker?" mimiccharge="2" />
 </pocketitems>

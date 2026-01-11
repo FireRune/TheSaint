@@ -47,12 +47,16 @@ local UnlockManager = {
 --- | "card"
 --- | "rune"
 
+--- @class TheSaint.UnlockManager.Unlockable
+--- @field Variant PickupVariant
+--- @field SubType integer
+
 --- @class TheSaint.UnlockManager.Unlock
 --- @field Player TheSaint.UnlockManager.UnlockPlayer
 --- @field Marks TheSaint.Enums.CompletionMarks[]
 --- @field Difficulty TheSaint.UnlockManager.UnlockDifficulty
 --- @field PickupType TheSaint.UnlockManager.TypeOfPickup
---- @field Unlockable integer
+--- @field Unlockable TheSaint.UnlockManager.Unlockable
 
 --- @alias TheSaint.UnlockManager.CmdOperation
 --- | "show"
@@ -123,58 +127,83 @@ local bossMarks = {
 
 --#region Unlocks
 
+--- @type TheSaint.UnlockManager.Unlock[]
+local unlocksTable = {}
+
+--- @type table<string, TheSaint.UnlockManager.Unlock>
+local unlocksMap = {}
+
 --- @param player TheSaint.UnlockManager.UnlockPlayer
 --- @param marks TheSaint.Enums.CompletionMarks | TheSaint.Enums.CompletionMarks[]
 --- @param difficulty TheSaint.UnlockManager.UnlockDifficulty
 --- @param typeOfPickup TheSaint.UnlockManager.TypeOfPickup
 --- @param unlockable integer
---- @return TheSaint.UnlockManager.Unlock
 local function createUnlock(player, marks, difficulty, typeOfPickup, unlockable)
 	if (type(marks) ~= "table") then marks = {marks} end
-	return {
+
+	--- @type PickupVariant
+	local variant = PickupVariant.PICKUP_NULL
+	if (typeOfPickup == "collectible") then
+		variant = PickupVariant.PICKUP_COLLECTIBLE
+	elseif (typeOfPickup == "trinket") then
+		variant = PickupVariant.PICKUP_TRINKET
+	elseif ((typeOfPickup == "card") or (typeOfPickup == "rune")) then
+		variant = PickupVariant.PICKUP_TAROTCARD
+	end
+
+	--- @type TheSaint.UnlockManager.Unlock
+	local unlock = {
 		Player = player,
 		Marks = marks,
 		Difficulty = difficulty,
 		PickupType = typeOfPickup,
-		Unlockable = unlockable,
+		--- @type TheSaint.UnlockManager.Unlockable
+		Unlockable = {
+			Variant = variant,
+			SubType = unlockable,
+		},
 	}
+
+	table.insert(unlocksTable, unlock)
+
+	local mapKey = variant.."_"..unlockable
+	unlocksMap[mapKey] = unlock
 end
 
---- @type TheSaint.UnlockManager.Unlock[]
-local unlocksTable = {
+local function fillUnlocksTableAndMap()
 	-- (Boss Rush with Saint)
 	-- "Almanach" (Mom's Heart on Hard Mode with Saint)
-	createUnlock("Saint", enums.CompletionMarks.MOMS_HEART, "hard", "collectible", enums.CollectibleType.COLLECTIBLE_ALMANACH),
+	createUnlock("Saint", enums.CompletionMarks.MOMS_HEART, "hard", "collectible", enums.CollectibleType.COLLECTIBLE_ALMANACH)
 	-- "Scorched Baby" (Satan with Saint)
-	createUnlock("Saint", enums.CompletionMarks.SATAN, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_SCORCHED_BABY),
+	createUnlock("Saint", enums.CompletionMarks.SATAN, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_SCORCHED_BABY)
 	-- "Divine Bombs" (Isaac with Saint)
-	createUnlock("Saint", enums.CompletionMarks.ISAAC, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS),
+	createUnlock("Saint", enums.CompletionMarks.ISAAC, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS)
 	-- "Scattered Pages" (The Lamb with Saint)
-	createUnlock("Saint", enums.CompletionMarks.THE_LAMB, "normal", "trinket", enums.TrinketType.TRINKET_SCATTERED_PAGES),
+	createUnlock("Saint", enums.CompletionMarks.THE_LAMB, "normal", "trinket", enums.TrinketType.TRINKET_SCATTERED_PAGES)
 	-- (??? with Saint)
 	-- (Mega Satan with Saint)
 	-- "Library Card" (Greed Mode with Saint)
-	createUnlock("Saint", enums.CompletionMarks.GREED_MODE, "normal", "card", enums.Card.CARD_LIBRARY),
+	createUnlock("Saint", enums.CompletionMarks.GREED_MODE, "normal", "card", enums.Card.CARD_LIBRARY)
 	-- "Wooden Key" (Hush with Saint)
-	createUnlock("Saint", enums.CompletionMarks.HUSH, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_WOODEN_KEY),
+	createUnlock("Saint", enums.CompletionMarks.HUSH, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_WOODEN_KEY)
 	-- (Greedier Mode with Saint)
 	-- (Delirium with Saint)
 	-- (Mother with Saint)
 	-- "Holy Hand Grenade" (The Beast with Saint)
-	createUnlock("Saint", enums.CompletionMarks.THE_BEAST, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE),
+	createUnlock("Saint", enums.CompletionMarks.THE_BEAST, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE)
 	-- "Soul of the Saint" (Boss Rush + Hush with T.Saint)
-	createUnlock("T_Saint", {enums.CompletionMarks.BOSS_RUSH, enums.CompletionMarks.HUSH}, "normal", "rune", enums.Card.CARD_SOUL_SAINT),
+	createUnlock("T_Saint", {enums.CompletionMarks.BOSS_RUSH, enums.CompletionMarks.HUSH}, "normal", "rune", enums.Card.CARD_SOUL_SAINT)
 	-- (Satan + Isaac + The Lamb + ??? with T.Saint)
 	-- "Red Joker" (Greedier Mode with T.Saint)
-	createUnlock("T_Saint", enums.CompletionMarks.GREED_MODE, "hard", "card", enums.Card.CARD_RED_JOKER),
+	createUnlock("T_Saint", enums.CompletionMarks.GREED_MODE, "hard", "card", enums.Card.CARD_RED_JOKER)
 	-- "Mending Heart" (Delirium with T.Saint)
-	createUnlock("T_Saint", enums.CompletionMarks.DELIRIUM, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_MENDING_HEART),
+	createUnlock("T_Saint", enums.CompletionMarks.DELIRIUM, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_MENDING_HEART)
 	-- "Holy Penny" (Mother with T.Saint)
-	createUnlock("T_Saint", enums.CompletionMarks.MOTHER, "normal", "trinket", enums.TrinketType.TRINKET_HOLY_PENNY),
+	createUnlock("T_Saint", enums.CompletionMarks.MOTHER, "normal", "trinket", enums.TrinketType.TRINKET_HOLY_PENNY)
 	-- "Rite of Rebirth" (The Beast with T.Saint)
-	createUnlock("T_Saint", enums.CompletionMarks.THE_BEAST, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH),
+	createUnlock("T_Saint", enums.CompletionMarks.THE_BEAST, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH)
 	-- (Mega Satan with T.Saint)
-}
+end
 
 --#endregion
 
@@ -347,44 +376,23 @@ local function rerollItem(pickup, typeOfPickup, lockedSubType)
 	end
 end
 
---- @param pickup EntityPickup
 --- @param unlockPlayer TheSaint.UnlockManager.UnlockPlayer
 --- @param compMarks TheSaint.Enums.CompletionMarks[]
 --- @param unlockDifficulty TheSaint.UnlockManager.UnlockDifficulty
---- @param typeOfPickup TheSaint.UnlockManager.TypeOfPickup
---- @param unlockableSubType integer
 --- @return boolean
-local function rerollIfLocked(pickup, unlockPlayer, compMarks, unlockDifficulty, typeOfPickup, unlockableSubType)
-	--- @type PickupVariant
-	local variant = PickupVariant.PICKUP_NULL
-	if (typeOfPickup == "collectible") then
-		variant = PickupVariant.PICKUP_COLLECTIBLE
-	elseif (typeOfPickup == "trinket") then
-		variant = PickupVariant.PICKUP_TRINKET
-	elseif ((typeOfPickup == "card") or (typeOfPickup == "rune")) then
-		variant = PickupVariant.PICKUP_TAROTCARD
+local function isUnlocked(unlockPlayer, compMarks, unlockDifficulty)
+	--- @type TheSaint.UnlockManager.CharacterCompletionMarks
+	local charMarks = v.persistent.characterMarks[unlockPlayer]
+
+	--- @type TheSaint.UnlockManager.CompletionState[]
+	local states = {}
+
+	for _, mark in ipairs(compMarks) do
+		local state = charMarks[mark]
+		table.insert(states, state)
 	end
 
-	-- this shouldn't normally happen, but just to make sure
-	if (variant == PickupVariant.PICKUP_NULL) then return false end
-
-	if (pickupCheck(pickup, variant, unlockableSubType) == true) then
-		local charMarks = v.persistent.characterMarks[unlockPlayer]
-
-		--- @type TheSaint.UnlockManager.CompletionState[]
-		local states = {}
-
-		for _, mark in ipairs(compMarks) do
-			local state = charMarks[mark]
-			table.insert(states, state)
-		end
-
-		if (stateCheck(states, unlockDifficulty) == false) then
-			rerollItem(pickup, typeOfPickup, unlockableSubType)
-		end
-		return true
-	end
-	return false
+	return stateCheck(states, unlockDifficulty)
 end
 
 --- Automatically reroll any item/pickup that hasn't been unlocked yet
@@ -392,9 +400,17 @@ end
 local function postPickupInitFirst(_, pickup)
 	if (mcm:getSetting(enums.Setting.UNLOCK_ALL) == true) then return end
 
-	for _, unlock in ipairs(unlocksTable) do
-		local pickupFound = rerollIfLocked(pickup, unlock.Player, unlock.Marks, unlock.Difficulty, unlock.PickupType, unlock.Unlockable)
-		if (pickupFound) then return end
+	-- pickup-check
+	--- @param unlock TheSaint.UnlockManager.Unlock
+	local unlockForPickup = isc:find(unlocksTable, function (_, unlock)
+		return pickupCheck(pickup, unlock.Unlockable.Variant, unlock.Unlockable.SubType)
+	end)
+	--- @cast unlockForPickup TheSaint.UnlockManager.Unlock?
+
+	if (unlockForPickup) then
+		if (isUnlocked(unlockForPickup.Player, unlockForPickup.Marks, unlockForPickup.Difficulty) == false) then
+			rerollItem(pickup, unlockForPickup.PickupType, unlockForPickup.Unlockable.SubType)
+		end
 	end
 
 end
@@ -595,6 +611,7 @@ function UnlockManager:Init(mod)
 	self.ThisMod = mod
 
 	mod:saveDataManager(self.SaveDataKey, v)
+	fillUnlocksTableAndMap()
 	-- awarding completion marks
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_AMBUSH_FINISHED, postAmbushFinished, isc.AmbushType.BOSS_RUSH)
 	mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, preSpawnCleanAward)
@@ -602,6 +619,21 @@ function UnlockManager:Init(mod)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst)
 	-- console commands
 	mod:addConsoleCommand("thesaint_marks", thesaint_marks)
+end
+
+--- for use in other features to check whether something from this mod is unlocked
+--- @param variant PickupVariant
+--- @param subtype integer
+--- @return boolean
+function UnlockManager:IsPickupUnlocked(variant, subtype)
+	if ((self.IsInitialized) and (mcm:getSetting(enums.Setting.UNLOCK_ALL) == false)) then
+		local mapKey = variant.."_"..subtype
+		local unlock = unlocksMap[mapKey]
+		if (unlock) then
+			return isUnlocked(unlock.Player, unlock.Marks, unlock.Difficulty)
+		end
+	end
+	return true
 end
 
 return UnlockManager

@@ -1,6 +1,7 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local featureTarget = require("TheSaint.structures.FeatureTarget")
+local unlockManager = require("TheSaint.UnlockManager")
 
 local game = Game()
 
@@ -32,17 +33,57 @@ local function useCard(_, card, player, flags)
 	player:UseCard(Card.CARD_JOKER, useFlag)
 end
 
--- TODO: implement mechanic of morphing "Joker" and "Red Joker" into each other (requires small rework of UnlockManager.lua)
+local spawnFromPlayer = false
 
---- Every "Joker" that spawns has a 10% chance to be turned into a "Red Joker"
---- @param pickup EntityPickup
-local function postPickupInitFirst_Joker(_, pickup)
-	local rng = pickup:GetDropRNG()
+--- @param type EntityType
+--- @param variant integer
+--- @param subtype integer
+--- @param position Vector
+--- @param velocity Vector
+--- @param spawner Entity
+--- @param seed integer
+--- @return { Type: EntityType, Variant: integer, SubType: integer, Seed: integer }?
+local function preEntitySpawn(_, type, variant, subtype, position, velocity, spawner, seed)
+	if ((type == EntityType.ENTITY_PICKUP)
+	and (variant == PickupVariant.PICKUP_TAROTCARD)
+	and ((subtype == Card.CARD_JOKER) or (subtype == Red_Joker.Target.Type))) then
+		-- if `spawner` is a player, then it is most likely due to dropping said item, therefore don't morph
+		if (spawner and spawner:ToPlayer()) then
+			spawnFromPlayer = true
+		end
+	end
 end
 
---- Every "Red Joker" that naturally spawns will turn into 
+local redJokerSpawn = false
+
+--- Every "Joker" that naturally spawns has a 10% chance to be turned into a "Red Joker"
+--- @param pickup EntityPickup
+local function postPickupInitFirst_Joker(_, pickup)
+	if (spawnFromPlayer) then
+		spawnFromPlayer = false
+		return
+	end
+	if (unlockManager:IsPickupUnlocked(PickupVariant.PICKUP_TAROTCARD, Red_Joker.Target.Type)) then
+		local rng = pickup:GetDropRNG()
+		if (rng:RandomInt(100) < 10) then
+			redJokerSpawn = true
+			pickup:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, Red_Joker.Target.Type, false, false, true)
+		end
+	end
+end
+
+--- Every "Red Joker" that naturally spawns will turn into "Joker"
 --- @param pickup EntityPickup
 local function postPickupInitFirst_RedJoker(_, pickup)
+	if (spawnFromPlayer) then
+		spawnFromPlayer = false
+		return
+	end
+	if (redJokerSpawn == false) then
+		pickup:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, Card.CARD_JOKER, false, false, true)
+	else
+		redJokerSpawn = false
+	end
 end
 
 --- Initialize this item's functionality
@@ -51,8 +92,9 @@ function Red_Joker:Init(mod)
 	if (self.IsInitialized) then return end
 
 	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard, self.Target.Type)
-	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst_Joker, PickupVariant.PICKUP_TAROTCARD, Card.CARD_JOKER)
+	mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, preEntitySpawn)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst_RedJoker, PickupVariant.PICKUP_TAROTCARD, self.Target.Type)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst_Joker, PickupVariant.PICKUP_TAROTCARD, Card.CARD_JOKER)
 end
 
 return Red_Joker
