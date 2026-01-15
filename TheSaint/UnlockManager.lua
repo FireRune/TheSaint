@@ -381,6 +381,8 @@ end
 --- @param unlockDifficulty TheSaint.UnlockManager.UnlockDifficulty
 --- @return boolean
 local function isUnlocked(unlockPlayer, compMarks, unlockDifficulty)
+	if (mcm:getSetting(enums.Setting.UNLOCK_ALL) == true) then return true end
+
 	--- @type TheSaint.UnlockManager.CharacterCompletionMarks
 	local charMarks = v.persistent.characterMarks[unlockPlayer]
 
@@ -398,8 +400,6 @@ end
 --- Automatically reroll any item/pickup that hasn't been unlocked yet
 --- @param pickup EntityPickup
 local function postPickupInitFirst(_, pickup)
-	if (mcm:getSetting(enums.Setting.UNLOCK_ALL) == true) then return end
-
 	-- pickup-check
 	--- @param unlock TheSaint.UnlockManager.Unlock
 	local unlockForPickup = isc:find(unlocksTable, function (_, unlock)
@@ -626,7 +626,7 @@ end
 --- @param subtype integer
 --- @return boolean
 function UnlockManager:IsPickupUnlocked(variant, subtype)
-	if ((self.IsInitialized) and (mcm:getSetting(enums.Setting.UNLOCK_ALL) == false)) then
+	if (self.IsInitialized) then
 		local mapKey = variant.."_"..subtype
 		local unlock = unlocksMap[mapKey]
 		if (unlock) then
