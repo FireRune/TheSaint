@@ -1,5 +1,6 @@
 --- @generic T: CollectibleType | TrinketType | Card | PillEffect | PlayerType
---- @class TheSaint.structures.FeatureTarget<T> : { Type: T }
+--- @class TheSaint.structures.FeatureTarget<T>
+--- @field Type T
 --- @field Familiar FamiliarVariant? @ if that feature spawns a familiar, specify the corresponding `FamiliarVariant` here
 --- @field Character PlayerType[]? @ specifies the player type(s), to which this feature should be applied innately
 local FeatureTarget = {}

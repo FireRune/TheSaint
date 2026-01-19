@@ -1,7 +1,5 @@
 --#region typedef
 
---- @diagnostic disable: undefined-doc-name
-
 --- Base class for this mod's features
 --- @class TheSaint.classes.ModFeature
 --- @field protected Init fun(self: TheSaint.classes.ModFeature, mod: ModUpgraded) @ this function should only run once, so include this line at the top of the function body:<br>```if (self.IsInitialized) then return end```
@@ -12,8 +10,6 @@
 --- @generic T: CollectibleType | TrinketType | Card | PillEffect | PlayerType
 --- @class TheSaint.classes.ModFeatureTargeted<T> : TheSaint.classes.ModFeature
 --- @field protected Target TheSaint.structures.FeatureTarget<T>
-
---- @diagnostic enable: undefined-doc-name
 --#endregion
 
 --- @class TheSaint.imports : TheSaint.classes.ModFeature
@@ -35,7 +31,7 @@ Feature load order:
 - `include` features
 - `include` mod integration
 ]]
---- @type TheSaint.classes.ModFeature[]
+---- @type TheSaint.classes.ModFeature[]
 local features = {
 	-- MCM integration MUST be initialized first
 	require("TheSaint.ModIntegration.MCM"),
@@ -69,6 +65,7 @@ function imports:LoadFeatures(mod)
 	if (self.IsInitialized) then return end
 
 	for _, feature in ipairs(features) do
+		--- @cast feature TheSaint.classes.ModFeature
 		feature:Init(mod)
 		feature.IsInitialized = true
 	end

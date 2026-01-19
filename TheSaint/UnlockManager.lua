@@ -415,6 +415,22 @@ local function postPickupInitFirst(_, pickup)
 
 end
 
+--- @param rng RNG
+--- @param card Card
+--- @param includePlaying boolean
+--- @param includeRunes boolean
+--- @param onlyRunes boolean
+--- @return Card | nil
+local function getCard(_, rng, card, includePlaying, includeRunes, onlyRunes)
+	local pool = game:GetItemPool()
+
+	local newCard = card
+	while (UnlockManager:IsPickupUnlocked(PickupVariant.PICKUP_TAROTCARD, newCard) == false) do
+		newCard = pool:GetCard(rng:Next(), includePlaying, includeRunes, onlyRunes)
+	end
+	return newCard
+end
+
 --#endregion
 
 --#region Console Commands
@@ -617,6 +633,8 @@ function UnlockManager:Init(mod)
 	mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, preSpawnCleanAward)
 	-- prevent getting things, that aren't unlocked yet
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst)
+	-- prevent card pool pulling cards/runes that aren't unlocked yet
+	mod:AddCallback(ModCallbacks.MC_GET_CARD, getCard)
 	-- console commands
 	mod:addConsoleCommand("thesaint_marks", thesaint_marks)
 end
