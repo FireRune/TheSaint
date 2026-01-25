@@ -4,6 +4,7 @@ local featureTarget = require("TheSaint.structures.FeatureTarget")
 local unlockManager = require("TheSaint.UnlockManager")
 
 local game = Game()
+local sfx = SFXManager()
 
 --- "Red Joker"
 --- - if the Devil/Angel Room has been generated already, acts like "Joker"
@@ -17,6 +18,8 @@ local Red_Joker = {
 	Target = featureTarget:new(enums.Card.CARD_RED_JOKER),
 }
 
+local playVoiceline = false
+
 --- @param card Card
 --- @param player EntityPlayer
 --- @param flags UseFlag
@@ -28,9 +31,22 @@ local function useCard(_, card, player, flags)
 		local roomData = isc:getRoomDataForTypeVariant(RoomType.ROOM_DEVIL, 101)
 		isc:setRoomData(GridRooms.ROOM_DEVIL_IDX, roomData)
 	end
+	playVoiceline = true
 	local useFlag = (UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER | UseFlag.USE_NOHUD)
 	--- @cast useFlag UseFlag
 	player:UseCard(Card.CARD_JOKER, useFlag)
+end
+
+--- @param room RoomType
+local function postNewRoomReordered(_, room)
+	if ((room ~= RoomType.ROOM_DEVIL) and (room ~= RoomType.ROOM_ANGEL)) then return end
+	if (playVoiceline) then
+		local rng = Isaac.GetPlayer(0):GetCardRNG(Red_Joker.Target.Type)
+		if ((Options.AnnouncerVoiceMode == 2) or ((Options.AnnouncerVoiceMode == 0) and (rng:RandomInt(2) == 0))) then
+			sfx:Play(enums.SoundEffect.SOUND_REVERSE_JOKER)
+		end
+		playVoiceline = false
+	end
 end
 
 local spawnFromPlayer = false
@@ -92,6 +108,7 @@ function Red_Joker:Init(mod)
 	if (self.IsInitialized) then return end
 
 	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard, self.Target.Type)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_ROOM_REORDERED, postNewRoomReordered)
 	mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, preEntitySpawn)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst_RedJoker, PickupVariant.PICKUP_TAROTCARD, self.Target.Type)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst_Joker, PickupVariant.PICKUP_TAROTCARD, Card.CARD_JOKER)

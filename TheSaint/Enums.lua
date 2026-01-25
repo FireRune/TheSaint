@@ -38,6 +38,11 @@ local Enums = {
 		SCORCHED_BABY = Isaac.GetEntityVariantByName("Scorched Baby"),
 	},
 
+	--- @enum TheSaint.Enums.SoundEffect
+	SoundEffect = {
+		SOUND_REVERSE_JOKER = Isaac.GetSoundIdByName("Red_Joker"),
+	},
+
 	--- @enum TheSaint.Enums.CompletionMarks
 	CompletionMarks = {
 		BOSS_RUSH = "BossRush",

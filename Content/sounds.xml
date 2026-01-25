@@ -1,0 +1,5 @@
+<sounds root="sfx/">
+	<sound name="Red_Joker">
+		<sample weight="1" path="voiceover/reversed/joker 3.wav" />
+	</sound>
+</sounds>
