@@ -23,7 +23,7 @@
 	- [x] Satan (Scorched Baby)
 	- [x] Isaac (Divine Bombs)
 	- [x] The Lamb (Scattered Pages)
-	- [ ] ???
+	- [x] ??? (Protective Candle)
 	- [ ] Mega Satan (maybe co-op baby?)
 	- [x] Hush (Wooden Key)
 	- [x] Greed Mode (Library Card)

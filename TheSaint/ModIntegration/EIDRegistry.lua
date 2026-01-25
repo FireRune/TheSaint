@@ -286,6 +286,13 @@ local function AddRegistry()
 
 	EID:addBFFSCondition(scorchedBaby, nil, 3.5, 7)
 	--#endregion
+
+	--#region Protective Candle
+
+	local protectiveCandle = enums.CollectibleType.COLLECTIBLE_PROTECTIVE_CANDLE
+	desc = "Isaac holds a candle in front of him#{{Burning}} The candle deals Isaac's damage and has a 10% chance to burn enemies on contact#{{Luck}} 100% chance at 13 luck#Holding Fire charges the candle, shooting a flame when released"
+	EID:addCollectible(protectiveCandle, desc)
+	--#endregion
 	--#endregion
 
 	--#region Trinkets
@@ -351,6 +358,10 @@ local function AddRegistry()
 	local saint = enums.PlayerType.PLAYER_THE_SAINT
 	EID:addIcon("Player"..saint, "Players", 0, 16, 16, 0, 0, charIcons)
 
+	desc = "Cannot shoot tears#{{Collectible"..protectiveCandle.."}} Innate item: Protective Candle#"
+	desc = desc.."Isaac holds a candle in front of him#{{Burning}} The candle deals Isaac's damage and has a 10% chance to burn enemies on contact#{{Luck}} 100% chance at 13 luck#Holding Fire charges the candle, shooting a flame when released"
+	EID:addCharacterInfo(saint, desc)
+
 	desc = "{{AngelRoom}} Entering an Angel Room for the first time each floor has the following effects:#↑{{IND}} Increases one of the following stats, whichever is lowest:#↑{{IND}}{{IND}} +1 Damage#↑{{IND}}{{IND}} +0.5 Fire Rate#↑{{IND}}{{IND}} +0.2 Speed#↑{{IND}}{{IND}} +2.5 Range#{{IND}} Spawns either 3 {{Coin}} coins, 1 {{Bomb}} bomb or 1 {{Key}} key depending on what you have the least of"
 	EID:addBirthright(saint, desc)
 	--#endregion
@@ -360,8 +371,8 @@ local function AddRegistry()
 	local tSaint = enums.PlayerType.PLAYER_THE_SAINT_B
 	EID:addIcon("Player"..tSaint, "Players", 1, 16, 16, 0, 0, charIcons)
 
-	desc = "Can't use {{SoulHeart}} Soul Hearts#When you take damage, turns all {{EmptyHeart}} empty Heart Containers into {{BrokenHeart}} Broken Hearts (doesn't apply to self-damage)"
-	desc = desc.."#{{Collectible"..mendingHeart.."}} Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#{{Collectible"..mendingHeart.."}} Will replace 2 instead, if no damage was taken on the previous floor#{{Collectible"..mendingHeart.."}} ↑ +0.25 Damage per heart restored"
+	desc = "Can't use {{SoulHeart}} Soul Hearts#When you take damage, turns all {{EmptyHeart}} empty Heart Containers into {{BrokenHeart}} Broken Hearts (doesn't apply to self-damage)#{{Collectible"..mendingHeart.."}} Innate item: Mending Heart#"
+	desc = desc.."Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#Will replace 2 instead, if no damage was taken on the previous floor#↑ +0.25 Damage per heart restored"
 	EID:addCharacterInfo(tSaint, desc)
 
 	desc = "Taking damage that causes penalties will only turn 1{{EmptyHeart}} empty Heart Container into a {{BrokenHeart}} Broken Heart"

@@ -22,4 +22,11 @@ function utils:AddTargetedCallback(mod, callbackId, callbackFn, targets)
 	end
 end
 
+--- Debug utility for identifying entities in the form of "Type.Variant.SubType"
+--- @param entity Entity
+--- @return string
+function utils:GetTVSString(entity)
+	return tostring(entity.Type or 0).."."..tostring(entity.Variant or 0).."."..tostring(entity.SubType or 0)
+end
+
 return utils

@@ -1,16 +1,46 @@
+--- @class TheSaint.structures.FeatureTarget.TargetEntity
+--- @field Type EntityType
+--- @field Variant integer
+--- @field SubType integer?
+
 --- @generic T: CollectibleType | TrinketType | Card | PillEffect | PlayerType
 --- @class TheSaint.structures.FeatureTarget<T>
 --- @field Type T
---- @field Familiar FamiliarVariant? @ if that feature spawns a familiar, specify the corresponding `FamiliarVariant` here
+--- @field Entity TheSaint.structures.FeatureTarget.TargetEntity? @ if that feature spawns an entity, specify the corresponding Type, Variant (and optionally SubType) here
 --- @field Character PlayerType[]? @ specifies the player type(s), to which this feature should be applied innately
 local FeatureTarget = {}
 
+--- @param tvs string
+--- @return TheSaint.structures.FeatureTarget.TargetEntity?
+local function getTargetEntityFromTVS(tvs)
+	local strTable = {}
+	for str in tvs:gmatch("%d+") do
+		table.insert(strTable, str)
+	end
+
+	-- couldn't extract a number
+	if (#strTable == 0) then return end
+
+	local t = tonumber(strTable[1])
+	if (not t) then return end
+
+	local v = ((strTable[2] and tonumber(strTable[2])) or 0)
+	local s = (strTable[3] and tonumber(strTable[3]))
+
+	--- @type TheSaint.structures.FeatureTarget.TargetEntity
+	return {
+		Type = t,
+		Variant = v,
+		SubType = s
+	}
+end
+
 --- @generic T: CollectibleType | TrinketType | Card | PillEffect | PlayerType
 --- @param targetType T
---- @param familiar FamiliarVariant?
---- @param character (PlayerType | PlayerType[])?
+--- @param entityTVS? string | integer[]
+--- @param character? PlayerType | PlayerType[]
 --- @return TheSaint.structures.FeatureTarget<T>
-function FeatureTarget:new(targetType, familiar, character)
+function FeatureTarget:new(targetType, entityTVS, character)
 	--- @type PlayerType[]?
 	local charTable = nil
 	if (character and type(character) ~= "table") then
@@ -19,9 +49,17 @@ function FeatureTarget:new(targetType, familiar, character)
 		charTable = character
 	end
 
+	local entity = nil
+	if (entityTVS) then
+		if (type(entityTVS) == "table") then
+			entityTVS = table.concat(entityTVS, ".")
+		end
+		entity = getTargetEntityFromTVS(entityTVS)
+	end
+
 	return {
 		Type = targetType,
-		Familiar = familiar,
+		Entity = entity,
 		Character = charTable,
 	}
 end

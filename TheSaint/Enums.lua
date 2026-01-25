@@ -12,6 +12,7 @@ local Enums = {
 		COLLECTIBLE_HOLY_HAND_GRENADE = Isaac.GetItemIdByName("Holy Hand Grenade"),
 		COLLECTIBLE_RITE_OF_REBIRTH = Isaac.GetItemIdByName("Rite of Rebirth"),
 		COLLECTIBLE_SCORCHED_BABY = Isaac.GetItemIdByName("Scorched Baby"),
+		COLLECTIBLE_PROTECTIVE_CANDLE = Isaac.GetItemIdByName("Protective Candle"),
 	},
 
 	--- @enum TheSaint.Enums.TrinketType
@@ -36,6 +37,11 @@ local Enums = {
 	--- @enum TheSaint.Enums.FamiliarVariant
 	FamiliarVariant = {
 		SCORCHED_BABY = Isaac.GetEntityVariantByName("Scorched Baby"),
+	},
+
+	--- @enum TheSaint.Enums.EffectVariant
+	EffectVariant = {
+		PROTECTIVE_CANDLE = Isaac.GetEntityVariantByName("Protective Candle"),
 	},
 
 	--- @enum TheSaint.Enums.SoundEffect

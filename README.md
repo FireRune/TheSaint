@@ -12,7 +12,7 @@ Using [IsaacScript](https://isaacscript.github.io) (version 87.8.0)
 ## Current list of features
 
 - 2 new characters: "The Saint" and "Tainted Saint"
-- 8 new collectibles
+- 9 new collectibles
 - 2 new trinkets
 - 3 new cards/runes
 - integration for the following mods

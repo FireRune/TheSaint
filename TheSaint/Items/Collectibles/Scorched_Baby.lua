@@ -6,14 +6,14 @@ local featureTarget = require("TheSaint.structures.FeatureTarget")
 local Scorched_Baby = {
 	IsInitialized = false,
 	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
-	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_SCORCHED_BABY, enums.FamiliarVariant.SCORCHED_BABY),
+	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_SCORCHED_BABY, {EntityType.ENTITY_FAMILIAR, enums.FamiliarVariant.SCORCHED_BABY}),
 }
 
 --- @param player EntityPlayer
 --- @param flag CacheFlag
 local function evaluateStats(_, player, flag)
 	if (flag == CacheFlag.CACHE_FAMILIARS) then
-		isc:checkFamiliarFromCollectibles(player, Scorched_Baby.Target.Type, Scorched_Baby.Target.Familiar)
+		isc:checkFamiliarFromCollectibles(player, Scorched_Baby.Target.Type, Scorched_Baby.Target.Entity.Variant)
 	end
 end
 
@@ -26,8 +26,8 @@ end
 local function familiarUpdate(_, familiar)
 	familiar:Shoot()
 	for _, ent in ipairs(Isaac.FindByType(EntityType.ENTITY_TEAR, TearVariant.BLUE, 0)) do
-		if ((ent.SpawnerType == EntityType.ENTITY_FAMILIAR)
-		and (ent.SpawnerVariant == Scorched_Baby.Target.Familiar)
+		if ((ent.SpawnerType == familiar.Type)
+		and (ent.SpawnerVariant == familiar.Variant)
 		and (ent.FrameCount == 0)) then
 			local tear = ent:ToTear() --- @cast tear EntityTear
 			tear:AddTearFlags(TearFlags.TEAR_BURN)
@@ -42,8 +42,8 @@ function Scorched_Baby:Init(mod)
 	if (self.IsInitialized) then return end
 
 	mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats, CacheFlag.CACHE_FAMILIARS)
-	mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, familiarInit, self.Target.Familiar)
-	mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, familiarUpdate, self.Target.Familiar)
+	mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, familiarInit, self.Target.Entity.Variant)
+	mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, familiarUpdate, self.Target.Entity.Variant)
 end
 
 return Scorched_Baby
