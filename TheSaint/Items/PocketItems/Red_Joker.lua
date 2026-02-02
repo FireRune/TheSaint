@@ -31,7 +31,9 @@ local function useCard(_, card, player, flags)
 		local roomData = isc:getRoomDataForTypeVariant(RoomType.ROOM_DEVIL, 101)
 		isc:setRoomData(GridRooms.ROOM_DEVIL_IDX, roomData)
 	end
-	playVoiceline = true
+	if (flags & UseFlag.USE_NOANNOUNCER ~= UseFlag.USE_NOANNOUNCER) then
+		playVoiceline = true
+	end
 	local useFlag = (UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER | UseFlag.USE_NOHUD)
 	--- @cast useFlag UseFlag
 	player:UseCard(Card.CARD_JOKER, useFlag)
