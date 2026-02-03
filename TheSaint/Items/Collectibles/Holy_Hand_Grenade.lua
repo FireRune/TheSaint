@@ -22,7 +22,7 @@ local targetFlag = TearFlags.TEAR_LIGHT_FROM_HEAVEN
 
 local v = {
 	room = {
-		--- @type table<string, boolean>
+		--- @type table<string, true | nil>
 		playerItemState = {},
 		--- @type table<integer, table<string, boolean>>
 		bombList = {},
@@ -47,6 +47,7 @@ end
 --- @param rng RNG
 --- @param player EntityPlayer
 --- @param flags UseFlag
+--- @return { Discharge: boolean, Remove: boolean, ShowAnim: boolean }?
 local function useItem(_, collectible, rng, player, flags)
 	-- prevent "Car Battery"
 	if (flags & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return end
@@ -56,14 +57,9 @@ local function useItem(_, collectible, rng, player, flags)
 		v.room.playerItemState[playerIndex] = true
 		player:AnimateCollectible(Holy_Hand_Grenade.Target.Type, "LiftItem")
 	else
-		v.room.playerItemState[playerIndex] = false
+		v.room.playerItemState[playerIndex] = nil
 		player:AnimateCollectible(Holy_Hand_Grenade.Target.Type, "HideItem")
 	end
-	return {
-		Discharge = false,
-		Remove = false,
-		ShowAnim = false,
-	}
 end
 
 --- Returns a normalized `Vector` (Length = 1) that corresponds to the major cardinal direction of `inputVector`
@@ -88,22 +84,30 @@ end
 local function tryThrowGrenade(player)
 	local shootingInput = player:GetShootingInput()
 	if (shootingInput:Length() > 0) then
+		-- hide item
 		player:AnimateCollectible(Holy_Hand_Grenade.Target.Type, "HideItem")
-		local launchVector = getAxisAlignedVector(shootingInput):Resized(15)
-		local grenade = Isaac.Spawn(EntityType.ENTITY_BOMB, BombVariant.BOMB_GIGA, 0, player.Position, Vector.Zero, player):ToBomb()
-		if (grenade) then
-			local sprite = grenade:GetSprite()
-			sprite:ReplaceSpritesheet(0, "gfx/items/pick ups/pickup_giga_bomb.png")
-			sprite:LoadGraphics()
-			local ptr = GetPtrHash(grenade)
-			v.room.bombList[ptr] = {["Holy_Hand_Grenade"] = true}
-			player:TryHoldEntity(grenade)
-			player:ThrowHeldEntity(launchVector)
-			if (questionMarkCardUsed) then
-				questionMarkCardUsed = false
-			else
-				player:RemoveCollectible(Holy_Hand_Grenade.Target.Type)
-			end
+
+		-- spawn bomb entity
+		local grenade = Isaac.Spawn(EntityType.ENTITY_BOMB, BombVariant.BOMB_GIGA, 0, player.Position, Vector.Zero, player):ToBomb() --- @cast grenade -?
+
+		-- replace spritesheet
+		local sprite = grenade:GetSprite()
+		sprite:ReplaceSpritesheet(0, "gfx/items/pick ups/pickup_giga_bomb.png")
+		sprite:LoadGraphics()
+
+		-- set flag
+		local ptr = GetPtrHash(grenade)
+		v.room.bombList[ptr] = {["Holy_Hand_Grenade"] = true}
+
+		-- throw grenade
+		player:TryHoldEntity(grenade)
+		player:ThrowHeldEntity(getAxisAlignedVector(shootingInput):Resized(15))
+
+		-- remove item, unless triggered by "? Card"
+		if (questionMarkCardUsed) then
+			questionMarkCardUsed = false
+		else
+			player:RemoveCollectible(Holy_Hand_Grenade.Target.Type)
 		end
 		return true
 	end
@@ -113,8 +117,11 @@ end
 --- if the given player is currently holding up "Holy Hand Grenade", launch it in the first pressed shooting direction
 --- @param player EntityPlayer
 local function postPlayerUpdate(_, player)
+	-- early exit if player doesn't have "Holy Hand Grenade"
+	if (player:HasCollectible(Holy_Hand_Grenade.Target.Type) == false) then return end
+
 	local playerIndex = "HHG_"..isc:getPlayerIndex(player)
-	if (v.room.playerItemState[playerIndex] == true) then
+	if (v.room.playerItemState[playerIndex]) then
 		-- prevent swapping active items if Isaac has "Schoolbag"
 		if (Input.IsActionTriggered(ButtonAction.ACTION_DROP, player.ControllerIndex)) then
 			-- Testing with "Bob's Rotten Head" has shown that Active Items don't switch while Pocket Items still cycle through each other when pressing the input.
@@ -122,7 +129,7 @@ local function postPlayerUpdate(_, player)
 			player:SwapActiveItems()
 		else
 			if (tryThrowGrenade(player) == true) then
-				v.room.playerItemState[playerIndex] = false
+				v.room.playerItemState[playerIndex] = nil
 			end
 		end
 	end
@@ -132,15 +139,15 @@ end
 --- @param bomb EntityBomb
 local function postBombUpdate(_, bomb)
 	local player = (bomb.SpawnerEntity and bomb.SpawnerEntity:ToPlayer())
-	if player then
+	if (player) then
 		local ptr = GetPtrHash(bomb)
 		local data = v.room.bombList[ptr]
-		if (data and data["Holy_Hand_Grenade"] == true) then
+		if (data and (data["Holy_Hand_Grenade"] == true)) then
 			bomb:AddTearFlags(targetFlag)
 			data["Holy_Hand_Grenade"] = nil
 		end
-		if bomb:HasTearFlags(targetFlag) then
-			if bomb:GetSprite():IsPlaying("Explode") then
+		if (bomb:HasTearFlags(targetFlag)) then
+			if (bomb:GetSprite():IsPlaying("Explode")) then
 				v.room.bigExplosion = true
 				game:GetRoom():MamaMegaExplosion(bomb.Position)
 			end

@@ -103,9 +103,14 @@ end
 --- @param rng RNG
 --- @param player EntityPlayer
 --- @param flags UseFlag
+--- @return { Discharge: boolean, Remove: boolean, ShowAnim: boolean }?
 local function useItem(_, collectible, rng, player, flags)
 	openDoors(rng, player)
-	return true
+	return {
+		Discharge = true,
+		Remove = false,
+		ShowAnim = (flags & UseFlag.USE_NOANIM ~= UseFlag.USE_NOANIM),
+	}
 end
 
 --- @param wisp EntityFamiliar

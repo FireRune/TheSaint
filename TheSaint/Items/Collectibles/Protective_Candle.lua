@@ -253,6 +253,7 @@ local function tryNextState(candleRef, frameCount, nextState)
 	end
 end
 
+--- @param player EntityPlayer
 local function renderChargeBar(_, player)
 	-- only show charge bar if enabled
 	if (Options.ChargeBars == false) then return end

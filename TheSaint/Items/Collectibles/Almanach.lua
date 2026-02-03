@@ -125,12 +125,13 @@ end
 --- @param collectible CollectibleType
 --- @param rng RNG
 --- @param player EntityPlayer
---- @param flag UseFlag
+--- @param flags UseFlag
 --- @param slot ActiveSlot
 --- @param varData integer
-local function useItem(_, collectible, rng, player, flag, slot, varData)
+--- @return { Discharge: boolean, Remove: boolean, ShowAnim: boolean }?
+local function useItem(_, collectible, rng, player, flags, slot, varData)
 	-- "Car Battery" should boost the triggered items instead of using "Almanach" twice
-	if (flag & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return end
+	if (flags & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return end
 	local hasCarBattery = isc:hasCollectible(player, CollectibleType.COLLECTIBLE_CAR_BATTERY)
 	local itemUses = ((hasCarBattery and 2) or 1)
 
@@ -202,17 +203,21 @@ local function useItem(_, collectible, rng, player, flag, slot, varData)
 	-- (REP only) show HUD text now, so that it will be on top
 	if not REPENTANCE_PLUS then showHUDText(texts) end
 
-	return true
+	return {
+		Discharge = true,
+		Remove = false,
+		ShowAnim = (flags & UseFlag.USE_NOANIM ~= UseFlag.USE_NOANIM),
+	}
 end
 
 --- if player holds "Book of Virtues" spawns the respective wisps of the invoked items (except "Lemegeton")
 --- @param book CollectibleType
 --- @param rng RNG
 --- @param player EntityPlayer
---- @param flag UseFlag
+--- @param flags UseFlag
 --- @param slot ActiveSlot
 --- @param varData integer
-local function spawnAlmanachBookWisp(_, book, rng, player, flag, slot, varData)
+local function spawnAlmanachBookWisp(_, book, rng, player, flags, slot, varData)
 	if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
 		if ((calledFromAlmanach == true) and (almanachLemegeton == false)) then
 			player:AddWisp(book, player.Position, true)

@@ -83,44 +83,58 @@ local function preSpawnCleanAward(_, rng, spawnPos)
 	end
 end
 
+--- @param player EntityPlayer
+--- @return boolean
+local function hasDevoutPrayerInPrimary(player)
+	return (player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == Devout_Prayer.Target.Type)
+end
+--- @param player EntityPlayer
+--- @return boolean
+local function hasDevoutPrayerInPocket(player)
+	return (player:GetActiveItem(ActiveSlot.SLOT_POCKET) == Devout_Prayer.Target.Type)
+end
+
 --- If any Pocket Item other than "Devout Prayer" is used, set flag to prevent accidental activation
 --- @param card Card
 --- @param player EntityPlayer
 --- @param flags UseFlag
 local function useCard(_, card, player, flags)
-	if ((card == Card.CARD_QUESTIONMARK) and (player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == Devout_Prayer.Target.Type)) then
+	if (hasDevoutPrayerInPrimary(player) and (card == Card.CARD_QUESTIONMARK)) then
 		-- Due to the way "? Card" works, it will trigger the MC_USE_ITEM callback before this one,
 		-- discharging the item in the process. To prevent that, restore the charge here.
 		player:SetActiveCharge(questionMarkCardUsed_CurrentCharge, ActiveSlot.SLOT_PRIMARY)
 	end
 	questionMarkCardUsed_CurrentCharge = 0
-	otherPocketItemUsed = true
+	if (hasDevoutPrayerInPocket(player)) then otherPocketItemUsed = true end
 end
 --- If any Pocket Item other than "Devout Prayer" is used, set flag to prevent accidental activation
 --- @param pillEffect PillEffect
 --- @param player EntityPlayer
 --- @param flags UseFlag
 local function usePill(_, pillEffect, player, flags)
-	otherPocketItemUsed = true
+	if (hasDevoutPrayerInPocket(player)) then otherPocketItemUsed = true end
+end
+
+--- @param player EntityPlayer
+--- @param slot ActiveSlot
+local function tryUseDevoutPrayer(player, slot)
+	local charge = player:GetActiveCharge(slot)
+	if (charge > 0) and (charge < 12) then
+		player:UseActiveItem(Devout_Prayer.Target.Type, UseFlag.USE_OWNED, slot)
+	end
 end
 
 --- check wether "Devout Prayer" should be used when corresponding action is triggered
 --- @param player EntityPlayer
 local function postPlayerUpdate(_, player)
-	if ((player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == Devout_Prayer.Target.Type)
-	and (Input.IsActionTriggered(ButtonAction.ACTION_ITEM, player.ControllerIndex))) then
-		local charge = player:GetActiveCharge(ActiveSlot.SLOT_PRIMARY)
-		if (charge > 0) and (charge < 12) then
-			player:UseActiveItem(Devout_Prayer.Target.Type, UseFlag.USE_OWNED, ActiveSlot.SLOT_PRIMARY)
-		end
-	else
-		if ((player:GetActiveItem(ActiveSlot.SLOT_POCKET) == Devout_Prayer.Target.Type)
-		and (Input.IsActionTriggered(ButtonAction.ACTION_PILLCARD, player.ControllerIndex))) then
+	local isInPrimary = hasDevoutPrayerInPrimary(player)
+	local isInPocket = hasDevoutPrayerInPocket(player)
+	if ((isInPrimary) or (isInPocket)) then
+		if ((isInPrimary) and (Input.IsActionTriggered(ButtonAction.ACTION_ITEM, player.ControllerIndex))) then
+			tryUseDevoutPrayer(player, ActiveSlot.SLOT_PRIMARY)
+		elseif ((isInPocket) and (Input.IsActionTriggered(ButtonAction.ACTION_PILLCARD, player.ControllerIndex))) then
 			if (not otherPocketItemUsed) then
-				local charge = player:GetActiveCharge(ActiveSlot.SLOT_POCKET)
-				if (charge > 0) and (charge < 12) then
-					player:UseActiveItem(Devout_Prayer.Target.Type, UseFlag.USE_OWNED, ActiveSlot.SLOT_POCKET)
-				end
+				tryUseDevoutPrayer(player, ActiveSlot.SLOT_POCKET)
 			else
 				otherPocketItemUsed = false
 			end
@@ -263,6 +277,7 @@ end
 --- @param player EntityPlayer
 --- @param flags UseFlag
 --- @param slot ActiveSlot
+--- @return { Discharge: boolean, Remove: boolean, ShowAnim: boolean }?
 local function useItem(_, collectible, rng, player, flags, slot)
 	-- "Car Battery" has no effect
 	if (flags & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return end
@@ -315,7 +330,7 @@ local function useItem(_, collectible, rng, player, flags, slot)
 		return {
 			Discharge = false,
 			Remove = false,
-			ShowAnim = true
+			ShowAnim = (flags & UseFlag.USE_NOANIM ~= UseFlag.USE_NOANIM),
 		}
 	end
 end
