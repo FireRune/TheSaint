@@ -37,6 +37,7 @@ local Protective_Candle = {
 --- @field Pointer EntityPtr
 --- @field Rotation number
 --- @field FlameDirection Vector
+--- @field TargetOffset Vector
 --- @field InitFlame boolean
 --- @field CurrentCharge integer
 --- @field ChargeBar ChargeBarData
@@ -54,11 +55,13 @@ local Protective_Candle = {
 local CANDLE_INIT_CHARGE = -9
 local CANDLE_MAX_CHARGE = 142
 
+--- Vector(10, 45)
 --- @return Vector
 local function CANDLE_DEFAULT_OFFSET()
 	return Vector(10, 45)
 end
 
+--- Vector(-11, -39)
 --- @return Vector
 local function CHARGEBAR_DEFAULT_OFFSET()
 	return Vector(-11, -39)
@@ -95,7 +98,7 @@ end
 --- @return EntityPtr
 local function createCandle(player)
 	local entTarget = Protective_Candle.Target.Entity --- @cast entTarget -?
-	return EntityPtr(Isaac.Spawn(entTarget.Type, entTarget.Variant, 0, player.Position, Vector.Zero, player))
+	return EntityPtr(Isaac.Spawn(entTarget.Type, entTarget.Variant, 0, player.Position + CANDLE_DEFAULT_OFFSET(), Vector.Zero, player))
 end
 
 --- @param player EntityPlayer
@@ -108,6 +111,7 @@ local function getCandleRef(player)
 				Pointer = createCandle(player),
 				Rotation = 0,
 				FlameDirection = Vector.Zero,
+				TargetOffset = CANDLE_DEFAULT_OFFSET(),
 				InitFlame = false,
 				CurrentCharge = CANDLE_INIT_CHARGE,
 				ChargeBar = {
@@ -145,13 +149,28 @@ local function getAngleDegreesForSpriteRotation(vInput)
 	return vInputBackup:Rotated(-90):GetAngleDegrees()
 end
 
+--- @param a number
+--- @param b number
+--- @return number
+local function angleDiff(a, b)
+	local diff = (a - b)
+	return (((diff + 180) % 360) - 180)
+end
+--- @param a number
+--- @param b number
+--- @param p number
+--- @return number
+local function lerpAngle(a, b, p)
+	return (a + (angleDiff(b, a) * p))
+end
+
 --- @param player EntityPlayer
 local function postPlayerUpdate(_, player)
 	local candleRef = getCandleRef(player)
 	if (candleRef) then
 		local entCandle = candleRef.Pointer.Ref:ToEffect() --- @cast entCandle -?
 		local shootingInput = getShootingVector(player)
-		if (shootingInput:Length() >= 0.9) then
+		if (shootingInput:Length() > 0.01) then
 			-- charging up the flame projectile
 			candleRef.CurrentCharge = math.min(candleRef.CurrentCharge + 1, CANDLE_MAX_CHARGE)
 
@@ -159,6 +178,7 @@ local function postPlayerUpdate(_, player)
 			local shootAngle = getAngleDegreesForSpriteRotation(shootingInput)
 			candleRef.Rotation = shootAngle
 			candleRef.FlameDirection = shootingInput
+			candleRef.TargetOffset = CANDLE_DEFAULT_OFFSET():Rotated(shootAngle)
 
 			-- handle charge bar
 			if ((not candleRef.ChargeBar.State) and (candleRef.CurrentCharge >= 0)) then
@@ -178,8 +198,13 @@ local function postPlayerUpdate(_, player)
 				candleRef.ChargeBar.CurrentFrame = 0
 			end
 		end
-		entCandle.SpriteRotation = candleRef.Rotation
-		entCandle.Position = (player.Position + (CANDLE_DEFAULT_OFFSET():Rotated(entCandle.SpriteRotation)))
+
+		-- Position & Sprite rotation
+		local angleCandle = (entCandle.Position - player.Position):GetAngleDegrees()
+		local angleTarget = candleRef.TargetOffset:GetAngleDegrees()
+		local angleNext = lerpAngle(angleCandle, angleTarget, 0.2)
+		entCandle.SpriteRotation = (angleNext - CANDLE_DEFAULT_OFFSET():GetAngleDegrees())
+		entCandle.Position = (player.Position + (Vector.FromAngle(angleNext) * CANDLE_DEFAULT_OFFSET():Length()))
 	end
 end
 
