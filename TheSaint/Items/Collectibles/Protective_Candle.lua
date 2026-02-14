@@ -14,10 +14,10 @@ local game = Game()
 --- - change sprite (with animated flame)
 --- 
 --- potential extras:
---- - smooth animation for rotation (see "Spear of Destiny")
 --- - lower charge time for "The Saint"
---- - a way to deal with static tnt from a distance, to avoid forced damage (especially for "The Saint")
 --- - maybe change properties of flame projectile
+---   - homing: purple flame, flame homes in on nearby enemies
+---   - "Continuum": flame goes through walls, loops around the screen
 --- @class TheSaint.Items.Collectibles.Protective_Candle : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Protective_Candle = {
 	IsInitialized = false,
@@ -34,13 +34,12 @@ local Protective_Candle = {
 --- | "Disappear"
 
 --- @class CandleRef
---- @field Pointer EntityPtr
---- @field Rotation number
---- @field FlameDirection Vector
---- @field TargetOffset Vector
---- @field InitFlame boolean
---- @field CurrentCharge integer
---- @field ChargeBar ChargeBarData
+--- @field Pointer EntityPtr		@ pointer to the candle entity
+--- @field FlameDirection Vector	@ used for the flame projectile
+--- @field TargetOffset Vector		@ used to set the candle entity's rotation and position
+--- @field InitFlame boolean		@ flag to distinguish this item's flame projectile from those of "Red Candle"
+--- @field CurrentCharge integer	@ current charge value (in frames)
+--- @field ChargeBar ChargeBarData	@ data holder for chargebar-related data
 
 --- @class ChargeBarData
 --- @field RenderOffset Vector
@@ -51,9 +50,19 @@ local Protective_Candle = {
 
 --#region constants (vectors via functions, so initial value is constant with every call)
 
---- Chargetime: ~2.5 seconds (9 frames before showing charge bar + 142 frames charging), getting as closely to "Maw of the Void" as possible
+--- Chargetime:
+--- - ~2.5 seconds (9 frames before showing charge bar + 142 frames charging), getting as closely to "Maw of the Void" as possible.
+--- - (The Saint only) ~2 seconds (9 frames before showing charge bar + 112 frames charging)
 local CANDLE_INIT_CHARGE = -9
-local CANDLE_MAX_CHARGE = 142
+--- @param player EntityPlayer
+--- @return integer
+local function CANDLE_MAX_CHARGE(player)
+	local maxCharge = 142
+	if (isc:isCharacter(player, table.unpack(Protective_Candle.Target.Character))) then
+		return (maxCharge - 30)
+	end
+	return maxCharge
+end
 
 --- Vector(10, 45)
 --- @return Vector
@@ -74,6 +83,7 @@ local FRAME_COUNTS = {
 	["Disappear"] = 8
 }
 
+--- damage radius of the candle entity
 local DAMAGE_RADIUS = 13.0
 
 --#endregion
@@ -98,7 +108,12 @@ end
 --- @return EntityPtr
 local function createCandle(player)
 	local entTarget = Protective_Candle.Target.Entity --- @cast entTarget -?
-	return EntityPtr(Isaac.Spawn(entTarget.Type, entTarget.Variant, 0, player.Position + CANDLE_DEFAULT_OFFSET(), Vector.Zero, player))
+	local entCandle = Isaac.Spawn(entTarget.Type, entTarget.Variant, 0, player.Position + CANDLE_DEFAULT_OFFSET(), Vector.Zero, player)
+
+	-- same as "Spear of Destiny"
+	entCandle.PositionOffset = Vector(0, -15)
+
+	return EntityPtr(entCandle)
 end
 
 --- @param player EntityPlayer
@@ -109,7 +124,6 @@ local function getCandleRef(player)
 		if (not playerCandles[playerIndex]) then
 			playerCandles[playerIndex] = {
 				Pointer = createCandle(player),
-				Rotation = 0,
 				FlameDirection = Vector.Zero,
 				TargetOffset = CANDLE_DEFAULT_OFFSET(),
 				InitFlame = false,
@@ -133,7 +147,7 @@ end
 --- @return Vector
 local function getShootingVector(player)
 	local sVector = Vector.Zero
-	local mouse = Input.IsMouseBtnPressed(0) and Input.GetMousePosition(true)
+	local mouse = (Input.IsMouseBtnPressed(0) and Input.GetMousePosition(true))
 	if mouse then
 		sVector = (mouse - player.Position)
 	else
@@ -170,14 +184,16 @@ local function postPlayerUpdate(_, player)
 	if (candleRef) then
 		local entCandle = candleRef.Pointer.Ref:ToEffect() --- @cast entCandle -?
 		local shootingInput = getShootingVector(player)
+		if (player:AreOpposingShootDirectionsPressed()) then
+			shootingInput = candleRef.FlameDirection
+		end
 		if (shootingInput:Length() > 0.01) then
 			-- charging up the flame projectile
-			candleRef.CurrentCharge = math.min(candleRef.CurrentCharge + 1, CANDLE_MAX_CHARGE)
+			candleRef.CurrentCharge = math.min(candleRef.CurrentCharge + 1, CANDLE_MAX_CHARGE(player))
 
 			-- handle shooting direction and candle rotation
-			local shootAngle = getAngleDegreesForSpriteRotation(shootingInput)
-			candleRef.Rotation = shootAngle
 			candleRef.FlameDirection = shootingInput
+			local shootAngle = getAngleDegreesForSpriteRotation(shootingInput)
 			candleRef.TargetOffset = CANDLE_DEFAULT_OFFSET():Rotated(shootAngle)
 
 			-- handle charge bar
@@ -187,7 +203,7 @@ local function postPlayerUpdate(_, player)
 			end
 		else
 			-- check whether or not to shoot flame projectile
-			if (candleRef.CurrentCharge == CANDLE_MAX_CHARGE) then
+			if (candleRef.CurrentCharge == CANDLE_MAX_CHARGE(player)) then
 				candleRef.InitFlame = true
 				player:ShootRedCandle(candleRef.FlameDirection)
 			end
@@ -208,42 +224,133 @@ local function postPlayerUpdate(_, player)
 	end
 end
 
---- Alter the flame projectile
 --- @param effect EntityEffect
-local function postEffectInit_RedCandleFlame(_, effect)
-	print(effect.GridCollisionClass)
-	effect.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_BULLET
-end
-
---- @param entCandle EntityEffect
 --- @return EntityPlayer?
-local function getPlayerFromCandle(entCandle)
+local function getPlayerFromEffect(effect)
 	local player = nil
-	local spawner = entCandle.SpawnerEntity
+	local spawner = effect.SpawnerEntity
 	if (spawner) then
 		player = spawner:ToPlayer()
 	end
 	return player
 end
 
+--- Alter the flame projectile
+--- @param entFlame EntityEffect
+local function postEffectInit_RedCandleFlame(_, entFlame)
+	local player = getPlayerFromEffect(entFlame)
+	if (not player) then return end
+
+	local candleRef = getCandleRef(player)
+	if (candleRef and candleRef.InitFlame) then
+		-- using GetData() is fine, as these entities do not respawn on leaving and re-entering a room
+		local data = {
+			Homing = false,
+		}
+
+		-- check for "Continuum" / spectral tears
+		if (isc:hasFlag(player.TearFlags, TearFlags.TEAR_CONTINUUM)) then
+			-- entFlame.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_BULLET
+			entFlame.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_WALLS
+		elseif (isc:hasSpectral(player)) then
+			entFlame.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_WALLS
+		end
+
+		-- check for homing
+		if (isc:hasHoming(player)) then
+			data.Homing = true
+			local flameSprite = entFlame:GetSprite()
+			flameSprite:ReplaceSpritesheet(0, "gfx/effects/effect_005_fire_purple.png")
+			flameSprite:LoadGraphics()
+		end
+
+		entFlame:GetData().TheSaint = data
+
+		-- initialization finished
+		candleRef.InitFlame = false
+	end
+end
+
 --- Returns whether the given entity should be damaged from "Protective Candle"
 --- @param enemy Entity
+--- @param includeTNT? boolean @ default: `true`
 --- @return boolean
-local function isValidEnemy(enemy)
+local function isValidEnemy(enemy, includeTNT)
+	if (includeTNT == nil) then includeTNT = true end
+
 	local isActiveEnemy = (enemy:IsActiveEnemy() == true)
 	local isNotFriendly = (enemy:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) == false)
-	local isTNT = (enemy.Type == EntityType.ENTITY_MOVABLE_TNT)
+	local isTNT = (includeTNT and (enemy.Type == EntityType.ENTITY_MOVABLE_TNT))
 	return ((isActiveEnemy and isNotFriendly) or isTNT)
 end
 
---- @param effect EntityEffect
-local function postEffectUpdate(_, effect)
-	local player = getPlayerFromCandle(effect)
+--- check for collision with static TNT and handle effects of homing and "Continuum"
+--- @param entFlame EntityEffect
+local function postEffectUpdate_RedCandleFlame(_, entFlame)
+	local player = getPlayerFromEffect(entFlame)
+	if (not player) then return end
+
+	local data = entFlame:GetData().TheSaint
+	if (data) then
+		local room = game:GetRoom()
+		local sourceRef = EntityRef(entFlame)
+
+		-- handle static TNT
+		local gridEnt = room:GetGridEntityFromPos(entFlame.Position)
+		-- TNT.State has a value from 0 to 4, with 4 being the destroyed TNT; therefore ignore that state
+		if ((gridEnt) and (gridEnt:GetType() == GridEntityType.GRID_TNT) and (gridEnt.State < 4)) then
+			if (REPENTANCE_PLUS) then
+				--- @diagnostic disable-next-line: undefined-field
+				gridEnt:DestroyWithSource(false, sourceRef)
+			else
+				gridEnt:Destroy(false)
+			end
+		end
+
+		-- handle homing
+		if (data.Homing) then
+			-- TODO: implement homing behaviour
+
+			local radius = 60
+			local velSize = 2.5
+
+			--- @type Entity?
+			local target = entFlame.Target
+
+			-- clear last target if it doesn't exist anymore
+			if (target and ((target:Exists() == false) or (entFlame.Position:Distance(target.Position) > radius))) then
+				target = nil
+			end
+			-- get closest target
+			if (target == nil) then
+				local enemies = Isaac.FindInRadius(entFlame.Position, radius, EntityPartition.ENEMY)
+				target = isc:getClosestEntityTo(entFlame, enemies, function (_, ent)
+					return isValidEnemy(ent, false)
+				end)
+			end
+			-- apply homing
+			if (target and (target:Exists())) then
+				entFlame.Velocity = ((target.Position - entFlame.Position):Resized(velSize))
+				entFlame.Target = target
+			end
+		end
+
+		-- handle "Continuum"
+		if (entFlame.GridCollisionClass == EntityGridCollisionClass.GRIDCOLL_BULLET) then
+			-- TODO: loop around the screen
+		end
+	end
+end
+
+--- handle damaging enemies and grid entities
+--- @param entCandle EntityEffect
+local function postEffectUpdate_ProtectiveCandle(_, entCandle)
+	local player = getPlayerFromEffect(entCandle)
 	if (not player) then return end
 
 	-- handle damaging enemies
-	local enemies = Isaac.FindInRadius(effect.Position, DAMAGE_RADIUS, EntityPartition.ENEMY)
-	local sourceRef = EntityRef(effect)
+	local enemies = Isaac.FindInRadius(entCandle.Position, DAMAGE_RADIUS, EntityPartition.ENEMY)
+	local sourceRef = EntityRef(entCandle)
 	local rng = player:GetCollectibleRNG(Protective_Candle.Target.Type)
 	-- use math.max to prevent dividing by zero and mathmatical underflow at high luck
 	local chance = (1 / math.max(1, (10 - math.floor(player.Luck * 0.7))))
@@ -259,10 +366,14 @@ local function postEffectUpdate(_, effect)
 
 	-- handle damaging grid entity at candle position (poops and static tnt)
 	local room = game:GetRoom()
-	local gridEnt = room:GetGridEntityFromPos(effect.Position)
+	local gridEnt = room:GetGridEntityFromPos(entCandle.Position)
 	if (gridEnt) then
-		--- @diagnostic disable-next-line: undefined-field
-		gridEnt:HurtWithSource(1, sourceRef)
+		if (REPENTANCE_PLUS) then
+			--- @diagnostic disable-next-line: undefined-field
+			gridEnt:HurtWithSource(1, sourceRef)
+		else
+			gridEnt:Hurt(1)
+		end
 	end
 end
 
@@ -296,7 +407,7 @@ local function renderChargeBar(_, player)
 
 			-- calculate current charge
 			if (candleRef.ChargeBar.State == "Charging") then
-				candleRef.ChargeBar.CurrentFrame = math.floor(math.min((candleRef.CurrentCharge / CANDLE_MAX_CHARGE) * frameCount, frameCount))
+				candleRef.ChargeBar.CurrentFrame = math.floor(math.min((candleRef.CurrentCharge / CANDLE_MAX_CHARGE(player)) * frameCount, frameCount))
 				tryNextState(candleRef, frameCount, "StartCharged")
 			else
 				candleRef.ChargeBar.CurrentFrame = math.min(candleRef.ChargeBar.CurrentFrame + 1, frameCount)
@@ -319,8 +430,14 @@ function Protective_Candle:Init(mod)
 
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate, 0)
 	mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, postEffectInit_RedCandleFlame, EffectVariant.RED_CANDLE_FLAME)
-	mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, postEffectUpdate, Protective_Candle.Target.Entity.Variant)
+	mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, postEffectUpdate_RedCandleFlame, EffectVariant.RED_CANDLE_FLAME)
+	mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, postEffectUpdate_ProtectiveCandle, Protective_Candle.Target.Entity.Variant)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, renderChargeBar, 0)
+
+	mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, function ()
+		-- reset data holders
+		playerCandles = {}
+	end)
 end
 
 return Protective_Candle
