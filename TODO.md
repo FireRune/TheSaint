@@ -71,6 +71,8 @@ add item sprites for:
 - [ ] Devout Prayer
 - [ ] Wooden Key
 - [ ] Holy Hand Grenade
+- [ ] Rite of Rebirth
+- [ ] Protective Candle
 
 add collection page sprites for:
 - [ ] Almanach
@@ -79,10 +81,20 @@ add collection page sprites for:
 - [ ] Divine Bombs
 - [ ] Wooden Key
 - [ ] Holy Hand Grenade
+- [ ] Rite of Rebirth
+- [ ] Scorched Baby
+- [ ] Protective Candle
+
+add character costumes/entity sprites for:
+- [ ] Divine Bombs (costume)
+- [ ] Holy Hand Grenade (entity)
+- [ ] Rite of Rebirth (costume)
+- [ ] Protective Candle (entity)
 
 add front/back sprites + anims for:
 - [x] Library Card
 - [x] Soul of the Saint
+- [x] Red Joker
 
 # future features
 ## Holy_Hand_Grenade.lua
@@ -92,6 +104,11 @@ add front/back sprites + anims for:
 	- on reaching the number 3, throws the grenade entity in the stored direction (allows the player to reposition)
 	- grenade entity can bounce once when colliding with the ground, a wall or a grid entity and explode on the second collision
 		- if first collision is with an enemy, will explode immedeately instead
+
+## Protective_Candle.lua
+additional behaviour of flame projectile if player has following effects
+- [ ] homing: purple flame, flame homes in on nearby enemies
+- [ ] "Continuum": flame goes through walls, loops around the screen
 
 ## Mod integration
 
