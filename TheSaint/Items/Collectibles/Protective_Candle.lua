@@ -9,13 +9,13 @@ local game = Game()
 --- - deals contact damage equal to Isaac's damage stat
 --- - contact damage has a chance to inflict burn
 --- - can be charged up to release a flame projectile
+--- - having spectral tears allows the flame to go through grid entities
 --- 
 --- TODO:
 --- - change sprite (with animated flame)
 --- 
---- potential extras:
---- - lower charge time for "The Saint"
---- - maybe change properties of flame projectile
+--- future extras:
+--- - if player has a certain property, alter flame projectile accordingly
 ---   - homing: purple flame, flame homes in on nearby enemies
 ---   - "Continuum": flame goes through walls, loops around the screen
 --- @class TheSaint.Items.Collectibles.Protective_Candle : TheSaint.classes.ModFeatureTargeted<CollectibleType>
@@ -147,7 +147,7 @@ end
 --- @return Vector
 local function getShootingVector(player)
 	local sVector = Vector.Zero
-	local mouse = (Input.IsMouseBtnPressed(0) and Input.GetMousePosition(true))
+	local mouse = (Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_LEFT) and Input.GetMousePosition(true))
 	if mouse then
 		sVector = (mouse - player.Position)
 	else
@@ -178,15 +178,19 @@ local function lerpAngle(a, b, p)
 	return (a + (angleDiff(b, a) * p))
 end
 
+--- handle candle entity movement + attack (charge & release)
 --- @param player EntityPlayer
 local function postPlayerUpdate(_, player)
 	local candleRef = getCandleRef(player)
 	if (candleRef) then
 		local entCandle = candleRef.Pointer.Ref:ToEffect() --- @cast entCandle -?
 		local shootingInput = getShootingVector(player)
+
+		-- in case the player decides to press opposing shoot directions, maintain previous input
 		if (player:AreOpposingShootDirectionsPressed()) then
 			shootingInput = candleRef.FlameDirection
 		end
+
 		if (shootingInput:Length() > 0.01) then
 			-- charging up the flame projectile
 			candleRef.CurrentCharge = math.min(candleRef.CurrentCharge + 1, CANDLE_MAX_CHARGE(player))
@@ -243,28 +247,9 @@ local function postEffectInit_RedCandleFlame(_, entFlame)
 
 	local candleRef = getCandleRef(player)
 	if (candleRef and candleRef.InitFlame) then
-		-- using GetData() is fine, as these entities do not respawn on leaving and re-entering a room
-		local data = {
-			Homing = false,
-		}
-
-		-- check for "Continuum" / spectral tears
-		if (isc:hasFlag(player.TearFlags, TearFlags.TEAR_CONTINUUM)) then
-			-- entFlame.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_BULLET
-			entFlame.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_WALLS
-		elseif (isc:hasSpectral(player)) then
+		if (isc:hasSpectral(player)) then
 			entFlame.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_WALLS
 		end
-
-		-- check for homing
-		if (isc:hasHoming(player)) then
-			data.Homing = true
-			local flameSprite = entFlame:GetSprite()
-			flameSprite:ReplaceSpritesheet(0, "gfx/effects/effect_005_fire_purple.png")
-			flameSprite:LoadGraphics()
-		end
-
-		entFlame:GetData().TheSaint = data
 
 		-- initialization finished
 		candleRef.InitFlame = false
@@ -305,39 +290,6 @@ local function postEffectUpdate_RedCandleFlame(_, entFlame)
 			else
 				gridEnt:Destroy(false)
 			end
-		end
-
-		-- handle homing
-		if (data.Homing) then
-			-- TODO: implement homing behaviour
-
-			local radius = 60
-			local velSize = 2.5
-
-			--- @type Entity?
-			local target = entFlame.Target
-
-			-- clear last target if it doesn't exist anymore
-			if (target and ((target:Exists() == false) or (entFlame.Position:Distance(target.Position) > radius))) then
-				target = nil
-			end
-			-- get closest target
-			if (target == nil) then
-				local enemies = Isaac.FindInRadius(entFlame.Position, radius, EntityPartition.ENEMY)
-				target = isc:getClosestEntityTo(entFlame, enemies, function (_, ent)
-					return isValidEnemy(ent, false)
-				end)
-			end
-			-- apply homing
-			if (target and (target:Exists())) then
-				entFlame.Velocity = ((target.Position - entFlame.Position):Resized(velSize))
-				entFlame.Target = target
-			end
-		end
-
-		-- handle "Continuum"
-		if (entFlame.GridCollisionClass == EntityGridCollisionClass.GRIDCOLL_BULLET) then
-			-- TODO: loop around the screen
 		end
 	end
 end
