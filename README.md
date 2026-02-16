@@ -7,7 +7,9 @@ The final amount of content will change in the future.
 
 This version is designed to be used with the Repentance and Repentance+ DLCs.
 
-Using [IsaacScript](https://isaacscript.github.io) (version 87.8.0)
+Using the following libraries:
+- [IsaacScript](https://isaacscript.github.io) (version 87.8.0)
+- [ThrowableItemLib](https://github.com/drpandacat/ThrowableItemLib) (version 1.5.2)
 
 ## Current list of features
 

@@ -1,6 +1,6 @@
-local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local featureTarget = require("TheSaint.structures.FeatureTarget")
+include("TheSaint.lib.throwableitemlib").Init()
 
 local game = Game()
 
@@ -18,12 +18,11 @@ local Holy_Hand_Grenade = {
 	SaveDataKey = "Holy_Hand_Grenade",
 }
 
-local targetFlag = TearFlags.TEAR_LIGHT_FROM_HEAVEN
+local THROWABLE_IDENTIFIER = "TheSaint_HolyHandGrenade"
+local TARGET_FLAG = TearFlags.TEAR_LIGHT_FROM_HEAVEN
 
 local v = {
 	room = {
-		--- @type table<string, true | nil>
-		playerItemState = {},
 		--- @type table<integer, table<string, boolean>>
 		bombList = {},
 		bigExplosion = false,
@@ -39,101 +38,52 @@ local questionMarkCardUsed = false
 local function useCard_QuestionMark(_, card, player, flags)
 	if (player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == Holy_Hand_Grenade.Target.Type) then
 		questionMarkCardUsed = true
+		ThrowableItemLib.Utility:ScheduleLift(player, Holy_Hand_Grenade.Target.Type, ThrowableItemLib.Type.ACTIVE, ActiveSlot.SLOT_PRIMARY)
 	end
 end
 
---- Toggle between holding the item above Isaac's head and putting it away
---- @param collectible CollectibleType
---- @param rng RNG
 --- @param player EntityPlayer
---- @param flags UseFlag
---- @return { Discharge: boolean, Remove: boolean, ShowAnim: boolean }?
-local function useItem(_, collectible, rng, player, flags)
-	-- prevent "Car Battery"
-	if (flags & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return end
+--- @param vect Vector
+--- @param slot ActiveSlot
+--- @param mimic CollectibleType
+local function throwGrenade(player, vect, slot, mimic)
+	-- spawn bomb entity
+	local grenade = Isaac.Spawn(EntityType.ENTITY_BOMB, BombVariant.BOMB_GIGA, 0, player.Position, Vector.Zero, player):ToBomb() --- @cast grenade -?
 
-	local playerIndex = "HHG_"..isc:getPlayerIndex(player)
-	if (not v.room.playerItemState[playerIndex]) then
-		v.room.playerItemState[playerIndex] = true
-		player:AnimateCollectible(Holy_Hand_Grenade.Target.Type, "LiftItem")
+	-- replace spritesheet
+	local sprite = grenade:GetSprite()
+	sprite:ReplaceSpritesheet(0, "gfx/items/pick ups/pickup_giga_bomb.png")
+	sprite:LoadGraphics()
+
+	-- set flag
+	local ptr = GetPtrHash(grenade)
+	v.room.bombList[ptr] = {["Holy_Hand_Grenade"] = true}
+
+	-- throw grenade
+	player:TryHoldEntity(grenade)
+	player:ThrowHeldEntity(ThrowableItemLib.Utility:CardinalClamp(vect):Resized(15))
+
+	-- remove item, unless triggered by "? Card"
+	if (questionMarkCardUsed) then
+		questionMarkCardUsed = false
 	else
-		v.room.playerItemState[playerIndex] = nil
-		player:AnimateCollectible(Holy_Hand_Grenade.Target.Type, "HideItem")
+		player:RemoveCollectible(Holy_Hand_Grenade.Target.Type)
 	end
 end
 
---- Returns a normalized `Vector` (Length = 1) that corresponds to the major cardinal direction of `inputVector`
---- @param inputVector Vector
---- @return Vector
-local function getAxisAlignedVector(inputVector)
-	--The projectile can only be launched in 1 of the 4 cardinal directions, even with "Analog Stick" (tested with "Bob's Rotten Head")
-	local degrees = inputVector:GetAngleDegrees()
-
-	--- @type Direction
-	local targetDirection = isc:angleToDirection(degrees)
-
-	--- @type Vector
-	local directionVector = isc:directionToVector(targetDirection)
-
-	return directionVector
-end
-
---- launch the grenade in the first pressed shooting direction
---- @param player EntityPlayer
---- @return boolean `true` if grenade was thrown, otherwise `false`
-local function tryThrowGrenade(player)
-	local shootingInput = player:GetShootingInput()
-	if (shootingInput:Length() > 0) then
-		-- hide item
-		player:AnimateCollectible(Holy_Hand_Grenade.Target.Type, "HideItem")
-
-		-- spawn bomb entity
-		local grenade = Isaac.Spawn(EntityType.ENTITY_BOMB, BombVariant.BOMB_GIGA, 0, player.Position, Vector.Zero, player):ToBomb() --- @cast grenade -?
-
-		-- replace spritesheet
-		local sprite = grenade:GetSprite()
-		sprite:ReplaceSpritesheet(0, "gfx/items/pick ups/pickup_giga_bomb.png")
-		sprite:LoadGraphics()
-
-		-- set flag
-		local ptr = GetPtrHash(grenade)
-		v.room.bombList[ptr] = {["Holy_Hand_Grenade"] = true}
-
-		-- throw grenade
-		player:TryHoldEntity(grenade)
-		player:ThrowHeldEntity(getAxisAlignedVector(shootingInput):Resized(15))
-
-		-- remove item, unless triggered by "? Card"
-		if (questionMarkCardUsed) then
-			questionMarkCardUsed = false
-		else
-			player:RemoveCollectible(Holy_Hand_Grenade.Target.Type)
+ThrowableItemLib:RegisterThrowableItem({
+	ID = Holy_Hand_Grenade.Target.Type,
+	Type = ThrowableItemLib.Type.ACTIVE,
+	Identifier = THROWABLE_IDENTIFIER,
+	ThrowFn = throwGrenade,
+	AnimateFn = function (player, state)
+		if (state == ThrowableItemLib.State.THROW) then
+			player:AnimatePickup(Sprite(), true, "HideItem")
+			return true
 		end
-		return true
-	end
-	return false
-end
-
---- if the given player is currently holding up "Holy Hand Grenade", launch it in the first pressed shooting direction
---- @param player EntityPlayer
-local function postPlayerUpdate(_, player)
-	-- early exit if player doesn't have "Holy Hand Grenade"
-	if (player:HasCollectible(Holy_Hand_Grenade.Target.Type) == false) then return end
-
-	local playerIndex = "HHG_"..isc:getPlayerIndex(player)
-	if (v.room.playerItemState[playerIndex]) then
-		-- prevent swapping active items if Isaac has "Schoolbag"
-		if (Input.IsActionTriggered(ButtonAction.ACTION_DROP, player.ControllerIndex)) then
-			-- Testing with "Bob's Rotten Head" has shown that Active Items don't switch while Pocket Items still cycle through each other when pressing the input.
-			-- To mimic this behaviour, call player:SwapActiveItems() instead of cancelling the input in MC_INPUT_ACTION.
-			player:SwapActiveItems()
-		else
-			if (tryThrowGrenade(player) == true) then
-				v.room.playerItemState[playerIndex] = nil
-			end
-		end
-	end
-end
+	end,
+	Flags = ThrowableItemLib.Flag.NO_SPARKLE,
+})
 
 --- Add "Holy Light"-effect to bombs
 --- @param bomb EntityBomb
@@ -143,10 +93,10 @@ local function postBombUpdate(_, bomb)
 		local ptr = GetPtrHash(bomb)
 		local data = v.room.bombList[ptr]
 		if (data and (data["Holy_Hand_Grenade"] == true)) then
-			bomb:AddTearFlags(targetFlag)
+			bomb:AddTearFlags(TARGET_FLAG)
 			data["Holy_Hand_Grenade"] = nil
 		end
-		if (bomb:HasTearFlags(targetFlag)) then
+		if (bomb:HasTearFlags(TARGET_FLAG)) then
 			if (bomb:GetSprite():IsPlaying("Explode")) then
 				v.room.bigExplosion = true
 				game:GetRoom():MamaMegaExplosion(bomb.Position)
@@ -190,8 +140,6 @@ function Holy_Hand_Grenade:Init(mod)
 
 	mod:saveDataManager(self.SaveDataKey, v)
 	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard_QuestionMark, Card.CARD_QUESTIONMARK)
-	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.Target.Type)
-	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate, 0)
 	mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, postBombUpdate, BombVariant.BOMB_GIGA)
 	mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, entityTakeDamage)
 	mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, postEntityKill)
