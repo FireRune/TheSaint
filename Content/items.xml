@@ -12,8 +12,7 @@
     <passive id="7" name="Rite of Rebirth" description="If all else fails..." gfx="sprite_missing.png" tags="summonable" quality="2" />
     <!-- apologies in advance for this description -->
     <familiar id="8" name="Scorched Baby" description="Who left the oven open!?" gfx="scorched_baby.png" tags="baby monstermanual offensive summonable" quality="2" />
-    <!-- TODO: replace gfx -->
-    <passive id="9" name="Protective Candle" description="My faith protects..." gfx="sprite_missing.png" tags="offensive summonable" quality="2" />
+    <passive id="9" name="Protective Candle" description="My faith protects..." gfx="protective_candle.png" tags="offensive summonable" quality="2" />
 
     <trinket name="Holy Penny" description="Wealth of faith" gfx="holy_penny.png" />
     <!-- TODO: replace gfx -->

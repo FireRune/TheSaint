@@ -11,9 +11,6 @@ local game = Game()
 --- - can be charged up to release a flame projectile
 --- - having spectral tears allows the flame to go through grid entities
 --- 
---- TODO:
---- - change sprite (with animated flame)
---- 
 --- future extras:
 --- - if player has a certain property, alter flame projectile accordingly
 ---   - homing: purple flame, flame homes in on nearby enemies
@@ -109,9 +106,13 @@ end
 local function createCandle(player)
 	local entTarget = Protective_Candle.Target.Entity --- @cast entTarget -?
 	local entCandle = Isaac.Spawn(entTarget.Type, entTarget.Variant, 0, player.Position + CANDLE_DEFAULT_OFFSET(), Vector.Zero, player)
+	local entCandleFlame = Isaac.Spawn(entTarget.Type, entTarget.Variant, 1, entCandle.Position, Vector.Zero, player):ToEffect() --- @cast entCandleFlame -?
 
 	-- same as "Spear of Destiny"
 	entCandle.PositionOffset = Vector(0, -15)
+	entCandleFlame.PositionOffset = Vector(0, -15)
+	entCandleFlame.DepthOffset = 10
+	entCandleFlame:FollowParent(entCandle)
 
 	return EntityPtr(entCandle)
 end
@@ -298,7 +299,15 @@ end
 --- @param entCandle EntityEffect
 local function postEffectUpdate_ProtectiveCandle(_, entCandle)
 	local player = getPlayerFromEffect(entCandle)
-	if (not player) then return end
+	if (not player) then
+		return
+	elseif (hasProtectiveCandle(player) == false) then
+		entCandle:Remove()
+		return
+	end
+
+	-- early exit for the flame
+	if (entCandle.SubType ~= 0) then return end
 
 	-- handle damaging enemies
 	local enemies = Isaac.FindInRadius(entCandle.Position, DAMAGE_RADIUS, EntityPartition.ENEMY)

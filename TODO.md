@@ -72,7 +72,7 @@ add item sprites for:
 - [ ] Wooden Key
 - [ ] Holy Hand Grenade
 - [ ] Rite of Rebirth
-- [ ] Protective Candle
+- [x] Protective Candle
 
 add collection page sprites for:
 - [ ] Almanach
@@ -89,7 +89,7 @@ add character costumes/entity sprites for:
 - [ ] Divine Bombs (costume)
 - [ ] Holy Hand Grenade (entity)
 - [ ] Rite of Rebirth (costume)
-- [ ] Protective Candle (entity)
+- [x] Protective Candle (entity)
 
 add front/back sprites + anims for:
 - [x] Library Card

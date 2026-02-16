@@ -15,4 +15,5 @@
 
     <!-- Effects -->
     <entity name="Protective Candle" id="1000" variant="1024" subtype="0" anm2path="protective_candle.anm2" />
+    <entity name="Protective Candle Flame" id="1000" variant="1024" subtype="1" anm2path="protective_candle_flame.anm2" />
 </entities>
