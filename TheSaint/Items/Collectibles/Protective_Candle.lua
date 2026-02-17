@@ -4,7 +4,8 @@ local featureTarget = require("TheSaint.structures.FeatureTarget")
 
 local game = Game()
 
---- Spawns a candle entity close to the player (like "Spear of Destiny")
+--- "Protective Candle"
+--- - spawns a candle entity close to the player (like "Spear of Destiny")
 --- - candle points where Isaac is shooting
 --- - deals contact damage equal to Isaac's damage stat
 --- - contact damage has a chance to inflict burn
@@ -392,7 +393,7 @@ function Protective_Candle:Init(mod)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate, 0)
 	mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, postEffectInit_RedCandleFlame, EffectVariant.RED_CANDLE_FLAME)
 	mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, postEffectUpdate_RedCandleFlame, EffectVariant.RED_CANDLE_FLAME)
-	mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, postEffectUpdate_ProtectiveCandle, Protective_Candle.Target.Entity.Variant)
+	mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, postEffectUpdate_ProtectiveCandle, self.Target.Entity.Variant)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, renderChargeBar, 0)
 
 	mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, function ()
