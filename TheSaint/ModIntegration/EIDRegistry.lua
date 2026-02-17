@@ -340,9 +340,17 @@ local function AddRegistry()
 	--#region Red Joker
 
 	local redJoker = enums.Card.CARD_RED_JOKER
-	EID:addIcon("Card"..redJoker, "redjoker", 0, 32, 32, 4, 7, pocketIcons)
+	EID:addIcon("Card"..redJoker, "redjoker", 0, 16, 24, 4, 7, pocketIcons)
 	desc = "{{AngelDevilChance}} Teleports Isaac to the Devil or Angel Room#{{DevilRoom}} Guarantees a special Devil Room if it hasn't been generated yet"
 	EID:addCard(redJoker, desc)
+	--#endregion
+
+	--#region Glitched Card
+
+	local glitchedCard = enums.Card.CARD_GLITCHED
+	EID:addIcon("Card"..glitchedCard, "glitchedcard", 0, 16, 24, 4, 7, pocketIcons)
+	desc = "Random card effect#Has a chance to destroy itself with each use"
+	EID:addCard(glitchedCard, desc)
 	--#endregion
 
 	--#endregion

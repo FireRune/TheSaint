@@ -24,7 +24,7 @@
 	- [x] Isaac (Divine Bombs)
 	- [x] The Lamb (Scattered Pages)
 	- [x] ??? (Protective Candle)
-	- [ ] Mega Satan (maybe co-op baby?)
+	- [x] Mega Satan (Glitched Card)
 	- [x] Hush (Wooden Key)
 	- [x] Greed Mode (Library Card)
 	- [ ] Greedier Mode

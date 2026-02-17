@@ -1,5 +1,7 @@
 local utils = {}
 
+local RECOMMENDED_SHIFT_IDX = 35
+
 --- Helper function to add a callback for multiple targets (i.e. the 3rd argument of `ModReference:AddCallback`)<br>
 --- Example:
 --- ```
@@ -27,6 +29,17 @@ end
 --- @return string
 function utils:GetTVSString(entity)
 	return tostring(entity.Type or 0).."."..tostring(entity.Variant or 0).."."..tostring(entity.SubType or 0)
+end
+
+--- @param initSeed integer
+--- @return RNG
+function utils:CreateNewRNG(initSeed)
+	if (initSeed <= 0) then
+		initSeed = 2853650767
+	end
+	local rng = RNG()
+	rng:SetSeed(initSeed, RECOMMENDED_SHIFT_IDX)
+	return rng
 end
 
 return utils
