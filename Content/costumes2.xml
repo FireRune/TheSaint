@@ -1,4 +1,11 @@
 <costumes anm2root="gfx/characters/">
+    <!-- Character default costumes -->
+    <!-- The Saint -->
     <costume anm2path="character_sainthair.anm2" type="none" priority="99" />
+    <!-- Tainted Saint -->
     <costume anm2path="character_sainthair_b.anm2" type="none" priority="99" />
+
+    <!-- Item costumes -->
+    <!-- Rite of Rebirth -->
+    <costume anm2path="costume_rite_of_rebirth.anm2" type="passive" id="7" priority="0" />
 </costumes>

@@ -4,7 +4,9 @@
         bigportraitroot="gfx/ui/stage/">
     <!--
         "The Saint"
-        * The Saint starts with 'The Almanach' as their Active Item.
+        * cannot shoot tears normally
+        * has an innate form of "Protective Candle", which serves as the primary damage source
+        * starts with "Almanach" as their Active Item
     -->
     <player name="The Saint"
             skin="character_saint.png"
@@ -18,13 +20,13 @@
     />
     <!--
         "Tainted Saint"
-        * Tainted Saint cannot utilize Soul/Black Hearts.
-        * All empty Heart Containers will be replaced with Broken Hearts when taking damage
-        * Paying with Heart Containers wwill turn these into Broken Hearts.
+        * cannot utilize Soul/Black Hearts
+        * starts with an innate "Mending Heart"
+        * starts with "Devout Prayer" as their Pocket Active Item
+        * when taking damage (with penalties): all empty Heart Containers will be replaced with Broken Hearts
+        * paying with Heart Containers will turn these into Broken Hearts
         * Soul/Black Hearts have a chance to be replaced with an Eternal Heart
-        * While having an Eternal Heart: 'Devout Prayer' will charge faster (every 5th enemy killed; bosses give 2 charges)
-        * Starts with inherent 'Mending Heart'.
-        * Starts with 'Devout Prayer' as their Pocket Active Item.
+        * while having an Eternal Heart: "Devout Prayer" will charge faster (every 5th enemy killed; bosses give 2 charges)
     -->
     <player name="The Saint"
             bSkinParent="The Saint"

@@ -72,7 +72,7 @@ add item sprites for:
 	- [ ] Devout Prayer
 	- [x] Wooden Key
 	- [ ] Holy Hand Grenade
-	- [ ] Rite of Rebirth
+	- [x] Rite of Rebirth
 	- [x] Protective Candle
 - trinkets:
 	- [x] Scattered Pages
@@ -90,7 +90,7 @@ add collection page sprites for:
 
 add character costumes/entity sprites for:
 - [ ] Holy Hand Grenade (entity)
-- [ ] Rite of Rebirth (costume)
+- [x] Rite of Rebirth (costume)
 - [x] Protective Candle (entity)
 
 add front/back sprites + anims for:

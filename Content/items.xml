@@ -7,8 +7,7 @@
     <active id="5" name="Wooden Key" description="Where could it fit?" gfx="wooden_key.png" maxcharges="3" tags="offensive" quality="1" />
     <!-- TODO: replace gfx -->
     <active id="6" name="Holy Hand Grenade" description="Thou shalt count to three, no more, no less" gfx="sprite_missing.png" maxcharges="0" tags="offensive" quality="3" />
-    <!-- TODO: replace gfx -->
-    <passive id="7" name="Rite of Rebirth" description="If all else fails..." gfx="sprite_missing.png" tags="summonable" quality="2" />
+    <passive id="7" name="Rite of Rebirth" description="If all else fails..." gfx="rite_of_rebirth.png" tags="summonable" quality="2" />
     <!-- apologies in advance for this description -->
     <familiar id="8" name="Scorched Baby" description="Who left the oven open!?" gfx="scorched_baby.png" tags="baby monstermanual offensive summonable" quality="2" />
     <passive id="9" name="Protective Candle" description="My faith protects..." gfx="protective_candle.png" tags="offensive summonable" quality="2" />
