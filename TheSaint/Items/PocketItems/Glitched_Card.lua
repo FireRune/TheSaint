@@ -37,10 +37,13 @@ local function useCard(_, card, player, flags)
 		end
 	until (isValid)
 
+	local isMimic = (flags & UseFlag.USE_MIMIC == UseFlag.USE_MIMIC)
+	if (isMimic) then
+		flags = (flags ~ UseFlag.USE_MIMIC)
+	end
 	player:UseCard(newCard, flags)
 
-	if ((flags & UseFlag.USE_MIMIC ~= UseFlag.USE_MIMIC)
-	and (rng_removal:RandomFloat() >= 0.1)) then
+	if ((not isMimic) and (rng_removal:RandomFloat() >= 0.1)) then
 		player:AddCard(card)
 	end
 end
