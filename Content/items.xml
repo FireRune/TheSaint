@@ -14,4 +14,6 @@
 
     <trinket name="Holy Penny" description="Wealth of faith" gfx="holy_penny.png" />
     <trinket name="Scattered Pages" description="Who ripped these out?" gfx="scattered_pages.png" />
+    <!-- TODO: replace gfx -->
+    <trinket name="Charon's Obol" description="Bring their souls across Styx" gfx="sprite_missing.png" />
 </items>

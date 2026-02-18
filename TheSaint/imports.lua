@@ -53,6 +53,7 @@ local features = {
 	include("TheSaint.Items.Collectibles.Protective_Candle"),
 	include("TheSaint.Items.Trinkets.Holy_Penny"),
 	include("TheSaint.Items.Trinkets.Scattered_Pages"),
+	include("TheSaint.Items.Trinkets.Charons_Obol"),
 	include("TheSaint.Items.PocketItems.Library_Card"),
 	include("TheSaint.Items.PocketItems.Soul_Saint"),
 	include("TheSaint.Items.PocketItems.Red_Joker"),

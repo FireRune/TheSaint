@@ -33,7 +33,7 @@
 	- [x] The Beast (Holy Hand Grenade)
 - Tainted Saint:
 	- [x] Boss Rush + Hush (Soul of the Saint)
-	- [ ] Satan + Isaac + The Lamb + ??? (Trinket)
+	- [x] Satan + Isaac + The Lamb + ??? (Charon's Obol)
 	- [x] Greedier Mode (Red Joker)
 	- [x] Delirium (Mending Heart)
 	- [x] Mother (Holy Penny)

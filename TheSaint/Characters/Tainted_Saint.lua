@@ -1,6 +1,7 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local featureTarget = require("TheSaint.structures.FeatureTarget")
+local utils = include("TheSaint.utils")
 
 local game = Game()
 
@@ -102,7 +103,10 @@ end
 --- @param collider Entity
 local function prePickupCollision_TSaint_Hearts(_, heart, collider)
 	local player = collider:ToPlayer()
-	if player and (player:GetPlayerType() == Tainted_Saint.Target.Type) then
+	if (player and (player:GetPlayerType() == Tainted_Saint.Target.Type)) then
+		-- check for "Alabaster Box"
+		if (utils:AlabasterBoxNeedsCharge(player)) then return end
+
 		if (heart.SubType == HeartSubType.HEART_SOUL)
 		or (heart.SubType == HeartSubType.HEART_BLACK)
 		or (heart.SubType == HeartSubType.HEART_HALF_SOUL)

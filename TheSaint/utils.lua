@@ -1,3 +1,5 @@
+local isc = require("TheSaint.lib.isaacscript-common")
+
 local utils = {}
 
 local RECOMMENDED_SHIFT_IDX = 35
@@ -40,6 +42,25 @@ function utils:CreateNewRNG(initSeed)
 	local rng = RNG()
 	rng:SetSeed(initSeed, RECOMMENDED_SHIFT_IDX)
 	return rng
+end
+
+--- If `player` has "Alabaster Box" and it's not fully charged, return `true`; otherwise `false`
+--- @param player EntityPlayer
+--- @return boolean
+function utils:AlabasterBoxNeedsCharge(player)
+	local slots = isc:getActiveItemSlots(player, CollectibleType.COLLECTIBLE_ALABASTER_BOX)
+	if (#slots > 0) then
+		local isFull = true
+		for _, slot in ipairs(slots) do
+			if (player:GetActiveCharge(slot) < 12) then
+				isFull = false
+			end
+		end
+		if (not isFull) then
+			return true
+		end
+	end
+	return false
 end
 
 return utils

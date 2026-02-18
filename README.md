@@ -15,7 +15,7 @@ Using the following libraries:
 
 - 2 new characters: "The Saint" and "Tainted Saint"
 - 9 new collectibles
-- 2 new trinkets
+- 3 new trinkets
 - 4 new cards/runes
 - integration for the following mods
 	- [External Item Descriptions](https://github.com/wofsauge/External-Item-Descriptions)

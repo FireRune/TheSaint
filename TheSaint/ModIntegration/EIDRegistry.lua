@@ -290,9 +290,10 @@ local function AddRegistry()
 	--#region Protective Candle
 
 	local protectiveCandle = enums.CollectibleType.COLLECTIBLE_PROTECTIVE_CANDLE
-	desc = "Isaac holds a candle in front of him#{{Burning}} The candle deals Isaac's damage and has a 10% chance to burn enemies on contact#{{Luck}} 100% chance at 13 luck#Holding Fire charges the candle, shooting a flame when released"
+	desc = "Isaac holds a candle in front of him#{{Burning}} The candle deals Isaac's damage and has a 10% chance to burn enemies on contact#{{Luck}} 100% chance at 13 luck#{{Chargeable}} Holding Fire charges the candle, shooting a flame when released"
 	EID:addCollectible(protectiveCandle, desc)
 	--#endregion
+
 	--#endregion
 
 	--#region Trinkets
@@ -313,6 +314,15 @@ local function AddRegistry()
 	EID:addCondition("5.350."..scatteredPages, almanach, "Using Almanach has a 33% chance to trigger 2 random book items instead")
 	EID:addGoldenTrinketMetadataAdditive(scatteredPages, nil, 33, {33, 67})
 	--#endregion
+
+	--#region Charon's Obol
+
+	local charonsObol = enums.TrinketType.TRINKET_CHARONS_OBOL
+	desc = "Picking up Soul/Black Hearts can convert them into wisps#Works even while at full health#Effect may consume hearts needed for healing#{{SoulHeart}} Soul Hearts spawn regular wisps#{{BlackHeart}} Black Hearts spawn {{Collectible35}} Necronomicon wisps"
+	EID:addTrinket(charonsObol, desc)
+	EID:addGoldenTrinketMetadata(charonsObol, "Increased number of wisps spawned")
+	--#endregion
+
 	--#endregion
 
 	--#region PocketItems
@@ -367,7 +377,7 @@ local function AddRegistry()
 	EID:addIcon("Player"..saint, "Players", 0, 16, 16, 0, 0, charIcons)
 
 	desc = "Cannot shoot tears#{{Collectible"..protectiveCandle.."}} Innate item: Protective Candle#"
-	desc = desc.."Isaac holds a candle in front of him#{{Burning}} The candle deals Isaac's damage and has a 10% chance to burn enemies on contact#{{Luck}} 100% chance at 13 luck#Holding Fire charges the candle, shooting a flame when released"
+	desc = desc.."Isaac holds a candle in front of him#{{Burning}} The candle deals Isaac's damage and has a 10% chance to burn enemies on contact#{{Luck}} 100% chance at 13 luck#{{Chargeable}} Holding Fire charges the candle, shooting a flame when released"
 	EID:addCharacterInfo(saint, desc)
 
 	desc = "{{AngelRoom}} Entering an Angel Room for the first time each floor has the following effects:#↑{{IND}} Increases one of the following stats, whichever is lowest:#↑{{IND}}{{IND}} +1 Damage#↑{{IND}}{{IND}} +0.5 Fire Rate#↑{{IND}}{{IND}} +0.2 Speed#↑{{IND}}{{IND}} +2.5 Range#{{IND}} Spawns either 3 {{Coin}} coins, 1 {{Bomb}} bomb or 1 {{Key}} key depending on what you have the least of"
