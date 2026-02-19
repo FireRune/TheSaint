@@ -76,6 +76,7 @@ add item sprites for:
 	- [x] Protective Candle
 - trinkets:
 	- [x] Scattered Pages
+	- [x] Charon's Obol
 
 add collection page sprites for:
 - [ ] Almanach
