@@ -5,16 +5,17 @@ local utils = include("TheSaint.utils")
 
 local sfx = SFXManager()
 
+--- "Charon's Obol"
+--- - picking up Soul/Black Hearts has a 50% chance to spawn wisps instead of healing the player
+--- - allows picking up Soul/Black Hearts even at full health; chance for wisps goes to 100%
+--- - Soul Hearts spawn regular wisps, Black Hearts spawn "Necronomicon" wisps
+--- - only works with regular and half Soul Hearts, as well as regular Black Hearts
 --- @class TheSaint.Items.Trinkets.Charons_Obol : TheSaint.classes.ModFeatureTargeted<TrinketType>
 local Charons_Obol = {
 	IsInitialized = false,
 	--- @type TheSaint.structures.FeatureTarget<TrinketType>
 	Target = featureTarget:new(enums.TrinketType.TRINKET_CHARONS_OBOL),
 }
-
---- @alias SoulBlackHeart
---- | "Soul"
---- | "Black"
 
 --- @type table<PlayerType, string>
 local redHeartOnlyChars = {}
@@ -39,13 +40,13 @@ function TheSaintAPI:AddRedHeartOnlyCharacter(mod, char)
 end
 
 --- @param player EntityPlayer
---- @param heartType SoulBlackHeart
+--- @param isBlackHeart boolean
 --- @return boolean
-local function canPickSoulOrBlackHearts(player, heartType)
+local function canPickSoulOrBlackHearts(player, isBlackHeart)
 	if ((utils:AlabasterBoxNeedsCharge(player))
 	or (isc:isCharacter(player, redHeartOnlyChars) == false)
-	or ((heartType == "Soul") and (player:CanPickSoulHearts()))
-	or ((heartType == "Black") and (player:CanPickBlackHearts()))) then
+	or ((not isBlackHeart) and (player:CanPickSoulHearts()))
+	or ((isBlackHeart) and (player:CanPickBlackHearts()))) then
 		return true
 	end
 	return false
@@ -58,30 +59,26 @@ local function prePickupCollision_Hearts(_, pickup, collider, low)
 	local player = collider:ToPlayer()
 	if (not player) then return end
 
-	-- can only be an integer from 0 to 3
+	-- force value to be an integer from 0 to 3
 	local trinketMult = math.min(player:GetTrinketMultiplier(Charons_Obol.Target.Type), 3)
 	if (trinketMult == 0) then return end
 
 	--- @type HeartSubType
 	local subType = pickup.SubType
 
-	--- @type SoulBlackHeart
-	local soulBlack
-
+	local isBlackHeart = false
 	local numWisps = 2
 	if ((subType == HeartSubType.HEART_SOUL)) then
-		soulBlack = "Soul"
 	elseif (subType == HeartSubType.HEART_BLACK) then
-		soulBlack = "Black"
+		isBlackHeart = true
 	elseif (subType == HeartSubType.HEART_HALF_SOUL) then
-		soulBlack = "Soul"
 		numWisps = 1
 	else
 		-- early exit on any other heart type
 		return
 	end
 
-	local chance = ((canPickSoulOrBlackHearts(player, soulBlack) and 0.5) or 1)
+	local chance = ((canPickSoulOrBlackHearts(player, isBlackHeart) and 0.5) or 1)
 
 	local rng = player:GetTrinketRNG(Charons_Obol.Target.Type)
 	if (rng:RandomFloat() < chance) then
@@ -91,11 +88,11 @@ local function prePickupCollision_Hearts(_, pickup, collider, low)
 		pickup:Die()
 
 		-- play corresponding sfx
-		local sfxId = (((soulBlack == "Black") and SoundEffect.SOUND_UNHOLY) or SoundEffect.SOUND_HOLY)
+		local sfxId = (((isBlackHeart) and SoundEffect.SOUND_UNHOLY) or SoundEffect.SOUND_HOLY)
 		sfx:Play(sfxId)
 
 		-- spawn wisps
-		local wispType = (((soulBlack == "Black") and CollectibleType.COLLECTIBLE_NECRONOMICON) or CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES)
+		local wispType = (((isBlackHeart) and CollectibleType.COLLECTIBLE_NECRONOMICON) or CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES)
 		for _ = 1, (numWisps * trinketMult) do
 			player:AddWisp(wispType, player.Position, true)
 		end

@@ -30,7 +30,7 @@ local function useCard(_, card, player, flags)
 			end
 		end
 	end
-	local rng = player:GetDropRNG()
+	local rng = player:GetCardRNG(card)
 	if (#libraries > 0) then
 		-- current floor has at least 1 Library -> teleport to 1 of them (prioritize unvisited rooms)
 		local randInt = rng:RandomInt(math.maxinteger)
