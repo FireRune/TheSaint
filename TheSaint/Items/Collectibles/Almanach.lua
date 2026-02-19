@@ -1,6 +1,7 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local featureTarget = require("TheSaint.structures.FeatureTarget")
+local utils = include("TheSaint.utils")
 
 local game = Game()
 local config = Isaac.GetItemConfig()
@@ -73,7 +74,7 @@ end
 --- caches all items with the `book`-tag
 local function getBooks()
 	if (#books > 0) then return end
-	Isaac.DebugString("[The Saint] (INFO) <Almanach> generate list of items with 'book'-tag (except blacklisted items)")
+	utils:DebugStringWithHeader("(INFO) <Almanach> generate list of items with 'book'-tag (except blacklisted items)")
 	--- API says that `GetCollectibles()` returns `userdata`, but it's actually `ItemConfigList`
 	--- @type ItemConfigList
 	--- @diagnostic disable-next-line
@@ -86,10 +87,10 @@ local function getBooks()
 				local name = isc:getCollectibleName(id)
 				if (isBlacklisted(id) == false) then
 					table.insert(books, {ID = id, Name = name})
-					Isaac.DebugString("[The Saint] (INFO) <Almanach> add ["..id.."] '"..name.."'")
+					utils:DebugStringWithHeader("(INFO) <Almanach> add ["..id.."] '"..name.."'")
 				else
 					local modName = books_blacklist[id]
-					Isaac.DebugString("[The Saint] (INFO) <Almanach> skipped blacklisted item ["..id.."] '"..name.."' (blacklisted by the mod: '"..modName.."')")
+					utils:DebugStringWithHeader("(INFO) <Almanach> skipped blacklisted item ["..id.."] '"..name.."' (blacklisted by the mod: '"..modName.."')")
 				end
 			end
 		end
@@ -229,7 +230,7 @@ end
 local function thesaint_reloadbooks()
 	books = {}
 	getBooks()
-	print("[The Saint]: reloaded book-cache")
+	utils:PrintWithHeader("reloaded book-cache")
 end
 
 --- initialize the item's functionality

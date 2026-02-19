@@ -5,12 +5,17 @@
         <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0"/>
     </entity>
 
-    <!-- Pocket Items -->
+    <!-- Pickups -->
     <entity name="Library Card" id="5" variant="300" subtype="128" anm2path="library_card.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" numGridCollisionPoints="24" shadowSize="16" stageHP="0">
         <preload-snd id="8" />
     </entity>
     <entity name="Soul of the Saint" id="5" variant="300" subtype="129" anm2path="soul_saint.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" numGridCollisionPoints="24" shadowSize="16" stageHP="0">
         <preload-snd id="8" />
+    </entity>
+    <entity name="Sinful Chest" id="5" variant="361" anm2path="sinful_chest.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" numGridCollisionPoints="24" shadowSize="28" stageHP="0">
+        <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0"/>
+        <preload-snd id="22"/>
+        <preload-snd id="156"/>
     </entity>
 
     <!-- Effects -->

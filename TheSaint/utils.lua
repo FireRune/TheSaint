@@ -63,4 +63,44 @@ function utils:AlabasterBoxNeedsCharge(player)
 	return false
 end
 
+--- like tostring(), but encloses string values in single quotation marks
+--- @param val any
+--- @return string
+function utils:Stringify(val)
+	local str
+	if (type(val) == "string") then
+		str = "'"..val.."'"
+	else
+		str = tostring(val)
+	end
+	return str
+end
+
+--- Same as `print`, but automatically uses the string "[The Saint]" as its first argument.
+--- @param ... any
+function utils:PrintWithHeader(...)
+	print("[The Saint]", ...)
+end
+
+--- Same as `Isaac.DebugString`, but automatically prepends `str` with "[The Saint] ".
+--- @param str string
+function utils:DebugStringWithHeader(str)
+	Isaac.DebugString("[The Saint] "..str)
+end
+
+--- Prints the string `str` both to the Debug Console and to the Log file.
+--- @param str string
+function utils:PrintAndLog(str)
+	print(str)
+	Isaac.DebugString(str)
+end
+
+--- Prints the string `str` both to the Debug Console and to the Log file. Automatically prepends `str` with "[The Saint] ".
+--- @param str string
+function utils:PrintAndLogWithHeader(str)
+	local msg = "[The Saint] "..str
+	print(msg)
+	Isaac.DebugString(msg)
+end
+
 return utils

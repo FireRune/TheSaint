@@ -1,6 +1,7 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local mcm = require("TheSaint.ModIntegration.MCM")
+local utils = include("TheSaint.utils")
 
 local game = Game()
 
@@ -46,6 +47,7 @@ local UnlockManager = {
 --- | "trinket"
 --- | "card"
 --- | "rune"
+--- | "other" @ meaning other kind of PickupVariant, SubType is treated as 0
 
 --- @class TheSaint.UnlockManager.Unlockable
 --- @field Variant PickupVariant
@@ -57,6 +59,7 @@ local UnlockManager = {
 --- @field Difficulty TheSaint.UnlockManager.UnlockDifficulty
 --- @field PickupType TheSaint.UnlockManager.TypeOfPickup
 --- @field Unlockable TheSaint.UnlockManager.Unlockable
+--- @field Fallback TheSaint.UnlockManager.Unlockable?
 
 --- @alias TheSaint.UnlockManager.CmdOperation
 --- | "show"
@@ -138,7 +141,9 @@ local unlocksMap = {}
 --- @param difficulty TheSaint.UnlockManager.UnlockDifficulty
 --- @param typeOfPickup TheSaint.UnlockManager.TypeOfPickup
 --- @param unlockable integer
-local function createUnlock(player, marks, difficulty, typeOfPickup, unlockable)
+--- @param fallback? integer		@ If `typeOfPickup` is "other", must specify a fallback value here. If `otherSubType` is nil, `fallback` is treated as Variant, otherwise as SubType.
+--- @param otherSubType? integer	@ If `unlockable` is an already existing PickupVariant, specify the relevant SubType here.
+local function createUnlock(player, marks, difficulty, typeOfPickup, unlockable, fallback, otherSubType)
 	if (type(marks) ~= "table") then marks = {marks} end
 
 	--- @type PickupVariant
@@ -149,6 +154,18 @@ local function createUnlock(player, marks, difficulty, typeOfPickup, unlockable)
 		variant = PickupVariant.PICKUP_TRINKET
 	elseif ((typeOfPickup == "card") or (typeOfPickup == "rune")) then
 		variant = PickupVariant.PICKUP_TAROTCARD
+	elseif (typeOfPickup == "other") then
+		if (not fallback) then
+			utils:PrintAndLog("[The Saint] (WARN) createUnlock(player, marks, difficulty, typeOfPickup, unlockable, fallback?, otherSubType?)")
+			utils:PrintAndLog("[The Saint] Message: Couldn't create unlock of type 'other', due to missing fallback value!")
+			local marksStr = table.concat(marks, "', '")
+			utils:PrintAndLog("[The Saint] Parameter values: "..utils:Stringify(player)..", {'"..marksStr.."'}, "..utils:Stringify(difficulty)..", "..utils:Stringify(typeOfPickup)..", "..utils:Stringify(unlockable)..", nil, "..utils:Stringify(otherSubType))
+			return
+		end
+		--- @cast fallback -?
+		--- @cast unlockable PickupVariant
+		variant = unlockable
+		unlockable = (otherSubType or 0)
 	end
 
 	--- @type TheSaint.UnlockManager.Unlock
@@ -163,6 +180,12 @@ local function createUnlock(player, marks, difficulty, typeOfPickup, unlockable)
 			SubType = unlockable,
 		},
 	}
+	if (typeOfPickup == "other") then
+		unlock.Fallback = {
+			Variant = (((otherSubType) and variant) or fallback),
+			SubType = ((otherSubType) or fallback),
+		}
+	end
 
 	table.insert(unlocksTable, unlock)
 
@@ -206,6 +229,7 @@ local function fillUnlocksTableAndMap()
 	-- "Rite of Rebirth" (The Beast with T.Saint)
 	createUnlock("T_Saint", enums.CompletionMarks.THE_BEAST, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH)
 	-- (Mega Satan with T.Saint)
+	createUnlock("T_Saint", enums.CompletionMarks.MEGA_SATAN, "normal", "other", enums.PickupVariant.PICKUP_SINFULCHEST, PickupVariant.PICKUP_REDCHEST)
 end
 
 --#endregion
@@ -337,9 +361,11 @@ local function stateCheck(states, unlockDifficulty)
 end
 
 --- @param pickup EntityPickup
---- @param typeOfPickup TheSaint.UnlockManager.TypeOfPickup
---- @param lockedSubType integer
-local function rerollItem(pickup, typeOfPickup, lockedSubType)
+--- @param unlock TheSaint.UnlockManager.Unlock
+local function rerollItem(pickup, unlock)
+	local typeOfPickup = unlock.PickupType
+	local lockedSubType = unlock.Unlockable.SubType
+
 	local variant = PickupVariant.PICKUP_NULL
 	local newSubType = 0
 	local pool = game:GetItemPool()
@@ -373,6 +399,10 @@ local function rerollItem(pickup, typeOfPickup, lockedSubType)
 		repeat
 			newSubType = pool:GetCard(pickup.InitSeed, false, isRune, isRune)
 		until (newSubType ~= lockedSubType)
+	elseif (typeOfPickup == "other") then
+		local fallback = unlock.Fallback --- @cast fallback -?
+		variant = fallback.Variant
+		newSubType = fallback.SubType
 	end
 	if (variant ~= PickupVariant.PICKUP_NULL) then
 		pickup:Morph(EntityType.ENTITY_PICKUP, variant, newSubType, true)
@@ -412,7 +442,7 @@ local function postPickupInitFirst(_, pickup)
 
 	if (unlockForPickup) then
 		if (isUnlocked(unlockForPickup.Player, unlockForPickup.Marks, unlockForPickup.Difficulty) == false) then
-			rerollItem(pickup, unlockForPickup.PickupType, unlockForPickup.Unlockable.SubType)
+			rerollItem(pickup, unlockForPickup)
 		end
 	end
 
@@ -445,42 +475,42 @@ end
 --- @param diff? TheSaint.UnlockManager.UnlockDifficulty | "?"
 local function showCommandHelp(char, operation, mark, diff)
 	if (char == "?") then
-		print("[The Saint] 1st argument (<character>)")
-		print("[The Saint] allowed values (case-sensitive):")
-		print("[The Saint] - 'Saint' (The Saint)")
-		print("[The Saint] - 'T_Saint' (Tainted Saint)")
+		utils:PrintWithHeader("1st argument (<character>)")
+		utils:PrintWithHeader("allowed values (case-sensitive):")
+		utils:PrintWithHeader("- 'Saint' (The Saint)")
+		utils:PrintWithHeader("- 'T_Saint' (Tainted Saint)")
 	end
 	if (operation == "?") then
-		print("[The Saint] 2nd argument (show, set, clear)")
-		print("[The Saint] - 'show': display a list of the specified character's completion marks and their progress")
-		print("[The Saint] - 'set': sets the completion status of the specified mark to the specified value")
-		print("[The Saint] - 'clear': clears the completion status of the specified mark")
-		print("[The Saint] if the argument is not given defaults to 'show'")
+		utils:PrintWithHeader("2nd argument (show, set, clear)")
+		utils:PrintWithHeader("- 'show': display a list of the specified character's completion marks and their progress")
+		utils:PrintWithHeader("- 'set': sets the completion status of the specified mark to the specified value")
+		utils:PrintWithHeader("- 'clear': clears the completion status of the specified mark")
+		utils:PrintWithHeader("if the argument is not given defaults to 'show'")
 	end
 	if (mark == "?") then
-		print("[The Saint] 3rd argument (<completion mark>)")
-		print("[The Saint] allowed values for <completion mark> (case-sensitive):")
-		print("[The Saint] - 'all'")
-		print("[The Saint] - 'BossRush'")
-		print("[The Saint] - 'MomsHeart'")
-		print("[The Saint] - 'Satan'")
-		print("[The Saint] - 'Isaac'")
-		print("[The Saint] - 'TheLamb'")
-		print("[The Saint] - 'BlueBaby'")
-		print("[The Saint] - 'MegaSatan'")
-		print("[The Saint] - 'GreedMode'")
-		print("[The Saint] - 'Hush'")
-		print("[The Saint] - 'Delirium'")
-		print("[The Saint] - 'Mother'")
-		print("[The Saint] - 'TheBeast'")
-		print("[The Saint] if the argument is not given defaults to 'all'")
+		utils:PrintWithHeader("3rd argument (<completion mark>)")
+		utils:PrintWithHeader("allowed values for <completion mark> (case-sensitive):")
+		utils:PrintWithHeader("- 'all'")
+		utils:PrintWithHeader("- 'BossRush'")
+		utils:PrintWithHeader("- 'MomsHeart'")
+		utils:PrintWithHeader("- 'Satan'")
+		utils:PrintWithHeader("- 'Isaac'")
+		utils:PrintWithHeader("- 'TheLamb'")
+		utils:PrintWithHeader("- 'BlueBaby'")
+		utils:PrintWithHeader("- 'MegaSatan'")
+		utils:PrintWithHeader("- 'GreedMode'")
+		utils:PrintWithHeader("- 'Hush'")
+		utils:PrintWithHeader("- 'Delirium'")
+		utils:PrintWithHeader("- 'Mother'")
+		utils:PrintWithHeader("- 'TheBeast'")
+		utils:PrintWithHeader("if the argument is not given defaults to 'all'")
 	end
 	if (diff == "?") then
-		print("[The Saint] 4th argument (normal, hard)")
-		print("[The Saint] - 'normal': sets the mark for Normal/Greed Mode")
-		print("[The Saint] - 'hard': sets the mark for Hard/Greedier Mode")
-		print("[The Saint] this argument is ignored when 2nd argument is 'clear'")
-		print("[The Saint] if the argument is not given defaults to 'normal'")
+		utils:PrintWithHeader("4th argument (normal, hard)")
+		utils:PrintWithHeader("- 'normal': sets the mark for Normal/Greed Mode")
+		utils:PrintWithHeader("- 'hard': sets the mark for Hard/Greedier Mode")
+		utils:PrintWithHeader("this argument is ignored when 2nd argument is 'clear'")
+		utils:PrintWithHeader("if the argument is not given defaults to 'normal'")
 	end
 end
 
@@ -496,18 +526,18 @@ end
 
 --- @param marks TheSaint.UnlockManager.CharacterCompletionMarks
 local function listMarks(marks)
-	print("[The Saint] Boss Rush: "..getStatusString(marks["BossRush"]))
-	print("[The Saint] Mom's Heart: "..getStatusString(marks["MomsHeart"]))
-	print("[The Saint] Satan: "..getStatusString(marks["Satan"]))
-	print("[The Saint] Isaac: "..getStatusString(marks["Isaac"]))
-	print("[The Saint] The Lamb: "..getStatusString(marks["TheLamb"]))
-	print("[The Saint] ???: "..getStatusString(marks["BlueBaby"]))
-	print("[The Saint] Mega Satan: "..getStatusString(marks["MegaSatan"]))
-	print("[The Saint] Greed Mode: "..getStatusString(marks["GreedMode"]))
-	print("[The Saint] Hush: "..getStatusString(marks["Hush"]))
-	print("[The Saint] Delirium: "..getStatusString(marks["Delirium"]))
-	print("[The Saint] Mother: "..getStatusString(marks["Mother"]))
-	print("[The Saint] The Beast: "..getStatusString(marks["TheBeast"]))
+	utils:PrintWithHeader("Boss Rush: "..getStatusString(marks["BossRush"]))
+	utils:PrintWithHeader("Mom's Heart: "..getStatusString(marks["MomsHeart"]))
+	utils:PrintWithHeader("Satan: "..getStatusString(marks["Satan"]))
+	utils:PrintWithHeader("Isaac: "..getStatusString(marks["Isaac"]))
+	utils:PrintWithHeader("The Lamb: "..getStatusString(marks["TheLamb"]))
+	utils:PrintWithHeader("???: "..getStatusString(marks["BlueBaby"]))
+	utils:PrintWithHeader("Mega Satan: "..getStatusString(marks["MegaSatan"]))
+	utils:PrintWithHeader("Greed Mode: "..getStatusString(marks["GreedMode"]))
+	utils:PrintWithHeader("Hush: "..getStatusString(marks["Hush"]))
+	utils:PrintWithHeader("Delirium: "..getStatusString(marks["Delirium"]))
+	utils:PrintWithHeader("Mother: "..getStatusString(marks["Mother"]))
+	utils:PrintWithHeader("The Beast: "..getStatusString(marks["TheBeast"]))
 end
 
 --- @param mark TheSaint.Enums.CompletionMarks | "all"
@@ -526,7 +556,7 @@ local function isValidMark(mark)
 	--- @cast retVal boolean
 
 	if (retVal == false) then
-		print("[The Saint] invalid argument <completion mark>")
+		utils:PrintWithHeader("invalid argument <completion mark>")
 	end
 	return retVal
 end
@@ -548,7 +578,7 @@ local function executeCommand(char, operation, mark, diff)
 		local marks = v.persistent.characterMarks[character]
 
 		if (operation == "show") then
-			print("[The Saint] completion marks for '"..charName.."':")
+			utils:PrintWithHeader("completion marks for '"..charName.."':")
 			listMarks(marks)
 		else
 			if (isValidMark(mark)) then
@@ -558,24 +588,24 @@ local function executeCommand(char, operation, mark, diff)
 					status = diff
 				end
 				local msg = {
-					["set"] = "[The Saint] set @ for '"..charName.."' to '"..diff.."'",
-					["clear"] = "[The Saint] cleared @ for '"..charName.."'",
+					["set"] = "set @ for '"..charName.."' to '"..diff.."'",
+					["clear"] = "cleared @ for '"..charName.."'",
 				}
 				if (mark == "all") then
 					for field, _ in pairs(marks) do
 						marks[field] = status
 					end
 					local output = msg[operation]:gsub("@", "all completion marks")
-					print(output)
+					utils:PrintWithHeader(output)
 				else
 					marks[mark] = status
 					local output = msg[operation]:gsub("@", "completion mark '"..mark.."'")
-					print(output)
+					utils:PrintWithHeader(output)
 				end
 			end
 		end
 	else
-		print("[The Saint] invalid argument <character>")
+		utils:PrintWithHeader("invalid argument <character>")
 	end
 end
 
@@ -588,9 +618,9 @@ local function thesaint_marks(params)
 		table.insert(paramList, param)
 	end
 	if ((#paramList == 0)) then
-		print("[The Saint] incomplete command, use the following syntax (without quotation marks):")
-		print("[The Saint] 'thesaint_marks <character> [show|{set|clear} [<completion mark> [normal|hard]]]'")
-		print("[The Saint] using '?' as any argument will show a list of all valid values")
+		utils:PrintWithHeader("incomplete command, use the following syntax (without quotation marks):")
+		utils:PrintWithHeader("'thesaint_marks <character> [show|{set|clear} [<completion mark> [normal|hard]]]'")
+		utils:PrintWithHeader("using '?' as any argument will show a list of all valid values")
 	else
 		local showHelp = false
 		--- @type string, string?, string?, string?, string?
@@ -635,7 +665,7 @@ function UnlockManager:Init(mod)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_AMBUSH_FINISHED, postAmbushFinished, isc.AmbushType.BOSS_RUSH)
 	mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, preSpawnCleanAward)
 	-- prevent getting things, that aren't unlocked yet
-	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst)
+	mod:AddPriorityCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, CallbackPriority.IMPORTANT, postPickupInitFirst)
 	-- prevent card pool pulling cards/runes that aren't unlocked yet
 	mod:AddCallback(ModCallbacks.MC_GET_CARD, getCard)
 	-- console commands

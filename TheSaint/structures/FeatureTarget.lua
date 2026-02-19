@@ -3,7 +3,7 @@
 --- @field Variant integer
 --- @field SubType integer?
 
---- @generic T: CollectibleType | TrinketType | Card | PillEffect | PlayerType
+--- @generic T: CollectibleType | TrinketType | Card | PillEffect | PlayerType | PickupVariant
 --- @class TheSaint.structures.FeatureTarget<T>
 --- @field Type T
 --- @field Entity TheSaint.structures.FeatureTarget.TargetEntity? @ if that feature spawns an entity, specify the corresponding Type, Variant (and optionally SubType) here
@@ -35,7 +35,7 @@ local function getTargetEntityFromTVS(tvs)
 	}
 end
 
---- @generic T: CollectibleType | TrinketType | Card | PillEffect | PlayerType
+--- @generic T: CollectibleType | TrinketType | Card | PillEffect | PlayerType | PickupVariant
 --- @param targetType T
 --- @param entityTVS? string | integer[]
 --- @param character? PlayerType | PlayerType[]

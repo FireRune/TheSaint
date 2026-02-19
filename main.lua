@@ -2,6 +2,7 @@
 
 local isc = require("TheSaint.lib.isaacscript-common")
 local stats = include("TheSaint.stats")
+local utils = include("TheSaint.utils")
 
 --- Obtained by using the `upgradeMod` function
 --- @class ModUpgraded : ModReference
@@ -218,10 +219,10 @@ TheSaintAPI = {}
 
 --- Custom commands
 local function thesaint_help()
-	print("[The Saint] list of commands (all commands and their parameters are case-insensitive, unless stated otherwise):")
-	print("[The Saint] - 'thesaint_help': shows this list")
-	print("[The Saint] - 'thesaint_reloadbooks': reloads the cache of 'book'-items for 'Almanach'")
-	print("[The Saint] - 'thesaint_marks': check progress for this mod's characters' completion marks")
+	utils:PrintWithHeader("list of commands (all commands and their parameters are case-insensitive, unless stated otherwise):")
+	utils:PrintWithHeader("- 'thesaint_help': shows this list")
+	utils:PrintWithHeader("- 'thesaint_reloadbooks': reloads the cache of 'book'-items for 'Almanach'")
+	utils:PrintWithHeader("- 'thesaint_marks': check progress for this mod's characters' completion marks")
 end
 TheSaint:addConsoleCommand("thesaint_help", thesaint_help)
 
@@ -234,4 +235,4 @@ if (type(imports) == "table") then
 	imports:LoadFeatures(TheSaint)
 end
 
-print("[The Saint] Type 'thesaint_help' for a list of commands")
+utils:PrintWithHeader("Type 'thesaint_help' for a list of commands")

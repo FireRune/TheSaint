@@ -41,6 +41,11 @@ local Enums = {
 		SCORCHED_BABY = Isaac.GetEntityVariantByName("Scorched Baby"),
 	},
 
+	--- @enum TheSaint.Enums.PickupVariant
+	PickupVariant = {
+		PICKUP_SINFULCHEST = Isaac.GetEntityVariantByName("Sinful Chest"),
+	},
+
 	--- @enum TheSaint.Enums.EffectVariant
 	EffectVariant = {
 		PROTECTIVE_CANDLE = Isaac.GetEntityVariantByName("Protective Candle"),

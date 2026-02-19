@@ -7,7 +7,7 @@
 --- @field protected SaveDataKey string? @ key to use for the `saveDataManager`-function
 --- @field protected ThisMod ModUpgraded? @ Must be set in the `Init` function! Reference to this mod, because the 1st parameter in callbacks is of type `ModReference`
 
---- @generic T: CollectibleType | TrinketType | Card | PillEffect | PlayerType
+--- @generic T: CollectibleType | TrinketType | Card | PillEffect | PlayerType | PickupVariant
 --- @class TheSaint.classes.ModFeatureTargeted<T> : TheSaint.classes.ModFeature
 --- @field protected Target TheSaint.structures.FeatureTarget<T>
 --#endregion
@@ -58,6 +58,7 @@ local features = {
 	include("TheSaint.Items.PocketItems.Soul_Saint"),
 	include("TheSaint.Items.PocketItems.Red_Joker"),
 	include("TheSaint.Items.PocketItems.Glitched_Card"),
+	include("TheSaint.Items.Pickups.Sinful_Chest"),
 
 	include("TheSaint.ModIntegration.EIDRegistry"),
 }
