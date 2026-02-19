@@ -21,7 +21,7 @@ local Glitched_Card = {
 --- @param player EntityPlayer
 --- @param flags UseFlag
 local function useCard(_, card, player, flags)
-	local rng_card = player:GetCardRNG(Glitched_Card.Target.Type)
+	local rng_card = player:GetCardRNG(card)
 	local initSeed = rng_card:RandomInt(math.maxinteger)
 	local rng_removal = utils:CreateNewRNG(initSeed)
 
