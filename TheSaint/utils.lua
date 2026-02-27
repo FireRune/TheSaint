@@ -33,14 +33,39 @@ function utils:GetTVSString(entity)
 	return tostring(entity.Type or 0).."."..tostring(entity.Variant or 0).."."..tostring(entity.SubType or 0)
 end
 
---- @param initSeed integer
---- @return RNG
-function utils:CreateNewRNG(initSeed)
-	if (initSeed <= 0) then
-		initSeed = 2853650767
+--- @param seed integer
+--- @return integer
+local function fixSeed(seed)
+	if (seed <= 0) then
+		seed = 2853650767
 	end
+	return seed
+end
+
+--- @param shiftIdx? integer
+--- @return integer
+local function fixShiftIdx(shiftIdx)
+	if ((not shiftIdx) or (shiftIdx < 0) or (shiftIdx > 80)) then
+		shiftIdx = RECOMMENDED_SHIFT_IDX
+	end
+	return shiftIdx
+end
+
+--- like `RNG:SetSeed`, but shiftIdx is optional
+--- @param rng RNG
+--- @param initSeed integer
+--- @param shiftIdx? integer	@ value must be between 0 and 80 (both inclusive), default: `35`
+function utils:RNGSetSeed(rng, initSeed, shiftIdx)
+	local seed = fixSeed(initSeed)
+	rng:SetSeed(seed, fixShiftIdx(shiftIdx))
+end
+
+--- @param initSeed integer
+--- @param shiftIdx? integer	@ value must be between 0 and 80 (both inclusive), default: `35`
+--- @return RNG
+function utils:CreateNewRNG(initSeed, shiftIdx)
 	local rng = RNG()
-	rng:SetSeed(initSeed, RECOMMENDED_SHIFT_IDX)
+	self:RNGSetSeed(rng, initSeed, shiftIdx)
 	return rng
 end
 
