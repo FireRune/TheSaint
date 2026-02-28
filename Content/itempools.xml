@@ -1,7 +1,7 @@
 <ItemPools>
     <Pool Name="treasure">
         <Item Name="Almanach" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
-        <Item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Mending Heart" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.05" />
         <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Wooden Key" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Scorched Baby" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
@@ -15,7 +15,7 @@
     </Pool>
     <Pool Name="angel">
         <Item Name="Almanach" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
-        <Item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Mending Heart" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.05" />
         <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Holy Hand Grenade" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Protective Candle" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
@@ -39,7 +39,7 @@
     <!-- <Pool Name="momsChest"></Pool> -->
     <Pool Name="greedTreasure">
         <Item Name="Almanach" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
-        <Item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Mending Heart" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.05" />
         <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Wooden Key" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Scorched Baby" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
@@ -54,7 +54,7 @@
     </Pool>
     <Pool Name="greedAngel">
         <Item Name="Almanach" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
-        <Item Name="Mending Heart" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Mending Heart" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.05" />
         <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Holy Hand Grenade" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Protective Candle" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
@@ -63,7 +63,10 @@
         <Item Name="Rite of Rebirth" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
     <!-- <Pool Name="craneGame"></Pool> -->
-    <!-- <Pool Name="ultraSecret"></Pool> -->
+    <Pool Name="ultraSecret">
+        <Item Name="Mending Heart" Weight="1.0" DecreaseBy="0.4" RemoveOn="0.1" />
+        <Item Name="Scorched Baby" Weight="1.0" DecreaseBy="0.4" RemoveOn="0.1" />
+    </Pool>
     <Pool Name="bombBum">
         <Item Name="Divine Bombs" Weight="1.0" DecreaseBy="0.5" RemoveOn="0.1" />
     </Pool>
