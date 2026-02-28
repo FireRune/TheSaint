@@ -38,7 +38,7 @@
 	- [x] Delirium (Mending Heart)
 	- [x] Mother (Holy Penny)
 	- [x] The Beast (Rite of Rebirth)
-	- [ ] Mega Satan (Pickup or Object)
+	- [x] Mega Satan (Sinful Chest)
 
 ### Almanach.lua
 

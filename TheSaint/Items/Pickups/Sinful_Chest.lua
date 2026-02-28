@@ -7,6 +7,17 @@ local utils = include("TheSaint.utils")
 local game = Game()
 local sfx = SFXManager()
 
+--- "Sinful Chest"
+--- - works like an Eternal Chest, but with the rewards of Red Chests (25% chance for nothing, no longer re-closes if payout was nothing, an item or a teleport)
+--- - has a chance to replace regular Red Chests (higher chance in Devil Rooms)
+--- @class TheSaint.Items.Pickups.Sinful_Chest : TheSaint.classes.ModFeatureTargeted<PickupVariant>
+local Sinful_Chest = {
+	IsInitialized = false,
+	--- @type TheSaint.structures.FeatureTarget<PickupVariant>
+	Target = featureTarget:new(enums.PickupVariant.PICKUP_SINFULCHEST),
+	SaveDataKey = "Sinful_Chest",
+}
+
 --#region typedef
 
 --- "Appear" -> "Idle" -> ("Open" -> wait 40 frames -> "Close")
@@ -59,17 +70,6 @@ end
 
 --#endregion
 
---- "Sinful Chest"
---- - works like an Eternal Chest, but with the rewards of Red Chests (25% chance for nothing, no longer re-closes if payout was nothing or an item)
---- - has a chance to replace regular Red Chests (higher chance in Devil Rooms)
---- @class TheSaint.Items.Pickups.Sinful_Chest : TheSaint.classes.ModFeatureTargeted<PickupVariant>
-local Sinful_Chest = {
-	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<PickupVariant>
-	Target = featureTarget:new(enums.PickupVariant.PICKUP_SINFULCHEST),
-	SaveDataKey = "Sinful_Chest",
-}
-
 local v = {
 	level = {
 		--- @type table<string, table<string, TheSaint.Items.Pickups.Sinful_Chest.SinfulChestData>>
@@ -82,7 +82,7 @@ local v = {
 --- Get the index for the current room (to use in `v.level.SinfulChests`)
 --- @return string
 local function getRoomListIdx()
-	return "SinfulChest_"..game:GetLevel():GetCurrentRoomDesc().ListIndex
+	return "SinfulChest_RoomListIdx_"..game:GetLevel():GetCurrentRoomDesc().ListIndex
 end
 
 --- Get the table associated with the current room holding data relevant to Sinful Chests
@@ -104,7 +104,7 @@ end
 --- @param chest EntityPickup
 --- @return string
 local function getChestIdx(chest)
-	return "SinfulChest_"..Sinful_Chest.ThisMod:getPickupIndex(chest)
+	return "SinfulChest_ChestIdx_"..Sinful_Chest.ThisMod:getPickupIndex(chest)
 end
 
 --- Get the new suffix to use for sprite replacements
