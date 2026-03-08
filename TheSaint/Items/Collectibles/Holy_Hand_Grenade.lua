@@ -1,6 +1,5 @@
 local enums = require("TheSaint.Enums")
 local featureTarget = require("TheSaint.structures.FeatureTarget")
-include("TheSaint.lib.throwableitemlib").Init()
 
 local game = Game()
 

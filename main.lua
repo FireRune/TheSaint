@@ -1,6 +1,12 @@
 -- Imports
 
+-- external libraries
+
 local isc = require("TheSaint.lib.isaacscript-common")
+include("TheSaint.lib.throwableitemlib").Init()
+
+-- other
+
 local stats = include("TheSaint.stats")
 local utils = include("TheSaint.utils")
 
