@@ -18,7 +18,7 @@
 
 ### Unlocks.lua
 - The Saint:
-	- [ ] Boss Rush
+	- [x] Boss Rush (Copper Stakes)
 	- [x] Mom's Heart on Hard Mode (Almanach)
 	- [x] Satan (Scorched Baby)
 	- [x] Isaac (Divine Bombs)
@@ -27,9 +27,9 @@
 	- [x] Mega Satan (Glitched Card)
 	- [x] Hush (Wooden Key)
 	- [x] Greed Mode (Library Card)
-	- [ ] Greedier Mode
-	- [ ] Delirium
-	- [ ] Mother
+	- [ ] Greedier Mode (Collectible)
+	- [ ] Delirium (Collectible)
+	- [ ] Mother (Trinket)
 	- [x] The Beast (Holy Hand Grenade)
 - Tainted Saint:
 	- [x] Boss Rush + Hush (Soul of the Saint)
@@ -74,6 +74,7 @@ add item sprites for:
 	- [ ] Holy Hand Grenade
 	- [x] Rite of Rebirth
 	- [x] Protective Candle
+	- [x] Copper Stakes
 - trinkets:
 	- [x] Scattered Pages
 	- [x] Charon's Obol
@@ -88,11 +89,13 @@ add collection page sprites for:
 - [ ] Rite of Rebirth
 - [ ] Scorched Baby
 - [ ] Protective Candle
+- [ ] Copper Stakes
 
 add character costumes/entity sprites for:
 - [ ] Holy Hand Grenade (entity)
 - [x] Rite of Rebirth (costume)
 - [x] Protective Candle (entity)
+- [ ] Copper Stakes
 
 add front/back sprites + anims for:
 - [x] Library Card

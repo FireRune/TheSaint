@@ -4,6 +4,7 @@
 
 local isc = require("TheSaint.lib.isaacscript-common")
 include("TheSaint.lib.throwableitemlib").Init()
+include("TheSaint.lib.status_effect_library")
 
 -- other
 

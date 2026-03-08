@@ -194,7 +194,8 @@ local function createUnlock(player, marks, difficulty, typeOfPickup, unlockable,
 end
 
 local function fillUnlocksTableAndMap()
-	-- (Boss Rush with Saint)
+	-- "Copper Stakes" (Boss Rush with Saint)
+	createUnlock("Saint", enums.CompletionMarks.BOSS_RUSH, "normal", "collectible", enums.CollectibleType.COLLECTIBLE_COPPER_STAKES)
 	-- "Almanach" (Mom's Heart on Hard Mode with Saint)
 	createUnlock("Saint", enums.CompletionMarks.MOMS_HEART, "hard", "collectible", enums.CollectibleType.COLLECTIBLE_ALMANACH)
 	-- "Scorched Baby" (Satan with Saint)
