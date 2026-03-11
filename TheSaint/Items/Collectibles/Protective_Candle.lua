@@ -252,6 +252,7 @@ local function postEffectInit_RedCandleFlame(_, entFlame)
 		if (isc:hasSpectral(player)) then
 			entFlame.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_WALLS
 		end
+		entFlame:GetData().TheSaint = {}
 
 		-- initialization finished
 		candleRef.InitFlame = false
