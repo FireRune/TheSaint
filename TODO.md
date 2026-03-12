@@ -95,7 +95,7 @@ add character costumes/entity sprites for:
 - [ ] Holy Hand Grenade (entity)
 - [x] Rite of Rebirth (costume)
 - [x] Protective Candle (entity)
-- [ ] Copper Stakes
+- [ ] Copper Stakes (costume)
 
 add front/back sprites + anims for:
 - [x] Library Card

@@ -128,4 +128,18 @@ function utils:PrintAndLogWithHeader(str)
 	Isaac.DebugString(msg)
 end
 
+--- Returns whether the given entity should be damaged from "Protective Candle"<br>
+--- Also used for the "Electrified" status to determine valid targets for the sparks
+--- @param enemy Entity
+--- @param includeTNT? boolean @ default: `true`
+--- @return boolean
+function utils:IsValidEnemy(enemy, includeTNT)
+	if (includeTNT == nil) then includeTNT = true end
+
+	local isActiveEnemy = (enemy:IsActiveEnemy() == true)
+	local isNotFriendly = (enemy:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) == false)
+	local isTNT = (includeTNT and (enemy.Type == EntityType.ENTITY_MOVABLE_TNT))
+	return ((isActiveEnemy and isNotFriendly) or isTNT)
+end
+
 return utils

@@ -1,6 +1,7 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local featureTarget = require("TheSaint.structures.FeatureTarget")
+local utils = include("TheSaint.utils")
 
 local game = Game()
 
@@ -259,19 +260,6 @@ local function postEffectInit_RedCandleFlame(_, entFlame)
 	end
 end
 
---- Returns whether the given entity should be damaged from "Protective Candle"
---- @param enemy Entity
---- @param includeTNT? boolean @ default: `true`
---- @return boolean
-local function isValidEnemy(enemy, includeTNT)
-	if (includeTNT == nil) then includeTNT = true end
-
-	local isActiveEnemy = (enemy:IsActiveEnemy() == true)
-	local isNotFriendly = (enemy:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) == false)
-	local isTNT = (includeTNT and (enemy.Type == EntityType.ENTITY_MOVABLE_TNT))
-	return ((isActiveEnemy and isNotFriendly) or isTNT)
-end
-
 --- check for collision with static TNT and handle effects of homing and "Continuum"
 --- @param entFlame EntityEffect
 local function postEffectUpdate_RedCandleFlame(_, entFlame)
@@ -319,7 +307,7 @@ local function postEffectUpdate_ProtectiveCandle(_, entCandle)
 	local chance = (1 / math.max(1, (10 - math.floor(player.Luck * 0.7))))
 
 	for _, enemy in ipairs(enemies) do
-		if (isValidEnemy(enemy) == true) then
+		if (utils:IsValidEnemy(enemy) == true) then
 			enemy:TakeDamage(player.Damage, DamageFlag.DAMAGE_FIRE, sourceRef, 30)
 			if (rng:RandomFloat() < chance) then
 				enemy:AddBurn(sourceRef, 30, player.Damage)

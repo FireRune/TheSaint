@@ -38,6 +38,7 @@ local features = {
 
 	require("TheSaint.DevilDealTracking"),
 	require("TheSaint.UnlockManager"),
+	require("TheSaint.StatusEffects"),
 
 	include("TheSaint.Characters.Characters"),
 	include("TheSaint.Characters.The_Saint"),

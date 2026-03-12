@@ -10,11 +10,12 @@ This version is designed to be used with the Repentance and Repentance+ DLCs.
 Using the following libraries:
 - [IsaacScript](https://isaacscript.github.io) (version 87.8.0)
 - [ThrowableItemLib](https://github.com/drpandacat/ThrowableItemLib) (version 1.5.2)
+- [status-effect-library](https://github.com/BenevolusGoat/status-effect-library) (version 1.1.3)
 
 ## Current list of features
 
 - 2 new characters: "The Saint" and "Tainted Saint"
-- 9 new collectibles
+- 10 new collectibles
 - 3 new trinkets
 - 4 new cards/runes
 - integration for the following mods

@@ -76,6 +76,14 @@ local function AddRegistry()
 
 	--#endregion
 
+	--#region General icons
+
+	local generalIcons = Sprite()
+	generalIcons:Load("gfx/EID/eid_generalicons.anm2")
+	EID:addIcon("Electrify", "StatusEffects", 0, 9, 11, 0, -1, generalIcons)
+
+	--#endregion
+
 	local desc = ""
 
 	--#region Collectibles
@@ -294,6 +302,13 @@ local function AddRegistry()
 	EID:addCollectible(protectiveCandle, desc)
 	--#endregion
 
+	--#region Copper Stakes
+
+	local copperStakes = enums.CollectibleType.COLLECTIBLE_COPPER_STAKES
+	desc = "↑ +1 Range#{{Electrify}} 20% chance to shoot electrifying tears#{{Luck}} 50% chance at 20 luck"
+	EID:addCollectible(copperStakes, desc)
+	--#endregion
+
 	--#endregion
 
 	--#region Trinkets
@@ -369,7 +384,7 @@ local function AddRegistry()
 
 	-- Character Icons
 	local charIcons = Sprite()
-	charIcons:Load("gfx/EID/eid_player_icons.anm2", true)
+	charIcons:Load("gfx/EID/eid_player_icons.anm2")
 
 	--#region The Saint
 

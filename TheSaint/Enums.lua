@@ -86,6 +86,11 @@ local Enums = {
 		--- setting value is `boolean`
 		UNLOCK_ALL = "UnlockAll",
 	},
+
+	--- @enum TheSaint.Enums.StatusEffect
+	StatusEffect = {
+		ELECTRIFIED = "SAINT_ELECTRIFIED",
+	},
 }
 
 return Enums
