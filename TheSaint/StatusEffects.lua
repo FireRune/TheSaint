@@ -10,6 +10,9 @@ local StatusEffects = {
 }
 
 local OFFSET = (40 / 255)
+
+--#region Electrified
+
 local SPARK_DISTANCE = 100.0
 
 --- "Electrified"
@@ -20,6 +23,24 @@ local function Status_Electrified()
 	local icon = nil
 	local color = Color(1.2, 1.2, 0.5, 1, OFFSET, OFFSET, OFFSET)
 	SEL.RegisterStatusEffect(identifier, icon, color)
+end
+
+--- @param ent EntityPlayer | EntityNPC
+--- @param effect StatusFlag
+--- @param customData table
+local function preAddEffect_Electrified(_, ent, effect, customData)
+	local effectData = SEL:GetStatusEffectData(ent, effect)
+	if (not effectData) then return end
+	effectData.Countdown = (effectData.Countdown + customData.Countdown)
+end
+
+--- @param ent EntityPlayer | EntityNPC
+--- @param effect StatusFlag
+--- @param effectData StatusEffectData
+local function postAddEffect_Electrified(_, ent, effect, effectData)
+	if (effectData.Countdown > 150) then
+		effectData.Countdown = 150
+	end
 end
 
 --- @param entity EntityPlayer | EntityNPC
@@ -61,26 +82,36 @@ local function statusEffectUpdate_Electrified(_, entity)
 		spark:SetMaxDistance(sparkLength)
 		spark.CollisionDamage = (player.Damage * 0.25)
 	end
-
 end
+
+--#endregion
 
 --- @param mod ModUpgraded
 function StatusEffects:Init(mod)
 	if (self.IsInitialized) then return end
 
 	Status_Electrified()
+	SEL.Callbacks.AddCallback(SEL.Callbacks.ID.PRE_ADD_ENTITY_STATUS_EFFECT, preAddEffect_Electrified, SEL.StatusFlag.SAINT_ELECTRIFIED)
+	SEL.Callbacks.AddCallback(SEL.Callbacks.ID.POST_ADD_ENTITY_STATUS_EFFECT, postAddEffect_Electrified, SEL.StatusFlag.SAINT_ELECTRIFIED)
 	SEL.Callbacks.AddCallback(SEL.Callbacks.ID.ENTITY_STATUS_EFFECT_UPDATE, statusEffectUpdate_Electrified, SEL.StatusFlag.SAINT_ELECTRIFIED)
 end
 
 --- @param target EntityPlayer | EntityNPC
 --- @param status TheSaint.Enums.StatusEffect
---- @param duration integer
+--- @param duration integer	@ in frames (1 second = 30 frames)
 --- @param source? Entity
 --- @param color? Color
 --- @param customData? table
 function StatusEffects:ApplyStatus(target, status, duration, source, color, customData)
 	local statusFlag = SEL.StatusFlag[status]
 	local ref = EntityRef(source)
+	if (customData) then
+		customData.Countdown = duration
+	else
+		customData = {
+			Countdown = duration,
+		}
+	end
 	SEL:AddStatusEffect(target, statusFlag, duration, ref, color, customData)
 end
 
