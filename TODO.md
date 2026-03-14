@@ -124,3 +124,5 @@ additional behaviour of flame projectile if player has following effects
 		- show item as usable even if not fully charged
 	- [ ] Rite_of_Rebirth.lua
 		- rework entirely
+	- [ ] Copper_Stakes.lua
+		- allow effect to be triggered from weapon swing (i.e. Forgotten's club or Berserk!)
