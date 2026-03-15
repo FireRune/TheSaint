@@ -40,6 +40,7 @@ local features = {
 	require("TheSaint.UnlockManager"),
 	require("TheSaint.StatusEffects"),
 
+	include("TheSaint.CustomCallbacks"),
 	include("TheSaint.Characters.Characters"),
 	include("TheSaint.Characters.The_Saint"),
 	include("TheSaint.Characters.Tainted_Saint"),

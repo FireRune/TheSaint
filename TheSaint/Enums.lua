@@ -91,6 +91,15 @@ local Enums = {
 	StatusEffect = {
 		ELECTRIFIED = "SAINT_ELECTRIFIED",
 	},
+
+	--- @enum TheSaint.Enums.Callbacks
+	Callbacks = {
+		--- (EntityLaser Laser, Entity Collider): void, Optional Arg: LaserVariant - Fired from the `MC_POST_LASER_UPDATE` callback whenever a laser collides with an `EntityPlayer` or `EntityNPC`. Triggered on every frame of the collision.
+		LASER_COLLISION = "TheSaint_LASER_COLLISION",
+
+		--- (EntityLaser Laser, Entity Receiver): void, Optional Arg: LaserVariant - Same as "TheSaint_LASER_COLLISION", but will only trigger on the exact frame the colliding entity has received damage.
+		LASER_DAMAGE = "TheSaint_LASER_DAMAGE",
+	},
 }
 
 return Enums
