@@ -94,4 +94,6 @@
 	<wisp id="5" hp="2" layer="0" flameColor="flame_red" coreColor="core_brown" coreGfx="key.png" canShoot="false" priority="-1" />
 	<!-- "Holy Hand Grenade" -->
 	<wisp id="6" count="0" />
+	<!-- "Tesla Coil" - shoots "Jacob's Ladder" tears, electrifies on contact -->
+	<wisp id="11" hp="2" layer="2" tearFlags="55" flameColor="flame_yellow" coreColor="core_white" />
 </wisps>

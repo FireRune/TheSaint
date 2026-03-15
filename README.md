@@ -15,7 +15,7 @@ Using the following libraries:
 ## Current list of features
 
 - 2 new characters: "The Saint" and "Tainted Saint"
-- 10 new collectibles
+- 11 new collectibles
 - 3 new trinkets
 - 4 new cards/runes
 - integration for the following mods

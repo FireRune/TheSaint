@@ -309,6 +309,18 @@ local function AddRegistry()
 	EID:addCollectible(copperStakes, desc)
 	--#endregion
 
+	--#region Tesla Coil
+
+	local teslaCoil = enums.CollectibleType.COLLECTIBLE_TESLA_COIL
+	desc = "Spawns a Tesla Coil that shoots electrical sparks around itself, dealing half of Isaac's damage#{{Electrify}} Enemies hit will be electrified"
+	EID:addCollectible(teslaCoil, desc)
+
+	desc = "{{Electrify}} Electrifies enemies on contact"
+	addWispData(teslaCoil, 2, 2, 3, 0.1, 1, 1, 30, 1, true, 1, {55}, {-1}, desc)
+
+	EID:addCarBatteryCondition(teslaCoil, {"a Tesla Coil", "2 {{CR}}Tesla Coils"})
+	--#endregion
+
 	--#endregion
 
 	--#region Trinkets

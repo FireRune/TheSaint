@@ -42,21 +42,9 @@ local function evaluateStats(_, player, flag)
 	end
 end
 
---- same luck formula as "Mom's Contacts"
---- @param player EntityPlayer
---- @param force? boolean	@ default: `false`
---- @return boolean
-local function chanceTime(player, force)
-	if (force) then return true end
-
-	local chance = math.min((1 / (5 - math.floor(player.Luck * 0.15))), 0.5)
-	local rng = player:GetCollectibleRNG(Copper_Stakes.Target.Type)
-	return (rng:RandomFloat() < chance)
-end
-
 --- @param weapon EntityTear | EntityKnife | EntityLaser
 local function shouldApplyEffect(weapon)
-	local player = weapon.SpawnerEntity:ToPlayer()
+	local player = (weapon.SpawnerEntity and weapon.SpawnerEntity:ToPlayer())
 	if (not player) then return end
 
 	if (player:HasCollectible(Copper_Stakes.Target.Type)) then
@@ -147,16 +135,12 @@ local function preKnifeCollision(_, knife, collider, low)
 end
 
 --- @param laser EntityLaser
-local function postLaserInit(_, laser)
-	shouldApplyEffect(laser)
-end
-
---- @param laser EntityLaser
 --- @param receiver Entity
 local function laserDamage(_, laser, receiver)
 	local enemy = ((utils:IsValidEnemy(receiver, false) and receiver:ToNPC()) or nil)
 	if (not enemy) then return end
 
+	shouldApplyEffect(laser)
 	local player = onCollision(laser, receiver)
 	if (player) then
 		enemyDamaged(enemy, player)
@@ -177,7 +161,6 @@ function Copper_Stakes:Init(mod)
 	-- Knife
 	mod:AddPriorityCallback(ModCallbacks.MC_PRE_KNIFE_COLLISION, CallbackPriority_VERY_LATE, preKnifeCollision)
 	-- Laser
-	utils:AddTargetedCallback(mod, ModCallbacks.MC_POST_LASER_INIT, postLaserInit, {LaserVariant.THICK_RED, LaserVariant.THIN_RED, LaserVariant.GIANT_RED, LaserVariant.BRIM_TECH, LaserVariant.THICKER_RED, LaserVariant.THICKER_BRIM_TECH, LaserVariant.GIANT_BRIM_TECH})
 	utils:AddTargetedCallback(mod, enums.Callbacks.LASER_DAMAGE, laserDamage, {LaserVariant.THICK_RED, LaserVariant.THIN_RED, LaserVariant.GIANT_RED, LaserVariant.BRIM_TECH, LaserVariant.THICKER_RED, LaserVariant.THICKER_BRIM_TECH, LaserVariant.GIANT_BRIM_TECH})
 end
 

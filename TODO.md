@@ -27,7 +27,7 @@
 	- [x] Mega Satan (Glitched Card)
 	- [x] Hush (Wooden Key)
 	- [x] Greed Mode (Library Card)
-	- [ ] Greedier Mode (Collectible)
+	- [x] Greedier Mode (Tesla Coil)
 	- [ ] Delirium (Collectible)
 	- [ ] Mother (Trinket)
 	- [x] The Beast (Holy Hand Grenade)
@@ -75,6 +75,7 @@ add item sprites for:
 	- [x] Rite of Rebirth
 	- [x] Protective Candle
 	- [x] Copper Stakes
+	- [ ] Tesla Coil
 - trinkets:
 	- [x] Scattered Pages
 	- [x] Charon's Obol
@@ -90,12 +91,14 @@ add collection page sprites for:
 - [ ] Scorched Baby
 - [ ] Protective Candle
 - [ ] Copper Stakes
+- [ ] Tesla Coil
 
 add character costumes/entity sprites for:
 - [ ] Holy Hand Grenade (entity)
 - [x] Rite of Rebirth (costume)
 - [x] Protective Candle (entity)
 - [ ] Copper Stakes (costume)
+- [ ] Tesla Coil (costume)
 
 add front/back sprites + anims for:
 - [x] Library Card

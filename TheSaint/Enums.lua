@@ -14,6 +14,7 @@ local Enums = {
 		COLLECTIBLE_SCORCHED_BABY = Isaac.GetItemIdByName("Scorched Baby"),
 		COLLECTIBLE_PROTECTIVE_CANDLE = Isaac.GetItemIdByName("Protective Candle"),
 		COLLECTIBLE_COPPER_STAKES = Isaac.GetItemIdByName("Copper Stakes"),
+		COLLECTIBLE_TESLA_COIL = Isaac.GetItemIdByName("Tesla Coil"),
 	},
 
 	--- @enum TheSaint.Enums.TrinketType
@@ -40,6 +41,7 @@ local Enums = {
 	--- @enum TheSaint.Enums.FamiliarVariant
 	FamiliarVariant = {
 		SCORCHED_BABY = Isaac.GetEntityVariantByName("Scorched Baby"),
+		TESLA_COIL = Isaac.GetEntityVariantByName("Tesla Coil"),
 	},
 
 	--- @enum TheSaint.Enums.PickupVariant

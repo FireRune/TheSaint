@@ -6,6 +6,7 @@
         <Item Name="Wooden Key" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Scorched Baby" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Copper Stakes" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Tesla Coil" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
     <Pool Name="shop">
         <Item Name="Protective Candle" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
@@ -38,6 +39,7 @@
     </Pool>
     <Pool Name="batteryBum">
         <Item Name="Copper Stakes" Weight="0.1" DecreaseBy="0.05" RemoveOn="0.01" />
+        <Item Name="Tesla Coil" Weight="0.1" DecreaseBy="0.05" RemoveOn="0.01" />
     </Pool>
     <!-- <Pool Name="momsChest"></Pool> -->
     <Pool Name="greedTreasure">
@@ -47,10 +49,12 @@
         <Item Name="Wooden Key" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Scorched Baby" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
         <Item Name="Copper Stakes" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Tesla Coil" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
     <!-- <Pool Name="greedBoss"></Pool> -->
     <Pool Name="greedShop">
         <Item Name="Protective Candle" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
+        <Item Name="Tesla Coil" Weight="1.0" DecreaseBy="1.0" RemoveOn="0.1" />
     </Pool>
     <!-- <Pool Name="greedCurse"></Pool> -->
     <Pool Name="greedDevil">
