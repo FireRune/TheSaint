@@ -2,6 +2,14 @@ local isc = require("TheSaint.lib.isaacscript-common")
 
 local utils = {}
 
+local CallbackPriority_LATER = 199		--- @cast CallbackPriority_LATER CallbackPriority
+local CallbackPriority_VERY_LATE = 200	--- @cast CallbackPriority_VERY_LATE CallbackPriority
+
+--- 199
+utils.CallbackPriority_LATER = CallbackPriority_LATER
+--- 200
+utils.CallbackPriority_VERY_LATE = CallbackPriority_VERY_LATE
+
 local RECOMMENDED_SHIFT_IDX = 35
 
 --- Helper function to add a callback for multiple targets (i.e. the 3rd argument of `ModReference:AddCallback`)<br>

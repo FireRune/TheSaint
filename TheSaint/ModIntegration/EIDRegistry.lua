@@ -80,7 +80,7 @@ local function AddRegistry()
 
 	local generalIcons = Sprite()
 	generalIcons:Load("gfx/EID/eid_generalicons.anm2")
-	EID:addIcon("Electrify", "StatusEffects", 0, 9, 11, 0, -1, generalIcons)
+	EID:addIcon("Electrify", "StatusEffects", 0, 9, 11, 0, 0, generalIcons)
 
 	--#endregion
 
@@ -246,7 +246,7 @@ local function AddRegistry()
 	desc = "On death, invokes the effect of {{Collectible"..woodenKey.."}} Wooden Key"
 	addWispData(woodenKey, 2, 0, 0, 0, 0, 0, 0, 1, false, 1, {-1}, {-1}, desc)
 
-	EID:addCarBatteryCondition(woodenKey, {"a random door", "opens it if it is", "2{{CR}} random doors", "opens them if they are"})
+	EID:addCarBatteryCondition(woodenKey, {"a random door", "2 {{CR}}random doors", "opens it if it is", "{{CR}}opens them if they are"})
 	--#endregion
 
 	--#region Holy Hand Grenade
@@ -312,13 +312,13 @@ local function AddRegistry()
 	--#region Tesla Coil
 
 	local teslaCoil = enums.CollectibleType.COLLECTIBLE_TESLA_COIL
-	desc = "Spawns a Tesla Coil that shoots electrical sparks around itself, dealing half of Isaac's damage#{{Electrify}} Enemies hit will be electrified"
+	desc = "Spawns a Tesla Coil shooting electrical sparks around itself, dealing half of Isaac's damage#{{Electrify}} Enemies hit will be electrified"
 	EID:addCollectible(teslaCoil, desc)
 
 	desc = "{{Electrify}} Electrifies enemies on contact"
 	addWispData(teslaCoil, 2, 2, 3, 0.1, 1, 1, 30, 1, true, 1, {55}, {-1}, desc)
 
-	EID:addCarBatteryCondition(teslaCoil, {"a Tesla Coil", "2 {{CR}}Tesla Coils"})
+	EID:addCarBatteryCondition(teslaCoil, {"a Tesla Coil", "2 {{CR}}Tesla Coils", "itself,", "{{CR}}themselves,"})
 	--#endregion
 
 	--#endregion

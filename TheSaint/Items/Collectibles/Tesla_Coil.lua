@@ -10,13 +10,16 @@ local game = Game()
 --- - 4 Room Charge
 --- - on use, spawns an entity like "Sprinkler"
 --- - entity repeatedly generates sparks around it
---- - sparks will jump to nearby enemies, dealing 50% of Isaac's damage and inflicting "Electrified"
+--- - sparks deal 50% of Isaac's damage and inflict "Electrified"
 --- @class TheSaint.Items.Collectibles.Tesla_Coil : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Tesla_Coil = {
 	IsInitialized = false,
 	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
 	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_TESLA_COIL, {EntityType.ENTITY_FAMILIAR, enums.FamiliarVariant.TESLA_COIL}),
 }
+
+local RANDOM_SPARK_RADIUS = 50
+local TARGETED_SPARK_RADIUS = 100
 
 --- @param collectible CollectibleType
 --- @param rng RNG
@@ -40,7 +43,7 @@ local function useItem(_, collectible, rng, player, flags, slot, varData)
 end
 
 --- @param familiar EntityFamiliar
-local function familiarInit(_, familiar)
+local function familiarInit_TeslaCoil(_, familiar)
 	familiar.FireCooldown = 14
 end
 
@@ -62,7 +65,7 @@ end
 --- @return EntityLaser
 local function randomSpark(familiar, player)
 	local angle = RandomVector():GetAngleDegrees()
-	local spark = spawnSpark(angle, 50, familiar, player)
+	local spark = spawnSpark(angle, RANDOM_SPARK_RADIUS, familiar, player)
 	return spark
 end
 
@@ -70,7 +73,7 @@ end
 local sparkPreventer = true
 
 --- @param familiar EntityFamiliar
-local function familiarUpdate(_, familiar)
+local function familiarUpdate_TeslaCoil(_, familiar)
 	local room = game:GetRoom()
 	local gridIdx = room:GetGridIndex(familiar.Position)
 	room:SetGridPath(gridIdx, 700)
@@ -85,7 +88,7 @@ local function familiarUpdate(_, familiar)
 	end
 	if (familiar.FireCooldown <= 0) then
 		-- shoot targeted spark
-		local enemies = Isaac.FindInRadius(familiar.Position, 100, EntityPartition.ENEMY)
+		local enemies = Isaac.FindInRadius(familiar.Position, TARGETED_SPARK_RADIUS, EntityPartition.ENEMY)
 		--- @type Entity?
 		local clostEnemy = isc:getClosestEntityTo(familiar, enemies, function (_, ent)
 			local enemy = ((utils:IsValidEnemy(ent, false) and ent:ToNPC()) or nil)
@@ -103,27 +106,65 @@ local function familiarUpdate(_, familiar)
 	familiar.FireCooldown = familiar.FireCooldown - 1
 end
 
+--- @param wisp EntityFamiliar
+local function familiarUpdate_Wisp(_, wisp)
+	local wispData = wisp:GetData().TheSaint
+	if (wispData) then
+		wispData.CollisionDetected = false
+	else
+		wispData = {
+			CollisionDetected = false,
+		}
+	end
+	wisp:GetData().TheSaint = wispData
+end
+
+--- @param wisp EntityFamiliar
+--- @param collider Entity
+--- @param low boolean
+local function preFamiliarCollision_TeslaCoilWisp(_, wisp, collider, low)
+	local enemy = ((utils:IsValidEnemy(collider, false) and collider:ToNPC()) or nil)
+	if (not enemy) then return end
+
+	local wispData = wisp:GetData().TheSaint
+	if (wispData) then
+		wispData.CollisionDetected = true
+	else
+		wispData = {
+			CollisionDetected = true,
+		}
+	end
+	wisp:GetData().TheSaint = wispData
+end
+
+--- Apply "Electrified" status when damaged from "Tesla Coil" entity OR contact damage from "Tesla Coil" wisp
 --- @param ent Entity
 --- @param amount number	@ value is an integer when `ent` is `EntityPlayer`, otherwise it's a float
 --- @param flags DamageFlag
 --- @param source EntityRef
 --- @param countdown integer
 local function entityTakeDamage(_, ent, amount, flags, source, countdown)
-	print("Source:", source.Entity.Type, source.Entity.Variant, source.Entity.SubType)
-
 	local enemy = ent:ToNPC()
-	if (not enemy) then print("Exit 1") return end
+	if (not enemy) then return end
 
 	local familiar = source.Entity:ToFamiliar()
-	if (not familiar) then print("Exit 2") return end
-	if ((familiar.Variant ~= Tesla_Coil.Target.Entity.Variant)
-	and (not ((familiar.Variant == FamiliarVariant.WISP) and (familiar.SubType == Tesla_Coil.Target.Type)))) then print("Exit 3") return end
+	if (not familiar) then return end
+
+	local famCheck = false
+	if (familiar.Variant == Tesla_Coil.Target.Entity.Variant) then
+		famCheck = true
+	elseif ((familiar.Variant == FamiliarVariant.WISP) and (familiar.SubType == Tesla_Coil.Target.Type)) then
+		local wispData = familiar:GetData().TheSaint
+		if (wispData) and (wispData.CollisionDetected) then
+			famCheck = true
+		end
+	end
+	if (not famCheck) then return end
 
 	local player = (familiar.SpawnerEntity and familiar.SpawnerEntity:ToPlayer())
-	if (not player) then print("Exit 4") return end
+	if (not player) then return end
 
 	statusEffects:ApplyStatus(enemy, enums.StatusEffect.ELECTRIFIED, 90, player)
-	print("Exit 5")
 end
 
 --- @param mod ModUpgraded
@@ -131,9 +172,11 @@ function Tesla_Coil:Init(mod)
 	if (self.IsInitialized) then return end
 
 	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.Target.Type)
-	mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, familiarInit, self.Target.Entity.Variant)
-	mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, familiarUpdate, self.Target.Entity.Variant)
-	mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, entityTakeDamage)
+	mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, familiarInit_TeslaCoil, self.Target.Entity.Variant)
+	mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, familiarUpdate_TeslaCoil, self.Target.Entity.Variant)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_FAMILIAR_UPDATE_FILTER, familiarUpdate_Wisp, FamiliarVariant.WISP, self.Target.Type)
+	mod:AddPriorityCallbackCustom(isc.ModCallbackCustom.PRE_FAMILIAR_COLLISION_FILTER, utils.CallbackPriority_VERY_LATE, preFamiliarCollision_TeslaCoilWisp, FamiliarVariant.WISP, self.Target.Type)
+	mod:AddPriorityCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, utils.CallbackPriority_VERY_LATE, entityTakeDamage)
 
 	--- remove "Tesla Coil" entities on entering a new room / run continue
 	local removalFn = function ()

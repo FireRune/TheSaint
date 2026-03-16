@@ -151,15 +151,13 @@ end
 function Copper_Stakes:Init(mod)
 	if (self.IsInitialized) then return end
 
-	local CallbackPriority_VERY_LATE = 200 --- @cast CallbackPriority_VERY_LATE CallbackPriority
-
 	mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, evaluateStats, CacheFlag.CACHE_RANGE)
-	mod:AddPriorityCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, CallbackPriority_VERY_LATE, entityTakeDmg)
+	mod:AddPriorityCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, utils.CallbackPriority_VERY_LATE, entityTakeDmg)
 	-- Tears
 	mod:AddCallback(ModCallbacks.MC_POST_TEAR_INIT, postTearInit)
-	mod:AddPriorityCallback(ModCallbacks.MC_PRE_TEAR_COLLISION, CallbackPriority_VERY_LATE, preTearCollision)
+	mod:AddPriorityCallback(ModCallbacks.MC_PRE_TEAR_COLLISION, utils.CallbackPriority_VERY_LATE, preTearCollision)
 	-- Knife
-	mod:AddPriorityCallback(ModCallbacks.MC_PRE_KNIFE_COLLISION, CallbackPriority_VERY_LATE, preKnifeCollision)
+	mod:AddPriorityCallback(ModCallbacks.MC_PRE_KNIFE_COLLISION, utils.CallbackPriority_VERY_LATE, preKnifeCollision)
 	-- Laser
 	utils:AddTargetedCallback(mod, enums.Callbacks.LASER_DAMAGE, laserDamage, {LaserVariant.THICK_RED, LaserVariant.THIN_RED, LaserVariant.GIANT_RED, LaserVariant.BRIM_TECH, LaserVariant.THICKER_RED, LaserVariant.THICKER_BRIM_TECH, LaserVariant.GIANT_BRIM_TECH})
 end

@@ -103,9 +103,7 @@ end
 function CustomCallbacks:Init(mod)
 	if (self.IsInitialized) then return end
 
-	local CallbackPriority_LATER = 199 --- @cast CallbackPriority_LATER CallbackPriority
-
-	mod:AddPriorityCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, CallbackPriority_LATER, entityTakeDamage)
+	mod:AddPriorityCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, utils.CallbackPriority_LATER, entityTakeDamage)
 	mod:AddPriorityCallback(ModCallbacks.MC_POST_LASER_UPDATE, CallbackPriority.IMPORTANT, postLaserUpdate)
 end
 
