@@ -76,52 +76,86 @@ local function AddRegistry()
 
 	--#endregion
 
-	--#region General icons
+	local ids = {
+		Almanach = enums.CollectibleType.COLLECTIBLE_ALMANACH,
+		MendingHeart = enums.CollectibleType.COLLECTIBLE_MENDING_HEART,
+		DevoutPrayer = enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER,
+		DivineBombs = enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS,
+		WoodenKey = enums.CollectibleType.COLLECTIBLE_WOODEN_KEY,
+		HolyHandGrenade = enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE,
+		RiteOfRebirth = enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH,
+		ScorchedBaby = enums.CollectibleType.COLLECTIBLE_SCORCHED_BABY,
+		ProtectiveCandle = enums.CollectibleType.COLLECTIBLE_PROTECTIVE_CANDLE,
+		CopperStakes = enums.CollectibleType.COLLECTIBLE_COPPER_STAKES,
+		TeslaCoil = enums.CollectibleType.COLLECTIBLE_TESLA_COIL,
+		HolyPenny = enums.TrinketType.TRINKET_HOLY_PENNY,
+		ScatteredPages = enums.TrinketType.TRINKET_SCATTERED_PAGES,
+		CharonsObol = enums.TrinketType.TRINKET_CHARONS_OBOL,
+		LibraryCard = enums.Card.CARD_LIBRARY,
+		SoulOfTheSaint = enums.Card.CARD_SOUL_SAINT,
+		RedJoker = enums.Card.CARD_RED_JOKER,
+		GlitchedCard = enums.Card.CARD_GLITCHED,
+		Saint = enums.PlayerType.PLAYER_THE_SAINT,
+		TSaint = enums.PlayerType.PLAYER_THE_SAINT_B,
+	}
+	local desc = ""
 
+	--#region Icons
+
+	-- General Icons
 	local generalIcons = Sprite()
 	generalIcons:Load("gfx/EID/eid_generalicons.anm2")
 	EID:addIcon("Electrify", "StatusEffects", 0, 9, 11, 0, 0, generalIcons)
 
-	--#endregion
+	-- Pocket Item icons
+	local pocketIcons = Sprite()
+	pocketIcons:Load("gfx/EID/eid_cardspills.anm2")
+	EID:addIcon("Card"..ids.LibraryCard, "librarycard", 0, 16, 24, 4, 7, pocketIcons)
+	EID:addIcon("Card"..ids.SoulOfTheSaint, "soulofthesaint", 0, 32, 32, 4, 7, pocketIcons)
+	EID:addIcon("Card"..ids.RedJoker, "redjoker", 0, 16, 24, 4, 7, pocketIcons)
+	EID:addIcon("Card"..ids.GlitchedCard, "glitchedcard", 0, 16, 24, 4, 7, pocketIcons)
 
-	local desc = ""
+	-- Character Icons
+	local charIcons = Sprite()
+	charIcons:Load("gfx/EID/eid_player_icons.anm2")
+	EID:addIcon("Player"..ids.Saint, "Players", 0, 16, 16, 0, 0, charIcons)
+	EID:addIcon("Player"..ids.TSaint, "Players", 1, 16, 16, 0, 0, charIcons)
+
+	--#endregion
 
 	--#region Collectibles
 
 	--#region Almanach
 
-	local almanach = enums.CollectibleType.COLLECTIBLE_ALMANACH
 	desc = "Invokes the effects of 2 random book items#Can also invoke books that haven't been unlocked yet"
-	EID:addCollectible(almanach, desc)
+	EID:addCollectible(ids.Almanach, desc)
 
 	desc = "Spawns the appropriate wisps of the triggered books"
-	addVirtuesCondition(almanach, desc)
+	addVirtuesCondition(ids.Almanach, desc)
 
 	desc = "Book effects doubled"
-	EID:addCarBatteryCondition(almanach, desc)
+	EID:addCarBatteryCondition(ids.Almanach, desc)
 	--#endregion
 
 	--#region Mending Heart
 
-	local mendingHeart = enums.CollectibleType.COLLECTIBLE_MENDING_HEART
 	desc = "Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#Will replace 2 instead, if no damage was taken on the previous floor#↑ +0.25 Damage per heart restored"
-	EID:addCollectible(mendingHeart, desc)
+	EID:addCollectible(ids.MendingHeart, desc)
 
 	desc = "Increases amount of Broken Hearts to replace"
-	EID:addCondition(mendingHeart, {mendingHeart, CollectibleType.COLLECTIBLE_DIPLOPIA, CollectibleType.COLLECTIBLE_CROOKED_PENNY}, desc)
+	EID:addCondition(ids.MendingHeart, {ids.MendingHeart, CollectibleType.COLLECTIBLE_DIPLOPIA, CollectibleType.COLLECTIBLE_CROOKED_PENNY}, desc)
 	--#endregion
 
 	--#region Devout Prayer
 
-	local devoutPrayer = enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER
 	desc = "Can be used with 1+ charge(s)#Charges by killing enemies#{{EternalHeart}} Better effects while having an Eternal Heart#↑ +0.1 Luck for the floor per charge spent#Grants an additional effect at 3+, 6+ or 12 charges"
-	EID:addCollectible(devoutPrayer, desc)
+	EID:addCollectible(ids.DevoutPrayer, desc)
 
 	desc = "Spawns 1 - 4 wisp(s), depending on charges spent ({{EternalHeart}} spawns {{Collectible"..CollectibleType.COLLECTIBLE_BIBLE.."}} Bible wisp(s) instead)"
-	addWispData(devoutPrayer, 2, 1, 3, 0.1, 1, 0.75, 42, 1, true, 0, {2}, {-1}, desc)
+	addWispData(ids.DevoutPrayer, 2, 1, 3, 0.1, 1, 0.75, 42, 1, true, 0, {2}, {-1}, desc)
 
 	desc = "No Effect"
-	EID:addCarBatteryCondition(devoutPrayer, desc)
+	EID:addCarBatteryCondition(ids.DevoutPrayer, desc)
 
 	--#region Devout Prayer - modifiers
 
@@ -133,14 +167,14 @@ local function AddRegistry()
 	--- @return boolean?
 	local function DevoutPrayer_getChargeBasedEffectCondition(descObj)
 		-- only apply to "Devout Prayer"
-		if ((descObj.ObjType == 5) and (descObj.ObjVariant == 100) and (descObj.ObjSubType == devoutPrayer)) then
+		if ((descObj.ObjType == 5) and (descObj.ObjVariant == 100) and (descObj.ObjSubType == ids.DevoutPrayer)) then
 			local player = EID.ItemReminderPlayerEntity
 			--- @cast player EntityPlayer?
 			if (player) then
 				local slot = ActiveSlot.SLOT_PRIMARY
 				if (EID.ItemReminderSelectedCategory == 4) then
 					-- Category 4 is "Actives"
-					if (player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) ~= devoutPrayer) then
+					if (player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) ~= ids.DevoutPrayer) then
 						slot = ActiveSlot.SLOT_SECONDARY
 					end
 				elseif (EID.ItemReminderSelectedCategory == 5) then
@@ -209,7 +243,7 @@ local function AddRegistry()
 	--- @return boolean?
 	local function DevoutPrayer_hasEternalHeartCondition(descObj)
 		-- only apply to "Devout Prayer"
-		if ((descObj.ObjType == 5) and (descObj.ObjVariant == 100) and (descObj.ObjSubType == devoutPrayer)) then
+		if ((descObj.ObjType == 5) and (descObj.ObjVariant == 100) and (descObj.ObjSubType == ids.DevoutPrayer)) then
 			local player = EID.ItemReminderPlayerEntity
 			--- @cast player EntityPlayer?
 			if (player) then
@@ -232,48 +266,44 @@ local function AddRegistry()
 
 	--#region Divine Bombs
 
-	local divineBombs = enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS
 	desc = "{{Bomb}} +5 Bombs#{{Collectible"..CollectibleType.COLLECTIBLE_HOLY_LIGHT.."}} Isaac's bombs release a beam of light that hits nearby enemies"
-	EID:addCollectible(divineBombs, desc)
+	EID:addCollectible(ids.DivineBombs, desc)
 	--#endregion
 
 	--#region Wooden Key
 
-	local woodenKey = enums.CollectibleType.COLLECTIBLE_WOODEN_KEY
 	desc = "Chooses a random door in the current room and opens it if it is closed#Can open locked doors#Can open {{SecretRoom}}{{SuperSecretRoom}} Secret Rooms/Super Secret Rooms#{{Collectible"..CollectibleType.COLLECTIBLE_RED_KEY.."}} Can also create Red Room Doors"
-	EID:addCollectible(woodenKey, desc)
+	EID:addCollectible(ids.WoodenKey, desc)
 
-	desc = "On death, invokes the effect of {{Collectible"..woodenKey.."}} Wooden Key"
-	addWispData(woodenKey, 2, 0, 0, 0, 0, 0, 0, 1, false, 1, {-1}, {-1}, desc)
+	desc = "On death, invokes the effect of {{Collectible"..ids.WoodenKey.."}} Wooden Key"
+	addWispData(ids.WoodenKey, 2, 0, 0, 0, 0, 0, 0, 1, false, 1, {-1}, {-1}, desc)
 
-	EID:addCarBatteryCondition(woodenKey, {"a random door", "2 {{CR}}random doors", "opens it if it is", "{{CR}}opens them if they are"})
+	EID:addCarBatteryCondition(ids.WoodenKey, {"a random door", "2 {{CR}}random doors", "opens it if it is", "{{CR}}opens them if they are"})
 	--#endregion
 
 	--#region Holy Hand Grenade
 
-	local holyHandGrenade = enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE
 	desc = "Using the item and firing in a direction throws the grenade#The grenade explodes after some time and releases a shockwave that kills every enemy in the room"
-	EID:addCollectible(holyHandGrenade, desc)
+	EID:addCollectible(ids.HolyHandGrenade, desc)
 
 	desc = "No Effect"
-	EID:addCarBatteryCondition(holyHandGrenade, desc)
+	EID:addCarBatteryCondition(ids.HolyHandGrenade, desc)
 
-	EID.SingleUseCollectibles[holyHandGrenade] = true
-	EID:AddSynergyConditional(holyHandGrenade, CollectibleType.COLLECTIBLE_VOID, "Void Single Use")
-	EID:AddSynergyConditional(holyHandGrenade, "5.300.48", "? Card Single Use")
+	EID.SingleUseCollectibles[ids.HolyHandGrenade] = true
+	EID:AddSynergyConditional(ids.HolyHandGrenade, CollectibleType.COLLECTIBLE_VOID, "Void Single Use")
+	EID:AddSynergyConditional(ids.HolyHandGrenade, "5.300.48", "? Card Single Use")
 	--#endregion
 
 	--#region Rite of Rebirth
 
-	local riteOfRebirth = enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH
 	desc = "↑ +1 Life"
-	EID:addCollectible(riteOfRebirth, desc)
+	EID:addCollectible(ids.RiteOfRebirth, desc)
 
 	--- @param descObj EID_DescObj
 	--- @return boolean?
 	local function RiteOfRebirth_notInBeastFightCondition(descObj)
 		-- only apply to "Rite of Rebirth"
-		if ((descObj.ObjType == 5) and (descObj.ObjVariant == 100) and (descObj.ObjSubType == riteOfRebirth)) then
+		if ((descObj.ObjType == 5) and (descObj.ObjVariant == 100) and (descObj.ObjSubType == ids.RiteOfRebirth)) then
 			return (isc:inBeastRoom() == false)
 		end
 	end
@@ -288,40 +318,36 @@ local function AddRegistry()
 
 	--#region Scorched Baby
 
-	local scorchedBaby = enums.CollectibleType.COLLECTIBLE_SCORCHED_BABY
 	desc = "{{Burning}} Shoots fire tears that set enemies ablaze#Deals 3.5 damage per tear"
-	EID:addCollectible(scorchedBaby, desc)
+	EID:addCollectible(ids.ScorchedBaby, desc)
 
-	EID:addBFFSCondition(scorchedBaby, nil, 3.5, 7)
+	EID:addBFFSCondition(ids.ScorchedBaby, nil, 3.5, 7)
 	--#endregion
 
 	--#region Protective Candle
 
-	local protectiveCandle = enums.CollectibleType.COLLECTIBLE_PROTECTIVE_CANDLE
 	desc = "Isaac holds a candle in front of him#{{Burning}} The candle deals Isaac's damage and has a 10% chance to burn enemies on contact#{{Luck}} 100% chance at 13 luck#{{Chargeable}} Holding Fire charges the candle, shooting a flame when released"
-	EID:addCollectible(protectiveCandle, desc)
+	EID:addCollectible(ids.ProtectiveCandle, desc)
 
 	desc = "Reduces charge time"
-	EID:addSynergyCondition(protectiveCandle, {"5.350."..TrinketType.TRINKET_MATCH_STICK, "5.350."..TrinketType.TRINKET_LIGHTER}, desc)
+	EID:addSynergyCondition(ids.ProtectiveCandle, {"5.350."..TrinketType.TRINKET_MATCH_STICK, "5.350."..TrinketType.TRINKET_LIGHTER}, desc)
 	--#endregion
 
 	--#region Copper Stakes
 
-	local copperStakes = enums.CollectibleType.COLLECTIBLE_COPPER_STAKES
 	desc = "↑ +1 Range#{{Electrify}} 20% chance to shoot electrifying tears#{{Luck}} 50% chance at 20 luck"
-	EID:addCollectible(copperStakes, desc)
+	EID:addCollectible(ids.CopperStakes, desc)
 	--#endregion
 
 	--#region Tesla Coil
 
-	local teslaCoil = enums.CollectibleType.COLLECTIBLE_TESLA_COIL
 	desc = "Spawns a Tesla Coil shooting electrical sparks around itself, dealing half of Isaac's damage#{{Electrify}} Enemies hit will be electrified"
-	EID:addCollectible(teslaCoil, desc)
+	EID:addCollectible(ids.TeslaCoil, desc)
 
 	desc = "{{Electrify}} Electrifies enemies on contact"
-	addWispData(teslaCoil, 2, 2, 3, 0.1, 1, 1, 30, 1, true, 1, {55}, {-1}, desc)
+	addWispData(ids.TeslaCoil, 2, 2, 3, 0.1, 1, 1, 30, 1, true, 1, {55}, {-1}, desc)
 
-	EID:addCarBatteryCondition(teslaCoil, {"a Tesla Coil", "2 {{CR}}Tesla Coils", "itself,", "{{CR}}themselves,"})
+	EID:addCarBatteryCondition(ids.TeslaCoil, {"a Tesla Coil", "2 {{CR}}Tesla Coils", "itself,", "{{CR}}themselves,"})
 	--#endregion
 
 	--#endregion
@@ -330,105 +356,80 @@ local function AddRegistry()
 
 	--#region Holy Penny
 
-	local holyPenny = enums.TrinketType.TRINKET_HOLY_PENNY
 	desc = "{{EternalHeart}} Picking up a coin has a 17% chance to spawn an Eternal Heart#Higher chance from nickels and dimes"
-	EID:addTrinket(holyPenny, desc)
-	EID:addGoldenTrinketMetadataAdditive(holyPenny, nil, 17, {8, 13})
+	EID:addTrinket(ids.HolyPenny, desc)
+	EID:addGoldenTrinketMetadataAdditive(ids.HolyPenny, nil, 17, {8, 13})
 	--#endregion
 
 	--#region Scattered Pages
 
-	local scatteredPages = enums.TrinketType.TRINKET_SCATTERED_PAGES
 	desc = "Using an active item has a 33% chance to trigger a random book item#Can only happen once per room"
-	EID:addTrinket(scatteredPages, desc)
-	EID:addCondition("5.350."..scatteredPages, almanach, "Using Almanach has a 33% chance to trigger 2 random book items instead")
-	EID:addGoldenTrinketMetadataAdditive(scatteredPages, nil, 33, {33, 67})
+	EID:addTrinket(ids.ScatteredPages, desc)
+	EID:addCondition("5.350."..ids.ScatteredPages, ids.Almanach, "Using Almanach has a 33% chance to trigger 2 random book items instead")
+	EID:addGoldenTrinketMetadataAdditive(ids.ScatteredPages, nil, 33, {33, 67})
 	--#endregion
 
 	--#region Charon's Obol
 
-	local charonsObol = enums.TrinketType.TRINKET_CHARONS_OBOL
 	desc = "Picking up Soul/Black Hearts can convert them into wisps#Works even while at full health#Effect may consume hearts needed for healing#{{SoulHeart}} Soul Hearts spawn regular wisps#{{BlackHeart}} Black Hearts spawn {{Collectible35}} Necronomicon wisps"
-	EID:addTrinket(charonsObol, desc)
-	EID:addGoldenTrinketMetadata(charonsObol, "Increased number of wisps spawned")
+	EID:addTrinket(ids.CharonsObol, desc)
+	EID:addGoldenTrinketMetadata(ids.CharonsObol, "Increased number of wisps spawned")
 	--#endregion
 
 	--#endregion
 
 	--#region PocketItems
 
-	-- Pocket Item icons
-	local pocketIcons = Sprite()
-	pocketIcons:Load("gfx/EID/eid_cardspills.anm2")
-
 	--#region Library Card
 
-	local libraryCard = enums.Card.CARD_LIBRARY
-	EID:addIcon("Card"..libraryCard, "librarycard", 0, 16, 24, 4, 7, pocketIcons)
 	desc = "{{Library}} Teleports Isaac to the Library"
-	EID:addCard(libraryCard, desc)
+	EID:addCard(ids.LibraryCard, desc)
 	--#endregion
 
 	--#region Soul of the Saint
 
-	local soulOfTheSaint = enums.Card.CARD_SOUL_SAINT
-	EID:addIcon("Card"..soulOfTheSaint, "soulofthesaint", 0, 32, 32, 4, 7, pocketIcons)
 	desc = "{{AngelDevilChance}} Teleports Isaac to the Devil or Angel Room#{{AngelRoom}} Guarantees an Angel Room if it hasn't been generated yet#{{AngelRoom}} If Isaac hasn't taken any Devil Deal, allows all items to be taken"
-	EID:addCard(soulOfTheSaint, desc)
+	EID:addCard(ids.SoulOfTheSaint, desc)
 	--#endregion
 
 	--#region Red Joker
 
-	local redJoker = enums.Card.CARD_RED_JOKER
-	EID:addIcon("Card"..redJoker, "redjoker", 0, 16, 24, 4, 7, pocketIcons)
 	desc = "{{AngelDevilChance}} Teleports Isaac to the Devil or Angel Room#{{DevilRoom}} Guarantees a special Devil Room if it hasn't been generated yet"
-	EID:addCard(redJoker, desc)
+	EID:addCard(ids.RedJoker, desc)
 	--#endregion
 
 	--#region Glitched Card
 
-	local glitchedCard = enums.Card.CARD_GLITCHED
-	EID:addIcon("Card"..glitchedCard, "glitchedcard", 0, 16, 24, 4, 7, pocketIcons)
 	desc = "Random card effect#Has a chance to destroy itself with each use"
-	EID:addCard(glitchedCard, desc)
+	EID:addCard(ids.GlitchedCard, desc)
 	--#endregion
 
 	--#endregion
 
 	--#region Characters
 
-	-- Character Icons
-	local charIcons = Sprite()
-	charIcons:Load("gfx/EID/eid_player_icons.anm2")
-
 	--#region The Saint
 
-	local saint = enums.PlayerType.PLAYER_THE_SAINT
-	EID:addIcon("Player"..saint, "Players", 0, 16, 16, 0, 0, charIcons)
-
-	desc = "Cannot shoot tears#{{Collectible"..protectiveCandle.."}} Innate item: Protective Candle#"
+	desc = "Cannot shoot tears#{{Collectible"..ids.ProtectiveCandle.."}} Innate item: Protective Candle#"
 	desc = desc.."Isaac holds a candle in front of him#{{Burning}} The candle deals Isaac's damage and has a 10% chance to burn enemies on contact#{{Luck}} 100% chance at 13 luck#{{Chargeable}} Holding Fire charges the candle, shooting a flame when released"
-	EID:addCharacterInfo(saint, desc)
+	EID:addCharacterInfo(ids.Saint, desc)
 
 	desc = "{{AngelRoom}} Entering an Angel Room for the first time each floor has the following effects:#↑{{IND}} Increases one of the following stats, whichever is lowest:#↑{{IND}}{{IND}} +1 Damage#↑{{IND}}{{IND}} +0.5 Fire Rate#↑{{IND}}{{IND}} +0.2 Speed#↑{{IND}}{{IND}} +2.5 Range#{{IND}} Spawns either 3 {{Coin}} coins, 1 {{Bomb}} bomb or 1 {{Key}} key depending on what you have the least of"
-	EID:addBirthright(saint, desc)
+	EID:addBirthright(ids.Saint, desc)
 	--#endregion
 
 	--#region Tainted Saint
 
-	local tSaint = enums.PlayerType.PLAYER_THE_SAINT_B
-	EID:addIcon("Player"..tSaint, "Players", 1, 16, 16, 0, 0, charIcons)
-
-	desc = "Can't use {{SoulHeart}} Soul Hearts#When you take damage, turns all {{EmptyHeart}} empty Heart Containers into {{BrokenHeart}} Broken Hearts (doesn't apply to self-damage)#{{Collectible"..mendingHeart.."}} Innate item: Mending Heart#"
+	desc = "Can't use {{SoulHeart}} Soul Hearts#When you take damage, turns all {{EmptyHeart}} empty Heart Containers into {{BrokenHeart}} Broken Hearts (doesn't apply to self-damage)#{{Collectible"..ids.MendingHeart.."}} Innate item: Mending Heart#"
 	desc = desc.."Entering a new floor will replace 1{{BrokenHeart}} Broken Heart with 1{{EmptyHeart}} empty Heart Container#Will replace 2 instead, if no damage was taken on the previous floor#↑ +0.25 Damage per heart restored"
-	EID:addCharacterInfo(tSaint, desc)
+	EID:addCharacterInfo(ids.TSaint, desc)
 
 	desc = "Taking damage that causes penalties will only turn 1{{EmptyHeart}} empty Heart Container into a {{BrokenHeart}} Broken Heart"
-	EID:addBirthright(tSaint, desc)
+	EID:addBirthright(ids.TSaint, desc)
 
 	-- Abaddon interaction
 	desc = "{1} is left with half a heart and turns all other Heart Containers into Broken Hearts"
-	EID:addPlayerCondition(CollectibleType.COLLECTIBLE_ABADDON, tSaint, desc)
+	EID:addPlayerCondition(CollectibleType.COLLECTIBLE_ABADDON, ids.TSaint, desc)
 	--#endregion
 
 	--#endregion
