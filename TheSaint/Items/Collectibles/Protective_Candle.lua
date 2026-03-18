@@ -57,8 +57,11 @@ local CANDLE_INIT_CHARGE = -9
 --- @return integer
 local function CANDLE_MAX_CHARGE(player)
 	local maxCharge = 142
+	if (player:HasTrinket(TrinketType.TRINKET_MATCH_STICK) or player:HasTrinket(TrinketType.TRINKET_LIGHTER)) then
+		maxCharge = (maxCharge - 30)
+	end
 	if (isc:isCharacter(player, table.unpack(Protective_Candle.Target.Character))) then
-		return (maxCharge - 30)
+		maxCharge = (maxCharge - 30)
 	end
 	return maxCharge
 end

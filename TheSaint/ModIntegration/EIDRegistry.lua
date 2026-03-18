@@ -300,6 +300,9 @@ local function AddRegistry()
 	local protectiveCandle = enums.CollectibleType.COLLECTIBLE_PROTECTIVE_CANDLE
 	desc = "Isaac holds a candle in front of him#{{Burning}} The candle deals Isaac's damage and has a 10% chance to burn enemies on contact#{{Luck}} 100% chance at 13 luck#{{Chargeable}} Holding Fire charges the candle, shooting a flame when released"
 	EID:addCollectible(protectiveCandle, desc)
+
+	desc = "Reduces charge time"
+	EID:addSynergyCondition(protectiveCandle, {"5.350."..TrinketType.TRINKET_MATCH_STICK, "5.350."..TrinketType.TRINKET_LIGHTER}, desc)
 	--#endregion
 
 	--#region Copper Stakes
