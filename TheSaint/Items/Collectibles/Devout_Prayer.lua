@@ -245,6 +245,7 @@ end
 local function effectSpawnItem(rng, player, extraEffect)
 	local optionIndex = getOptionIndex()
 	local ddTaken = ddTracking:HasDevilDealBeenTaken()
+	local SHOP_ITEM_DEVIL = -2
 	if ((extraEffect == true) and (ddTaken == false)) then
 		optionIndex = 0
 	end
@@ -259,8 +260,10 @@ local function effectSpawnItem(rng, player, extraEffect)
 	collectibles[0] = pool:GetCollectible(pool:GetPoolForRoom(room:GetType(), rng:RandomInt(math.maxinteger)), false, rng:RandomInt(math.maxinteger))
 	Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, collectibles[0], room:FindFreePickupSpawnPosition(player.Position, 0, true), Vector.Zero, nil):ToPickup().OptionsPickupIndex = optionIndex
 
-	-- 2nd item from Angel pool
-	-- if a Devil Deal has been taken before, spawn either from Devil pool (w/o an Eternal Heart has a 50% chance to be an empty pedestal instead)
+	-- 2nd item from Angel pool OR Devil pool, if a Devil Deal has been taken before
+	-- if it's from the Devil pool:
+	-- - must be paid for with health
+	-- - w/o an Eternal Heart has a 50% chance to be an empty pedestal instead
 	local poolAngelOrDevil = ((ddTaken and ItemPoolType.POOL_DEVIL) or ItemPoolType.POOL_ANGEL)
 	if (game:IsGreedMode()) then
 		poolAngelOrDevil = ((ddTaken and ItemPoolType.POOL_GREED_DEVIL) or ItemPoolType.POOL_GREED_ANGEL)
@@ -270,7 +273,12 @@ local function effectSpawnItem(rng, player, extraEffect)
 	if ((ddTaken == true) and (extraEffect == false) and (rng:RandomInt(math.maxinteger) % 2) == 1) then
 		isc:spawnEmptyCollectible(pos, rng)
 	else
-		Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, collectibles[1], pos, Vector.Zero, nil):ToPickup().OptionsPickupIndex = optionIndex
+		local itemAngelDevil = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, collectibles[1], pos, Vector.Zero, nil):ToPickup() --- @cast itemAngelDevil -?
+		itemAngelDevil.OptionsPickupIndex = optionIndex
+		if (ddTaken) then
+			itemAngelDevil.ShopItemId = SHOP_ITEM_DEVIL
+			itemAngelDevil.Price = 1
+		end
 	end
 end
 
