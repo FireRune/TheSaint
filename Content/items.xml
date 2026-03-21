@@ -17,4 +17,5 @@
     <trinket name="Holy Penny" description="Wealth of faith" gfx="holy_penny.png" />
     <trinket name="Scattered Pages" description="Who ripped these out?" gfx="scattered_pages.png" />
     <trinket name="Charon's Obol" description="Bring their souls across Styx" gfx="charons_obol.png" />
+    <trinket name="Old Hive" description="I hear buzzing..." gfx="old_hive.png" />
 </items>

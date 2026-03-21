@@ -29,14 +29,14 @@
 	- [x] Greed Mode (Library Card)
 	- [x] Greedier Mode (Tesla Coil)
 	- [ ] Delirium (Collectible)
-	- [ ] Mother (Trinket)
+	- [x] Mother (Holy Penny)
 	- [x] The Beast (Holy Hand Grenade)
 - Tainted Saint:
 	- [x] Boss Rush + Hush (Soul of the Saint)
 	- [x] Satan + Isaac + The Lamb + ??? (Charon's Obol)
 	- [x] Greedier Mode (Red Joker)
 	- [x] Delirium (Mending Heart)
-	- [x] Mother (Holy Penny)
+	- [x] Mother (Old Hive)
 	- [x] The Beast (Rite of Rebirth)
 	- [x] Mega Satan (Sinful Chest)
 

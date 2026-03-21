@@ -22,6 +22,7 @@ local Enums = {
 		TRINKET_HOLY_PENNY = Isaac.GetTrinketIdByName("Holy Penny"),
 		TRINKET_SCATTERED_PAGES = Isaac.GetTrinketIdByName("Scattered Pages"),
 		TRINKET_CHARONS_OBOL = Isaac.GetTrinketIdByName("Charon's Obol"),
+		TRINKET_OLD_HIVE = Isaac.GetTrinketIdByName("Old Hive"),
 	},
 
 	--- @enum TheSaint.Enums.Card

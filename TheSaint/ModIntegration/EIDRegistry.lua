@@ -88,13 +88,17 @@ local function AddRegistry()
 		ProtectiveCandle = enums.CollectibleType.COLLECTIBLE_PROTECTIVE_CANDLE,
 		CopperStakes = enums.CollectibleType.COLLECTIBLE_COPPER_STAKES,
 		TeslaCoil = enums.CollectibleType.COLLECTIBLE_TESLA_COIL,
+
 		HolyPenny = enums.TrinketType.TRINKET_HOLY_PENNY,
 		ScatteredPages = enums.TrinketType.TRINKET_SCATTERED_PAGES,
 		CharonsObol = enums.TrinketType.TRINKET_CHARONS_OBOL,
+		OldHive = enums.TrinketType.TRINKET_OLD_HIVE,
+
 		LibraryCard = enums.Card.CARD_LIBRARY,
 		SoulOfTheSaint = enums.Card.CARD_SOUL_SAINT,
 		RedJoker = enums.Card.CARD_RED_JOKER,
 		GlitchedCard = enums.Card.CARD_GLITCHED,
+
 		Saint = enums.PlayerType.PLAYER_THE_SAINT,
 		TSaint = enums.PlayerType.PLAYER_THE_SAINT_B,
 	}
@@ -374,6 +378,13 @@ local function AddRegistry()
 	desc = "Picking up Soul/Black Hearts can convert them into wisps#Works even while at full health#Effect may consume hearts needed for healing#{{SoulHeart}} Soul Hearts spawn regular wisps#{{BlackHeart}} Black Hearts spawn {{Collectible35}} Necronomicon wisps"
 	EID:addTrinket(ids.CharonsObol, desc)
 	EID:addGoldenTrinketMetadata(ids.CharonsObol, "Increased number of wisps spawned")
+	--#endregion
+
+	--#region Old Hive
+
+	desc = "25% chance for a random Fly/Spider item effect each room"
+	EID:addTrinket(ids.OldHive, desc)
+	EID:addGoldenTrinketMetadataAdditive(ids.OldHive, nil, 25, {25, 75})
 	--#endregion
 
 	--#endregion
