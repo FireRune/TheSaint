@@ -239,7 +239,7 @@ function Almanach:Init(mod)
 	if (self.IsInitialized) then return end
 
 	addItemToBookBlacklist(mod.Name, {CollectibleType.COLLECTIBLE_HOW_TO_JUMP, self.Target.Type})
-	mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, getBooks)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_GAME_STARTED_REORDERED_LAST, getBooks)
 	if not REPENTANCE_PLUS then
 		-- not needed with Rep+
 		mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, getWispName, FamiliarVariant.ITEM_WISP)

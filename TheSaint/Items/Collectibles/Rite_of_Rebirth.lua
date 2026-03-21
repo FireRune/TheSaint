@@ -2,6 +2,7 @@ local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local PlayerLoadout = require("TheSaint.classes.PlayerLoadout")
 local featureTarget = require("TheSaint.structures.FeatureTarget")
+local utils = include("TheSaint.utils")
 
 --#region Repentogon
 -- if REPENTOGON then
@@ -365,8 +366,7 @@ function Rite_of_Rebirth:Init(mod)
 
 	mod:saveDataManager(self.SaveDataKey, v)
 
-	-- want to run this callback pretty late, so using priority of 1000
-	mod:AddPriorityCallbackCustom(isc.ModCallbackCustom.PRE_CUSTOM_REVIVE, 1000, preCustomRevive, 0)
+	mod:AddPriorityCallbackCustom(isc.ModCallbackCustom.PRE_CUSTOM_REVIVE, utils.CallbackPriority_VERY_LATE, preCustomRevive, 0)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_CUSTOM_REVIVE, postCustomRevive, self.Target.Type)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_LEVEL_REORDERED, postNewLevelReordered)
 end

@@ -184,7 +184,9 @@ local function evaluateStats(_, player, flag)
 end
 
 --- reset counters at the start of a new level
-local function postNewLevel_resetCounters()
+--- @param stage LevelStage
+--- @param stageType StageType
+local function postNewLevelReordered_resetCounters(_, stage, stageType)
 	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
 		local flags = (CacheFlag.CACHE_DAMAGE | CacheFlag.CACHE_LUCK)
@@ -342,12 +344,12 @@ function Devout_Prayer:Init(mod)
 
 	mod:saveDataManager(self.SaveDataKey, v)
 	mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, postEntityKill)
-	mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, preSpawnCleanAward)
+	mod:AddPriorityCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, utils.CallbackPriority_VERY_LATE, preSpawnCleanAward)
 	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard)
 	mod:AddCallback(ModCallbacks.MC_USE_PILL, usePill)
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate, 0)
 	mod:AddCallback(ModCallbacks.MC_USE_ITEM, useItem, self.Target.Type)
-	mod:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, postNewLevel_resetCounters)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_LEVEL_REORDERED, postNewLevelReordered_resetCounters)
 	utils:AddTargetedCallback(mod, ModCallbacks.MC_EVALUATE_CACHE, evaluateStats, {CacheFlag.CACHE_DAMAGE, CacheFlag.CACHE_LUCK})
 end
 

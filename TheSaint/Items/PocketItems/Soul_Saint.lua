@@ -48,7 +48,8 @@ local function useCard(_, card, player, flags)
 end
 
 --- when entering the special Angel Room for the first time, change all item pedestals' OptionsPickupIndex to 0
-local function postNewRoom()
+--- @param room RoomType
+local function postNewRoomReordered(_, room)
 	local level = game:GetLevel()
 	if (level:GetCurrentRoomIndex() == GridRooms.ROOM_DEVIL_IDX) then
 		if (v.level.specialAngelRoom.generated and v.level.specialAngelRoom.firstVisit) then
@@ -70,7 +71,7 @@ function Soul_Saint:Init(mod)
 
 	mod:saveDataManager(self.SaveDataKey, v)
 	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard, self.Target.Type)
-	mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, postNewRoom)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_ROOM_REORDERED, postNewRoomReordered, RoomType.ROOM_ANGEL)
 end
 
 return Soul_Saint

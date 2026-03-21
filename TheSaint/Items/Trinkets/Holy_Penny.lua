@@ -1,5 +1,6 @@
 local enums = require("TheSaint.Enums")
 local featureTarget = require("TheSaint.structures.FeatureTarget")
+local utils = include("TheSaint.utils")
 
 local game = Game()
 
@@ -35,7 +36,7 @@ end
 function Holy_Penny:Init(mod)
 	if (self.IsInitialized) then return end
 
-	mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, onPickup)
+	mod:AddPriorityCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, utils.CallbackPriority_VERY_LATE, onPickup)
 end
 
 return Holy_Penny

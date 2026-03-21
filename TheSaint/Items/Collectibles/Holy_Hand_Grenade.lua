@@ -2,6 +2,7 @@ local enums = require("TheSaint.Enums")
 local featureTarget = require("TheSaint.structures.FeatureTarget")
 
 local game = Game()
+local TIL = ThrowableItemLib
 
 --- "Holy Hand Grenade"
 --- - single use
@@ -37,7 +38,7 @@ local questionMarkCardUsed = false
 local function useCard_QuestionMark(_, card, player, flags)
 	if (player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == Holy_Hand_Grenade.Target.Type) then
 		questionMarkCardUsed = true
-		ThrowableItemLib.Utility:ScheduleLift(player, Holy_Hand_Grenade.Target.Type, ThrowableItemLib.Type.ACTIVE, ActiveSlot.SLOT_PRIMARY)
+		TIL.Utility:ScheduleLift(player, Holy_Hand_Grenade.Target.Type, TIL.Type.ACTIVE, ActiveSlot.SLOT_PRIMARY)
 	end
 end
 
@@ -60,7 +61,7 @@ local function throwGrenade(player, vect, slot, mimic)
 
 	-- throw grenade
 	player:TryHoldEntity(grenade)
-	player:ThrowHeldEntity(ThrowableItemLib.Utility:CardinalClamp(vect):Resized(15))
+	player:ThrowHeldEntity(TIL.Utility:CardinalClamp(vect):Resized(15))
 
 	-- remove item, unless triggered by "? Card"
 	if (questionMarkCardUsed) then
@@ -70,18 +71,18 @@ local function throwGrenade(player, vect, slot, mimic)
 	end
 end
 
-ThrowableItemLib:RegisterThrowableItem({
+TIL:RegisterThrowableItem({
 	ID = Holy_Hand_Grenade.Target.Type,
-	Type = ThrowableItemLib.Type.ACTIVE,
+	Type = TIL.Type.ACTIVE,
 	Identifier = THROWABLE_IDENTIFIER,
 	ThrowFn = throwGrenade,
 	AnimateFn = function (player, state)
-		if (state == ThrowableItemLib.State.THROW) then
+		if (state == TIL.State.THROW) then
 			player:AnimatePickup(Sprite(), true, "HideItem")
 			return true
 		end
 	end,
-	Flags = ThrowableItemLib.Flag.NO_SPARKLE,
+	Flags = TIL.Flag.NO_SPARKLE,
 })
 
 --- Add "Holy Light"-effect to bombs
@@ -140,7 +141,7 @@ function Holy_Hand_Grenade:Init(mod)
 	mod:saveDataManager(self.SaveDataKey, v)
 	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard_QuestionMark, Card.CARD_QUESTIONMARK)
 	mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, postBombUpdate, BombVariant.BOMB_GIGA)
-	mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, entityTakeDamage)
+	mod:AddPriorityCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, CallbackPriority.IMPORTANT, entityTakeDamage)
 	mod:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, postEntityKill)
 end
 
