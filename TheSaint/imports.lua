@@ -55,6 +55,7 @@ local features = {
 	include("TheSaint.Items.Collectibles.Protective_Candle"),
 	include("TheSaint.Items.Collectibles.Copper_Stakes"),
 	include("TheSaint.Items.Collectibles.Tesla_Coil"),
+	include("TheSaint.Items.Collectibles.Sacred_Blindfold"),
 	include("TheSaint.Items.Trinkets.Holy_Penny"),
 	include("TheSaint.Items.Trinkets.Scattered_Pages"),
 	include("TheSaint.Items.Trinkets.Charons_Obol"),

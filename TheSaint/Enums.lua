@@ -15,6 +15,7 @@ local Enums = {
 		COLLECTIBLE_PROTECTIVE_CANDLE = Isaac.GetItemIdByName("Protective Candle"),
 		COLLECTIBLE_COPPER_STAKES = Isaac.GetItemIdByName("Copper Stakes"),
 		COLLECTIBLE_TESLA_COIL = Isaac.GetItemIdByName("Tesla Coil"),
+		COLLECTIBLE_SACRED_BLINDFOLD = Isaac.GetItemIdByName("Sacred Blindfold"),
 	},
 
 	--- @enum TheSaint.Enums.TrinketType
