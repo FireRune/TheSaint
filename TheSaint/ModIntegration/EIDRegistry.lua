@@ -88,6 +88,7 @@ local function AddRegistry()
 		ProtectiveCandle = enums.CollectibleType.COLLECTIBLE_PROTECTIVE_CANDLE,
 		CopperStakes = enums.CollectibleType.COLLECTIBLE_COPPER_STAKES,
 		TeslaCoil = enums.CollectibleType.COLLECTIBLE_TESLA_COIL,
+		SacredBlindfold = enums.CollectibleType.COLLECTIBLE_SACRED_BLINDFOLD,
 
 		HolyPenny = enums.TrinketType.TRINKET_HOLY_PENNY,
 		ScatteredPages = enums.TrinketType.TRINKET_SCATTERED_PAGES,
@@ -352,6 +353,20 @@ local function AddRegistry()
 	addWispData(ids.TeslaCoil, 2, 2, 3, 0.1, 1, 1, 30, 1, true, 1, {55}, {-1}, desc)
 
 	EID:addCarBatteryCondition(ids.TeslaCoil, {"a Tesla Coil", "2 {{CR}}Tesla Coils", "itself,", "{{CR}}themselves,"})
+	--#endregion
+
+	--#region Sacred Blindfold
+
+	desc = "{{TreasureRoom}} Future Treasure Rooms let Isaac choose between two items#Prevents Quality {{Quality0}} items from spawning#{{CurseCursed}} Permanently applies the following curses: #{{CurseLostSmall}}{{IND}} Curse of the Lost#{{CurseDarknessSmall}}{{IND}} Curse of Darkness#{{CurseUnknownSmall}}{{IND}} Curse of the Unknown"
+	EID:addCollectible(ids.SacredBlindfold, desc)
+
+	desc = "Curses can't be removed"
+	EID:addSynergyCondition(ids.SacredBlindfold, {
+		"5.100."..CollectibleType.COLLECTIBLE_BLACK_CANDLE,
+		"5.100."..CollectibleType.COLLECTIBLE_SOL,
+		"5.300."..Card.CARD_SUN,
+		"5.300."..Card.RUNE_DAGAZ,
+	}, desc)
 	--#endregion
 
 	--#endregion
