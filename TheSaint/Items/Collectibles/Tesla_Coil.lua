@@ -147,6 +147,9 @@ local function entityTakeDamage(_, ent, amount, flags, source, countdown)
 	local enemy = ent:ToNPC()
 	if (not enemy) then return end
 
+	-- `source.Entity` can be nil (if the source is a GridEntity)
+	if (not source.Entity) then return end
+
 	local familiar = source.Entity:ToFamiliar()
 	if (not familiar) then return end
 

@@ -166,7 +166,7 @@ end
 
 --- Init chest table for the current room if it doesn't exist
 --- @param room RoomType
-local function postNewRoomReordered(_, room)
+local function postNewRoomEarly(_, room)
 	local roomListIdx = getRoomListIdx()
 	if (not v.level.SinfulChests[roomListIdx]) then
 		v.level.SinfulChests[roomListIdx] = {}
@@ -377,7 +377,7 @@ function Sinful_Chest:Init(mod)
 	self.ThisMod = mod
 
 	mod:saveDataManager(self.SaveDataKey, v)
-	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_ROOM_REORDERED, postNewRoomReordered)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_ROOM_EARLY, postNewRoomEarly)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst_RedChest, PickupVariant.PICKUP_REDCHEST)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst_SinfulChest, self.Target.Type)
 	mod:AddCallback(ModCallbacks.MC_POST_PICKUP_INIT, postPickupInit_SinfulChest, self.Target.Type)

@@ -105,6 +105,9 @@ local function entityTakeDmg(_, ent, amount, flags, source, countdown)
 	local enemy = ((utils:IsValidEnemy(ent, false) and ent:ToNPC()) or nil)
 	if (not enemy) then return end
 
+	-- `source.Entity` can be nil (if the source is a GridEntity)
+	if (not source.Entity) then return end
+
 	--- @type EntityPlayer
 	local player = isc:getPlayerFromEntity(source.Entity)
 
