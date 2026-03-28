@@ -21,6 +21,18 @@ local v = {
 -- needed to stop the infinite loop caused by using `EntityPlayer:UseActiveItem` in a `MC_USE_ITEM` callback without any restrictions
 local effectIsRunning = false
 
+-- needed to prevent an undesired interaction with "Sacred Blindfold"
+local effectPreventer = false
+
+--- @param player EntityPlayer
+local function preNewLevel_Early(_, player)
+	effectPreventer = true
+end
+--- @param player EntityPlayer
+local function preNewLevel_Late(_, player)
+	effectPreventer = false
+end
+
 --- @param collectible CollectibleType
 --- @param rng RNG
 --- @param player EntityPlayer
@@ -28,7 +40,7 @@ local effectIsRunning = false
 local function useItem(_, collectible, rng, player, flags)
 	-- possible values: 0, 1, 2, 3
 	local trinketMult = math.min(3, player:GetTrinketMultiplier(Scattered_Pages.Target.Type))
-	if ((v.room.EffectTriggered == false) and (effectIsRunning == false) and (trinketMult > 0)) then
+	if ((not effectPreventer) and (not v.room.EffectTriggered) and (not effectIsRunning) and (trinketMult > 0)) then
 		effectIsRunning = true
 
 		-- at this point `trinketMult` can only have 1, 2 or 3 as its value
@@ -68,6 +80,8 @@ function Scattered_Pages:Init(mod)
 	if (self.IsInitialized) then return end
 
 	mod:saveDataManager(self.SaveDataKey, v)
+	mod:AddPriorityCallbackCustom(isc.ModCallbackCustom.PRE_NEW_LEVEL, CallbackPriority.EARLY, preNewLevel_Early)
+	mod:AddPriorityCallbackCustom(isc.ModCallbackCustom.PRE_NEW_LEVEL, CallbackPriority.LATE, preNewLevel_Late)
 	mod:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, CallbackPriority.EARLY, useItem)
 end
 

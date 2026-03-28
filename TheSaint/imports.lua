@@ -31,7 +31,6 @@ Feature load order:
 - `include` features
 - `include` mod integration
 ]]
----- @type TheSaint.classes.ModFeature[]
 local features = {
 	-- MCM integration MUST be initialized first
 	require("TheSaint.ModIntegration.MCM"),

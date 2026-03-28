@@ -28,7 +28,7 @@
 	- [x] Hush (Wooden Key)
 	- [x] Greed Mode (Library Card)
 	- [x] Greedier Mode (Tesla Coil)
-	- [ ] Delirium (Collectible)
+	- [x] Delirium (Sacred Blindfold)
 	- [x] Mother (Holy Penny)
 	- [x] The Beast (Holy Hand Grenade)
 - Tainted Saint:
@@ -76,6 +76,7 @@ add item sprites for:
 	- [x] Protective Candle
 	- [x] Copper Stakes
 	- [x] Tesla Coil
+	- [ ] Sacred Blindfold
 - trinkets:
 	- [x] Scattered Pages
 	- [x] Charon's Obol
@@ -92,6 +93,7 @@ add collection page sprites for:
 - [ ] Protective Candle
 - [ ] Copper Stakes
 - [ ] Tesla Coil
+- [ ] Sacred Blindfold
 
 add character costumes/entity sprites for:
 - [ ] Holy Hand Grenade (entity)
@@ -99,6 +101,7 @@ add character costumes/entity sprites for:
 - [x] Protective Candle (entity)
 - [ ] Copper Stakes (costume)
 - [x] Tesla Coil (entity)
+- [ ] Sacred Blindfold (costume)
 
 add front/back sprites + anims for:
 - [x] Library Card
@@ -118,6 +121,9 @@ add front/back sprites + anims for:
 additional behaviour of flame projectile if player has following effects
 - [ ] homing: purple flame, flame homes in on nearby enemies
 - [ ] "Continuum": flame goes through walls, loops around the screen
+
+## Sacred_Blindfold.lua
+- [ ] also apply the effect of "There's Options"
 
 ## Mod integration
 
