@@ -2,6 +2,8 @@ local isc = require("TheSaint.lib.isaacscript-common")
 
 local utils = {}
 
+--#region extra and unnamed vanilla enum members
+
 local CallbackPriority_LATER = 199		--- @cast CallbackPriority_LATER CallbackPriority
 local CallbackPriority_VERY_LATE = 200	--- @cast CallbackPriority_VERY_LATE CallbackPriority
 
@@ -9,6 +11,12 @@ local CallbackPriority_VERY_LATE = 200	--- @cast CallbackPriority_VERY_LATE Call
 utils.CallbackPriority_LATER = CallbackPriority_LATER
 --- 200
 utils.CallbackPriority_VERY_LATE = CallbackPriority_VERY_LATE
+
+local ChestSubType_CHEST_CLOSED_ETERNAL = 2	--- @cast ChestSubType_CHEST_CLOSED_ETERNAL ChestSubType
+--- 2
+utils.ChestSubType_CHEST_CLOSED_ETERNAL = ChestSubType_CHEST_CLOSED_ETERNAL
+
+--#endregion
 
 local RECOMMENDED_SHIFT_IDX = 35
 
@@ -171,6 +179,13 @@ function utils:IsValidEnemy(enemy, includeTNT)
 	local isNotFriendly = (enemy:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) == false)
 	local isTNT = (includeTNT and (enemy.Type == EntityType.ENTITY_MOVABLE_TNT))
 	return ((isActiveEnemy and isNotFriendly) or isTNT)
+end
+
+--- Helper for manipulating the Range stat
+--- @param rangeStat number	@ value as it is displayed in the extra HUD
+--- @return number			@ actual value to use in `MC_EVALUATE_CACHE`
+function utils:RangeStatToValue(rangeStat)
+	return (rangeStat * 40)
 end
 
 return utils

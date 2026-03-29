@@ -62,6 +62,7 @@ end
 
 --- checks wether the given item is in the books-blacklist
 --- @param item CollectibleType
+--- @return boolean
 local function isBlacklisted(item)
 	for collectible, _ in pairs(books_blacklist) do
 		if (item == collectible) then
@@ -75,23 +76,22 @@ end
 local function getBooks()
 	if (#books > 0) then return end
 	utils:DebugStringWithHeader("(INFO) <Almanach> generate list of items with 'book'-tag (except blacklisted items)")
+
 	--- API says that `GetCollectibles()` returns `userdata`, but it's actually `ItemConfigList`
 	--- @type ItemConfigList
 	--- @diagnostic disable-next-line
 	local collectibles = config:GetCollectibles()
-	for i = 0, collectibles.Size - 1 do
+	for i = 0, (collectibles.Size - 1) do
 		local collectible = config:GetCollectible(i)
-		if collectible then
-			if (collectible:HasTags(ItemConfig.TAG_BOOK)) then
-				local id = collectible.ID
-				local name = isc:getCollectibleName(id)
-				if (isBlacklisted(id) == false) then
-					table.insert(books, {ID = id, Name = name})
-					utils:DebugStringWithHeader("(INFO) <Almanach> add ["..id.."] '"..name.."'")
-				else
-					local modName = books_blacklist[id]
-					utils:DebugStringWithHeader("(INFO) <Almanach> skipped blacklisted item ["..id.."] '"..name.."' (blacklisted by the mod: '"..modName.."')")
-				end
+		if ((collectible) and (collectible:HasTags(ItemConfig.TAG_BOOK))) then
+			local id = collectible.ID
+			local name = isc:getCollectibleName(id)
+			if (not isBlacklisted(id)) then
+				table.insert(books, {ID = id, Name = name})
+				utils:DebugStringWithHeader("(INFO) <Almanach> add ["..id.."] '"..name.."'")
+			else
+				local modName = books_blacklist[id]
+				utils:DebugStringWithHeader("(INFO) <Almanach> skipped blacklisted item ["..id.."] '"..name.."' (blacklisted by the mod: '"..modName.."')")
 			end
 		end
 	end
@@ -100,20 +100,20 @@ end
 --- (REP only) when invoking the effect of "Lemegeton" caches the name of the item granted by the spawned wisp
 --- @param itemWisp EntityFamiliar
 local function getWispName(_, itemWisp)
-	if (almanachLemegeton == true) then
+	if (almanachLemegeton) then
 		table.insert(wispNames, isc:getCollectibleName(itemWisp.SubType))
 	end
 end
 
 --- @param texts { Text1: string, Text2: string? }
 local function showHUDText(texts)
-	if (texts.Text2 ~= nil) then
+	if (texts.Text2) then
 		texts.Text1 = texts.Text1.."..."
 		texts.Text2 = "... and "..texts.Text2
 	end
 
 	local hud = game:GetHUD()
-	if REPENTANCE_PLUS then
+	if (REPENTANCE_PLUS) then
 		-- (REP+) stack up text in case of multiple activations, to see what effects were granted
 		hud:ShowItemText(texts.Text1, texts.Text2, false, false)
 	else
@@ -133,6 +133,7 @@ end
 local function useItem(_, collectible, rng, player, flags, slot, varData)
 	-- "Car Battery" should boost the triggered items instead of using "Almanach" twice
 	if (flags & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then return end
+
 	local hasCarBattery = isc:hasCollectible(player, CollectibleType.COLLECTIBLE_CAR_BATTERY)
 	local itemUses = ((hasCarBattery and 2) or 1)
 
@@ -151,6 +152,7 @@ local function useItem(_, collectible, rng, player, flags, slot, varData)
 
 	--- @type TheSaint.Items.Collectibles.Almanach.Book[]
 	local bookExceptions = {}
+
 	-- First get the items to activate
 	for i = 1, limit do
 		--- @type TheSaint.Items.Collectibles.Almanach.Book
@@ -164,31 +166,30 @@ local function useItem(_, collectible, rng, player, flags, slot, varData)
 	end
 
 	-- (REP+ only) show HUD text now, so that Lemegeton item wisp names are displayed below
-	if REPENTANCE_PLUS then showHUDText(texts) end
+	if (REPENTANCE_PLUS) then showHUDText(texts) end
 
 	-- next, activate the items
 	for i = 1, limit do
-		if (bookNames[i] == "Lemegeton") then
-			almanachLemegeton = true
-		end
+		if (bookNames[i] == "Lemegeton") then almanachLemegeton = true end
 		for j = 1, itemUses do
-			local newFlags = UseFlag.USE_NOANIM
-			if (j > 1) then
-				newFlags = (newFlags | UseFlag.USE_CARBATTERY)
-			end
-			--- @cast newFlags UseFlag
-
 			if (bookNames[i] == "Book of Virtues") then
 				player:AddWisp(0, player.Position, true)
 			else
 				calledFromAlmanach = true
+
+				local newFlags = UseFlag.USE_NOANIM
+				if (j > 1) then
+					newFlags = (newFlags | UseFlag.USE_CARBATTERY)
+				end
+				--- @cast newFlags UseFlag
+
 				player:UseActiveItem(bookIDs[i], newFlags)
 				calledFromAlmanach = false
 			end
 		end
 		if (bookNames[i] == "Lemegeton") then
 			-- not necessary with Rep+, due to the "stack up text"-feature
-			if not REPENTANCE_PLUS then
+			if (not REPENTANCE_PLUS) then
 				local wisps = ""
 				for _, wispName in ipairs(wispNames) do
 					wisps = wisps..((wisps ~= "" and " / "..wispName) or wispName)
@@ -202,7 +203,7 @@ local function useItem(_, collectible, rng, player, flags, slot, varData)
 	end
 
 	-- (REP only) show HUD text now, so that it will be on top
-	if not REPENTANCE_PLUS then showHUDText(texts) end
+	if (not REPENTANCE_PLUS) then showHUDText(texts) end
 
 	return {
 		Discharge = true,
@@ -219,10 +220,10 @@ end
 --- @param slot ActiveSlot
 --- @param varData integer
 local function spawnAlmanachBookWisp(_, book, rng, player, flags, slot, varData)
-	if player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES) then
-		if ((calledFromAlmanach == true) and (almanachLemegeton == false)) then
-			player:AddWisp(book, player.Position, true)
-		end
+	if (not player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES)) then return end
+
+	if ((calledFromAlmanach) and (not almanachLemegeton)) then
+		player:AddWisp(book, player.Position, true)
 	end
 end
 
@@ -240,7 +241,7 @@ function Almanach:Init(mod)
 
 	addItemToBookBlacklist(mod.Name, {CollectibleType.COLLECTIBLE_HOW_TO_JUMP, self.Target.Type})
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_GAME_STARTED_REORDERED_LAST, getBooks)
-	if not REPENTANCE_PLUS then
+	if (not REPENTANCE_PLUS) then
 		-- not needed with Rep+
 		mod:AddCallback(ModCallbacks.MC_FAMILIAR_INIT, getWispName, FamiliarVariant.ITEM_WISP)
 	end

@@ -1,5 +1,10 @@
 local enums = require("TheSaint.Enums")
 local stats = include("TheSaint.stats")
+local utils = include("TheSaint.utils")
+
+local game = Game()
+local pool = game:GetItemPool()
+local config = Isaac.GetItemConfig()
 
 --- @class TheSaint.Characters.Characters : TheSaint.classes.ModFeature
 local Characters = {
@@ -8,43 +13,43 @@ local Characters = {
 
 -- Fields
 
-local config = Isaac.GetItemConfig()
-local game = Game()
-local pool = game:GetItemPool()
 local isContinue = true -- to differentiate between a fresh run and a continued run
 local char = enums.PlayerType.PLAYER_THE_SAINT
 local taintedChar = enums.PlayerType.PLAYER_THE_SAINT_B
-taintedChar = taintedChar == -1 and char or taintedChar
+taintedChar = (((taintedChar == -1) and char) or taintedChar)
 
 -- Utility Functions
 
 --- checks wether the given player is a character from this mod.
 --- @param player EntityPlayer
-local function IsChar(player)
-	if (player == nil) then return nil end
+--- @return boolean?
+local function isChar(player)
+	if (not player) then return end
+
 	local pType = player:GetPlayerType()
-	if (pType ~= char and pType ~= taintedChar) then return false end
-	return true
+	return (not ((pType ~= char) and (pType ~= taintedChar)))
 end
 
 --- checks wether the given player is a tainted character from this mod.
 --- @param player EntityPlayer
-local function IsTainted(player)
-	if (player == nil) then return nil end
+--- @return boolean?
+local function isTainted(player)
+	if (not player) then return end
+
 	local pType = player:GetPlayerType()
-	if (pType ~= char and pType ~= taintedChar) then return nil end
-	if (pType == char) then return false end
-	return true
+	if ((pType ~= char) and (pType ~= taintedChar)) then return end
+
+	return (not (pType == char))
 end
 
 --- if the given player is a character from this mod, returns the corresponding stat-table from stats.lua; otherwise nil
 --- @param player EntityPlayer
 --- @return TheSaint.stats.Character?
-local function GetPlayerStatTable(player)
-	local taint = IsTainted(player)
-	if (taint == nil) then return nil end
+local function getPlayerStatTable(player)
+	local taint = isTainted(player)
+	if (taint == nil) then return end
 
-	return (taint and stats.tSaint) or stats.saint
+	return ((taint and stats.TSaint) or stats.Saint)
 end
 
 -- Character Code
@@ -53,29 +58,42 @@ end
 --- @param player EntityPlayer
 --- @param flag CacheFlag
 local function evaluateStats(_, player, flag)
-	if (not IsChar(player)) then return end
+	if (not isChar(player)) then return end
 
-	local playerStat = GetPlayerStatTable(player).stats
+	local playerStatTable = getPlayerStatTable(player)
+	if (not playerStatTable) then return end
+
+	local playerStat = playerStatTable.Stats
 	if (flag == CacheFlag.CACHE_DAMAGE) then
-		player.Damage = (player.Damage * playerStat.damageMult) + playerStat.damage
+		player.Damage = ((player.Damage * playerStat.DamageMult) + playerStat.Damage)
+
 	elseif (flag == CacheFlag.CACHE_FIREDELAY) then
-		player.MaxFireDelay = player.MaxFireDelay + playerStat.firedelay
+		player.MaxFireDelay = (player.MaxFireDelay + playerStat.Firedelay)
+
 	elseif (flag == CacheFlag.CACHE_SHOTSPEED) then
-		player.ShotSpeed = player.ShotSpeed + playerStat.shotspeed
+		player.ShotSpeed = (player.ShotSpeed + playerStat.Shotspeed)
+
 	elseif (flag == CacheFlag.CACHE_RANGE) then
-		player.TearRange = player.TearRange + playerStat.range
+		player.TearRange = (player.TearRange + utils:RangeStatToValue(playerStat.Range))
+
 	elseif (flag == CacheFlag.CACHE_SPEED) then
-		player.MoveSpeed = player.MoveSpeed + playerStat.speed
+		player.MoveSpeed = (player.MoveSpeed + playerStat.Speed)
+
 	elseif (flag == CacheFlag.CACHE_TEARFLAG) then
-		player.TearFlags = player.TearFlags | playerStat.tearflags
+		player.TearFlags = (player.TearFlags | playerStat.Tearflags)
+
 	elseif (flag == CacheFlag.CACHE_TEARCOLOR) then
-		player.TearColor = playerStat.tearcolor
-	elseif (flag == CacheFlag.CACHE_FLYING) and playerStat.flying then
+		player.TearColor = playerStat.Tearcolor
+
+	elseif ((flag == CacheFlag.CACHE_FLYING) and playerStat.Flying) then
 		player.CanFly = true
+
 	-- elseif (flag == CacheFlag.CACHE_WEAPON) then
 	-- elseif (flag == CacheFlag.CACHE_FAMILIARS) then
+
 	elseif (flag == CacheFlag.CACHE_LUCK) then
-		player.Luck = player.Luck + playerStat.luck
+		player.Luck = (player.Luck + playerStat.Luck)
+
 	-- elseif (flag == CacheFlag.CACHE_SIZE) then
 	-- elseif (flag == CacheFlag.CACHE_COLOR) then
 	-- elseif (flag == CacheFlag.CACHE_PICKUP_VISION) then
@@ -83,95 +101,87 @@ local function evaluateStats(_, player, flag)
 end
 
 --- actually adds the costume
---- @param CostumeName string
+--- @param costumeName string
 --- @param player EntityPlayer
-local function AddCostume(CostumeName, player)
-	local cost = Isaac.GetCostumeIdByPath("gfx/characters/" .. CostumeName .. ".anm2")
+local function addCostume(costumeName, player)
+	local cost = Isaac.GetCostumeIdByPath("gfx/characters/"..costumeName..".anm2")
 	if (cost ~= -1) then player:AddNullCostume(cost) end
 end
 
 --- apply all given costumes to the specified player
---- @param AppliedCostume table|string
+--- @param appliedCostume table|string
 --- @param player EntityPlayer
-local function AddCostumes(AppliedCostume, player)
-	if (type(AppliedCostume) == "table") then
-		for i = 1, #AppliedCostume do
-			AddCostume(AppliedCostume[i], player)
+local function addCostumes(appliedCostume, player)
+	if (type(appliedCostume) == "table") then
+		for i = 1, #appliedCostume do
+			addCostume(appliedCostume[i], player)
 		end
 	else
-		AddCostume(AppliedCostume, player)
+		addCostume(appliedCostume, player)
 	end
 end
 
 --- actually removes the costume
---- @param CostumeName string
+--- @param costumeName string
 --- @param player EntityPlayer
-local function RemoveCostume(CostumeName, player)
-	local cost = Isaac.GetCostumeIdByPath("gfx/characters/" .. CostumeName .. ".anm2")
+local function removeCostume(costumeName, player)
+	local cost = Isaac.GetCostumeIdByPath("gfx/characters/"..costumeName..".anm2")
 	if (cost ~= -1) then player:TryRemoveNullCostume(cost) end
 end
 
 --- remove all given costumes from the specified player
---- @param AppliedCostume table|string
+--- @param appliedCostume table|string
 --- @param player EntityPlayer
-local function RemoveCostumes(AppliedCostume, player)
-	if (type(AppliedCostume) == "table") then
-		for i = 1, #AppliedCostume do
-			RemoveCostume(AppliedCostume[i], player)
+local function removeCostumes(appliedCostume, player)
+	if (type(appliedCostume) == "table") then
+		for i = 1, #appliedCostume do
+			removeCostume(appliedCostume[i], player)
 		end
 	else
-		RemoveCostume(AppliedCostume, player)
+		removeCostume(appliedCostume, player)
 	end
 end
 
 --- when starting a new run, add costumes and items to the specified player
 --- @param player EntityPlayer? default: `nil`
 local function postPlayerInitLate(player)
-	if not player then player = Isaac.GetPlayer() end
-	if not (IsChar(player)) then return end
-	local statTable = GetPlayerStatTable(player)
-	if not (statTable == nil) then
-		-- Costume
-		AddCostumes(statTable.costume, player)
+	if (not player) then player = Isaac.GetPlayer() end
+	if (not isChar(player)) then return end
 
-		local items = statTable.items
-		if (#items > 0) then
-			for _, item in ipairs(items) do
-				player:AddCollectible(item.ID)
-				if (item.Costume) then
-					local conf = config:GetCollectible(item.ID)
-					player:RemoveCostume(conf)
-				end
+	local statTable = getPlayerStatTable(player)
+	if (not statTable) then return end
+
+	-- Costume
+	addCostumes(statTable.Costume, player)
+
+	-- Items
+	local items = statTable.Items
+	for _, item in ipairs(items) do
+		if (item.Type == "active") then
+			if (item.Pocket) then
+				player:SetPocketActiveItem(item.ID, ActiveSlot.SLOT_POCKET, false)
+			else
+				player:AddCollectible(item.ID, statTable.Charge)
 			end
-			local charge = statTable.charge
-			if (player:GetActiveItem() and charge ~= -1) then
-				if (charge == true) then
-					player:FullCharge()
-				else
-					player:SetActiveCharge(charge)
-				end
-			end
+		elseif (not item.Innate) then
+			player:AddCollectible(item.ID)
 		end
-
-		local trinket = statTable.trinket
-		if (trinket ~= 0) then player:AddTrinket(trinket, true) end
-
-		local pill = statTable.pill
-		if (pill ~= false) then player:SetPill(0, pool:ForceAddPillEffect(pill)) end
-
-		local card = statTable.card
-		if (card ~= 0) then player:SetCard(0, card) end
+		pool:RemoveCollectible(item.ID)
 	end
 
-	local pType = player:GetPlayerType()
-	if (pType == char) then
-		pool:RemoveCollectible(enums.CollectibleType.COLLECTIBLE_ALMANACH)
-		pool:RemoveCollectible(enums.CollectibleType.COLLECTIBLE_PROTECTIVE_CANDLE)
-		player:AddCollectible(enums.CollectibleType.COLLECTIBLE_ALMANACH, -1) -- -1 for full charge
+	local trinket = statTable.Trinket
+	if (trinket ~= TrinketType.TRINKET_NULL) then
+		player:AddTrinket(trinket, true)
 	end
-	if (pType == taintedChar) then
-		pool:RemoveCollectible(enums.CollectibleType.COLLECTIBLE_MENDING_HEART)
-		player:SetPocketActiveItem(enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER, ActiveSlot.SLOT_POCKET, false)
+
+	local pill = statTable.Pill
+	if (pill ~= PillEffect.PILLEFFECT_NULL) then
+		player:SetPill(0, pool:ForceAddPillEffect(pill))
+	end
+
+	local card = statTable.Card
+	if (card ~= Card.CARD_NULL) then
+		player:SetCard(0, card)
 	end
 end
 

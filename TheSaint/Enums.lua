@@ -1,4 +1,6 @@
-local stats = include("TheSaint.stats")
+local charNames = {
+	NAME_SAINT = "The Saint",
+}
 
 --- @class TheSaint.Enums
 local Enums = {
@@ -34,10 +36,15 @@ local Enums = {
 		CARD_GLITCHED = Isaac.GetCardIdByName("glitchedcard"),
 	},
 
+	--- @enum TheSaint.Enums.CharacterNames
+	CharacterNames = {
+		NAME_SAINT = charNames.NAME_SAINT,
+	},
+
 	--- @enum TheSaint.Enums.PlayerType
 	PlayerType = {
-		PLAYER_THE_SAINT = Isaac.GetPlayerTypeByName(stats.saint.name, false),
-		PLAYER_THE_SAINT_B = Isaac.GetPlayerTypeByName(stats.tSaint.name, true),
+		PLAYER_THE_SAINT = Isaac.GetPlayerTypeByName(charNames.NAME_SAINT, false),
+		PLAYER_THE_SAINT_B = Isaac.GetPlayerTypeByName(charNames.NAME_SAINT, true),
 	},
 
 	--- @enum TheSaint.Enums.FamiliarVariant

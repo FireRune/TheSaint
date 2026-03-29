@@ -37,8 +37,8 @@ end
 local function evaluateStats(_, player, flag)
 	if (not (player:HasCollectible(Copper_Stakes.Target.Type))) then return end
 
-	if (flag & CacheFlag.CACHE_RANGE == CacheFlag.CACHE_RANGE) then
-		player.TearRange = (player.TearRange + 40)
+	if (flag == CacheFlag.CACHE_RANGE) then
+		player.TearRange = (player.TearRange + utils:RangeStatToValue(1))
 	end
 end
 
@@ -131,7 +131,7 @@ end
 --- @param low boolean
 local function preKnifeCollision(_, knife, collider, low)
 	-- only apply to "Mom's Knife" and T. Eve's "Sumptorium"
-	if (knife.Variant ~= knifeVariant.MOMS_KNIFE and knife.Variant ~= knifeVariant.SUMPTORIUM) then return end
+	if ((knife.Variant ~= knifeVariant.MOMS_KNIFE) and (knife.Variant ~= knifeVariant.SUMPTORIUM)) then return end
 
 	shouldApplyEffect(knife)
 	onCollision(knife, collider)
@@ -145,9 +145,10 @@ local function laserDamage(_, laser, receiver)
 
 	shouldApplyEffect(laser)
 	local player = onCollision(laser, receiver)
-	if (player) then
-		enemyDamaged(enemy, player)
-	end
+
+	if (not player) then return end
+
+	enemyDamaged(enemy, player)
 end
 
 --- @param mod ModUpgraded

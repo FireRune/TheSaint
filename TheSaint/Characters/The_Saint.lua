@@ -14,24 +14,24 @@ local The_Saint = {
 
 local v = {
 	level = {
-		angelRoomFirstEntry = true
-	}
+		angelRoomFirstEntry = true,
+	},
 }
 
 --- "Birthright": when entering an Angel Room increases lowest stat (by giving and removing "Consolation Prize")
 --- @param room RoomType
 local function postNewRoomReordered_Saint_Birthright(_, room)
-	if (v.level.angelRoomFirstEntry) then
-		for i = 0, game:GetNumPlayers() - 1 do
-			local player = Isaac.GetPlayer(i)
-			if (player:GetPlayerType() == The_Saint.Target.Type)
-			and (player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)) then
-				player:AddCollectible(CollectibleType.COLLECTIBLE_CONSOLATION_PRIZE)
-				player:RemoveCollectible(CollectibleType.COLLECTIBLE_CONSOLATION_PRIZE)
-			end
+	if (not v.level.angelRoomFirstEntry) then return end
+
+	for i = 0, game:GetNumPlayers() - 1 do
+		local player = Isaac.GetPlayer(i)
+		if (player:GetPlayerType() == The_Saint.Target.Type)
+		and (player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)) then
+			player:AddCollectible(CollectibleType.COLLECTIBLE_CONSOLATION_PRIZE)
+			player:RemoveCollectible(CollectibleType.COLLECTIBLE_CONSOLATION_PRIZE)
 		end
-		v.level.angelRoomFirstEntry = false
 	end
+	v.level.angelRoomFirstEntry = false
 end
 
 --- @param mod ModUpgraded

@@ -14,19 +14,26 @@ local Tainted_Saint = {
 
 local playersDamageTaken = {}
 
+--- @param player EntityPlayer
+--- @return string
+local function getPlayerIndex(player)
+	return "TSaint_DmgTaken_"..isc:getPlayerIndex(player)
+end
+
 --- "Tainted Saint" took damage that invokes penalties (i.e. decreasing Devil/Angel chance)
 --- @param ent Entity
---- @param flag DamageFlag
-local function onDmgTaken(_, ent, _, flag)
-	local player = ent:ToPlayer()
-	if player then
-		if (player:GetPlayerType() == Tainted_Saint.Target.Type) then
-			if (flag & DamageFlag.DAMAGE_RED_HEARTS ~= DamageFlag.DAMAGE_RED_HEARTS)
-			and (flag & DamageFlag.DAMAGE_NO_PENALTIES ~= DamageFlag.DAMAGE_NO_PENALTIES) then
-				local playerIndex = "TSaint_DmgTaken_"..isc:getPlayerIndex(player)
-				playersDamageTaken[playerIndex] = true
-			end
-		end
+--- @param amount number	@ value is an integer when `ent` is `EntityPlayer`, otherwise it's a float
+--- @param flags DamageFlag
+--- @param source EntityRef
+--- @param countdown integer
+local function onDmgTaken(_, ent, amount, flags, source, countdown)
+	local player = ent:ToPlayer() --- @cast player -?
+	if (player:GetPlayerType() ~= Tainted_Saint.Target.Type) then return end
+
+	if ((flags & DamageFlag.DAMAGE_RED_HEARTS ~= DamageFlag.DAMAGE_RED_HEARTS)
+	and (flags & DamageFlag.DAMAGE_NO_PENALTIES ~= DamageFlag.DAMAGE_NO_PENALTIES)) then
+		local playerIndex = getPlayerIndex(player)
+		playersDamageTaken[playerIndex] = true
 	end
 end
 
@@ -42,26 +49,26 @@ end
 --- (with "Birthright" only 1 Heart Container will turn into a Broken Heart instead.)<br>
 --- Remove any Soul Hearts, that may be applied through items.
 --- @param player EntityPlayer
-local function postPlayerUpdate_TSaint_Hearts(_, player)
-	if (player:GetPlayerType() == Tainted_Saint.Target.Type) then
-		local playerIndex = "TSaint_DmgTaken_"..isc:getPlayerIndex(player)
-		-- player took damage that causes penalties, then remove all empty Heart Containers, replace with Broken Hearts
-		if (playersDamageTaken[playerIndex] == true) then
-			local emptyContainers = getEmptyContainers(player)
-			if (emptyContainers > 0) then
-				if (player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)) then
-					emptyContainers = 1
-				end
-				player:AddMaxHearts(emptyContainers * -2)
-				player:AddBrokenHearts(emptyContainers)
+local function postPlayerUpdateReordered_TSaint_Hearts(_, player)
+	local playerIndex = getPlayerIndex(player)
+
+	-- player took damage that causes penalties, then remove all empty Heart Containers, replace with Broken Hearts
+	if (playersDamageTaken[playerIndex] == true) then
+		local emptyContainers = getEmptyContainers(player)
+		if (emptyContainers > 0) then
+			if (player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)) then
+				emptyContainers = 1
 			end
-			playersDamageTaken[playerIndex] = false
+			player:AddMaxHearts(emptyContainers * -2)
+			player:AddBrokenHearts(emptyContainers)
 		end
-		-- "Tainted Saint" can't utilize Soul/Black Hearts
-		local soulHearts = player:GetSoulHearts()
-		if (soulHearts > 0) then
-			player:AddSoulHearts(-soulHearts)
-		end
+		playersDamageTaken[playerIndex] = false
+	end
+
+	-- "Tainted Saint" can't utilize Soul/Black Hearts
+	local soulHearts = player:GetSoulHearts()
+	if (soulHearts > 0) then
+		player:AddSoulHearts(-soulHearts)
 	end
 end
 
@@ -81,19 +88,15 @@ end
 --- chance to replace Soul/Black/Blended Hearts with an Eternal Heart while playing as "Tainted Saint"
 --- @param heart EntityPickup
 local function postPickupInitFirst_TSaint_Hearts(_, heart)
-	for i = 0, game:GetNumPlayers() - 1 do
-		local player = Isaac.GetPlayer(i)
-		if (player:GetPlayerType() == Tainted_Saint.Target.Type) then
-			if (heart.SubType == HeartSubType.HEART_SOUL)
-			or (heart.SubType == HeartSubType.HEART_BLACK)
-			or (heart.SubType == HeartSubType.HEART_HALF_SOUL)
-			or (heart.SubType == HeartSubType.HEART_BLENDED) then
-				local rng = player:GetDropRNG()
-				if ((rng:RandomInt(20) + 1) == 20) then
-					heart:Morph(heart.Type, heart.Variant, HeartSubType.HEART_ETERNAL, true)
-				end
-			end
-			return -- attempt to replace only once, in case more than 1 player is "Tainted Saint"
+	if (not isc:anyPlayerIs(Tainted_Saint.Target.Type)) then return end
+
+	if (heart.SubType == HeartSubType.HEART_SOUL)
+	or (heart.SubType == HeartSubType.HEART_BLACK)
+	or (heart.SubType == HeartSubType.HEART_HALF_SOUL)
+	or (heart.SubType == HeartSubType.HEART_BLENDED) then
+		local rng = heart:GetDropRNG()
+		if ((rng:RandomInt(20)) == 0) then
+			heart:Morph(heart.Type, heart.Variant, HeartSubType.HEART_ETERNAL, true, false, true)
 		end
 	end
 end
@@ -103,16 +106,18 @@ end
 --- @param collider Entity
 local function prePickupCollision_TSaint_Hearts(_, heart, collider)
 	local player = collider:ToPlayer()
-	if (player and (player:GetPlayerType() == Tainted_Saint.Target.Type)) then
-		-- check for "Alabaster Box"
-		if (utils:AlabasterBoxNeedsCharge(player)) then return end
 
-		if (heart.SubType == HeartSubType.HEART_SOUL)
-		or (heart.SubType == HeartSubType.HEART_BLACK)
-		or (heart.SubType == HeartSubType.HEART_HALF_SOUL)
-		or ((heart.SubType == HeartSubType.HEART_BLENDED) and (player:GetHearts() >= player:GetMaxHearts())) then
-			return false
-		end
+	if (not player) then return end
+	if (player:GetPlayerType() ~= Tainted_Saint.Target.Type) then return end
+
+	-- check for "Alabaster Box"
+	if (utils:AlabasterBoxNeedsCharge(player)) then return end
+
+	if ((heart.SubType == HeartSubType.HEART_SOUL)
+	or (heart.SubType == HeartSubType.HEART_BLACK)
+	or (heart.SubType == HeartSubType.HEART_HALF_SOUL)
+	or ((heart.SubType == HeartSubType.HEART_BLENDED) and (player:GetHearts() >= player:GetMaxHearts()))) then
+		return false
 	end
 end
 
@@ -120,13 +125,13 @@ end
 --- sets health to 1 full Heart Container + 2 Broken Hearts and re-add "Devout Prayer"
 --- @param player EntityPlayer
 local function postFirstEsauJr(_, player)
-	if (player:GetPlayerType() == Tainted_Saint.Target.Type) then
-		player:AddMaxHearts(2)
-		player:AddHearts(2)
-		player:AddBrokenHearts(2)
-		-- prevent "Devout Prayer" from being removed
-		player:SetPocketActiveItem(enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER, ActiveSlot.SLOT_POCKET, false)
-	end
+	if (player:GetPlayerType() ~= Tainted_Saint.Target.Type) then return end
+
+	player:AddMaxHearts(2)
+	player:AddHearts(2)
+	player:AddBrokenHearts(2)
+	-- prevent "Devout Prayer" from being removed
+	player:SetPocketActiveItem(enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER, ActiveSlot.SLOT_POCKET, false)
 end
 
 -- Used to store the current amount of Heart Containers when picking up "Abaddon".
@@ -135,9 +140,9 @@ local abaddonHeartsRemoved = 0
 --- Store the current amount of Heart Containers when picking up "Abaddon".
 --- @param player EntityPlayer
 local function preItemPickup_Abaddon(_, player, _)
-	if (player:GetPlayerType() == Tainted_Saint.Target.Type) then
-		abaddonHeartsRemoved = math.max(0, (player:GetMaxHearts() // 2) - 1)
-	end
+	if (player:GetPlayerType() ~= Tainted_Saint.Target.Type) then return end
+
+	abaddonHeartsRemoved = math.max(0, (player:GetMaxHearts() // 2) - 1)
 end
 
 --- Picking up "Abaddon" would turn all Heart Containers into Black Hearts.<br>
@@ -145,13 +150,13 @@ end
 --- and replace all other Heart Containers with Broken Hearts.
 --- @param player EntityPlayer
 local function postItemPickup_Abaddon(_, player, _)
-	if (player:GetPlayerType() == Tainted_Saint.Target.Type) then
-		player:AddMaxHearts(2)
-		player:AddHearts(1)
-		if (abaddonHeartsRemoved > 0) then
-			player:AddBrokenHearts(abaddonHeartsRemoved)
-			abaddonHeartsRemoved = 0
-		end
+	if (player:GetPlayerType() ~= Tainted_Saint.Target.Type) then return end
+
+	player:AddMaxHearts(2)
+	player:AddHearts(1)
+	if (abaddonHeartsRemoved > 0) then
+		player:AddBrokenHearts(abaddonHeartsRemoved)
+		abaddonHeartsRemoved = 0
 	end
 end
 
@@ -160,7 +165,7 @@ function Tainted_Saint:Init(mod)
 	if (self.IsInitialized) then return end
 
 	mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, onDmgTaken, EntityType.ENTITY_PLAYER)
-	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, postPlayerUpdate_TSaint_Hearts, 0)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PLAYER_UPDATE_REORDERED, postPlayerUpdateReordered_TSaint_Hearts, 0, self.Target.Type)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.PRE_GET_PEDESTAL, preGetPedestal_TSaint_BrokenHearts, 0, self.Target.Type)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst_TSaint_Hearts, PickupVariant.PICKUP_HEART)
 	mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, prePickupCollision_TSaint_Hearts, PickupVariant.PICKUP_HEART)

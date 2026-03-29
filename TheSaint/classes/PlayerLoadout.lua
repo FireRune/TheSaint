@@ -35,7 +35,7 @@ local isRegistered = false
 local thisMod
 
 local function checkIsRegistered()
-	if (isRegistered == false) then
+	if (not isRegistered) then
 		error("[TheSaint] attempted to access a static member of class 'PlayerLoadout' without registering an object of type 'ModUpgraded' first. To do so, use the function 'PlayerLoadout.register'.")
 	end
 end
@@ -45,7 +45,7 @@ end
 --- Must call this function at least once before using this class.
 --- @param mod ModUpgraded @ must be upgraded with the feature `ISCFeature.PLAYER_COLLECTIBLE_TRACKING`
 function PlayerLoadout.register(mod)
-	if (isRegistered == true) then return end
+	if (isRegistered) then return end
 	thisMod = mod
 	isRegistered = true
 end
@@ -77,7 +77,7 @@ function PlayerLoadout.constructor()
 		"constructor",
 		"createFromPlayer",
 		"fromSerializable",
-		"register"
+		"register",
 	}
 	for k, v in pairs(PlayerLoadout) do
 		if (type(v) == "function") then
@@ -245,7 +245,7 @@ function PlayerLoadout:setActiveCollectiblesFromPlayer(player)
 	--- @param slot ActiveSlot
 	isc:forEach(activeSlots, function (_, slot)
 		local collectible = player:GetActiveItem(slot)
-		if ((collectible ~= CollectibleType.COLLECTIBLE_NULL) and (isc:isQuestCollectible(collectible) == false)) then
+		if ((collectible ~= CollectibleType.COLLECTIBLE_NULL) and (not isc:isQuestCollectible(collectible))) then
 			local charge = (player:GetActiveCharge(slot) + player:GetBatteryCharge(slot))
 			--- @type PlayerActiveItem
 			local activeItem = {
@@ -272,7 +272,7 @@ function PlayerLoadout:setPassiveCollectiblesFromPlayer(player)
 
 	--- @param collectible CollectibleType
 	isc:forEach(thisMod:getPlayerCollectibleTypes(player, false), function (_, collectible)
-		if (isc:isQuestCollectible(collectible) == false) then
+		if (not isc:isQuestCollectible(collectible)) then
 			table.insert(passives, collectible)
 		end
 	end)

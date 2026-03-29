@@ -15,15 +15,10 @@ local Sacred_Blindfold = {
 	IsInitialized = false,
 	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
 	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_SACRED_BLINDFOLD),
-	SaveDataKey = "Sacred_Blindfold",
 }
 
-local v = {
-	run = {
-		--- @type integer?
-		PlayerIndex = nil,
-	}
-}
+--- @type integer?
+local triggerPlayerIndex = nil
 
 --- make sure that "Curse of Darkness", "Curse of the Lost" and "Curse of the Unknown" are applied while any player has "Sacred Blindfold"
 local function postUpdate()
@@ -45,7 +40,7 @@ end
 local function preNewLevel(_, player)
 	if (not isc:anyPlayerHasCollectible(Sacred_Blindfold.Target.Type)) then return end
 
-	v.run.PlayerIndex = isc:getPlayerIndex(player)
+	triggerPlayerIndex = isc:getPlayerIndex(player)
 
 	-- first save the players Trinkets (if any)
 	--- @type TrinketType, TrinketType?
@@ -84,10 +79,10 @@ local function postNewLevelReordered(_, stage, stageType)
 	if (not isc:anyPlayerHasCollectible(Sacred_Blindfold.Target.Type)) then return end
 
 	-- no saved player index -> early exit
-	if (not v.run.PlayerIndex) then return end
+	if (not triggerPlayerIndex) then return end
 
 	--- @type EntityPlayer?
-	local player = isc:getPlayerFromIndex(v.run.PlayerIndex)
+	local player = isc:getPlayerFromIndex(triggerPlayerIndex)
 
 	-- shouldn't happen but just in case
 	if (not player) then return end
@@ -96,6 +91,8 @@ local function postNewLevelReordered(_, stage, stageType)
 	for _ = 1, 7 do
 		player:TryRemoveTrinket(TrinketType.TRINKET_GOLDEN_HORSE_SHOE)
 	end
+
+	triggerPlayerIndex = nil
 end
 
 --- Reroll all collectibles of quality 0 (except quest items)
@@ -136,7 +133,6 @@ end
 function Sacred_Blindfold:Init(mod)
 	if (self.IsInitialized) then return end
 
-	mod:saveDataManager(self.SaveDataKey, v)
 	mod:AddCallback(ModCallbacks.MC_POST_UPDATE, postUpdate)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.PRE_NEW_LEVEL, preNewLevel)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_LEVEL_REORDERED, postNewLevelReordered)

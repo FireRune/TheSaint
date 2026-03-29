@@ -22,14 +22,24 @@ local Devout_Prayer = {
 	SaveDataKey = "Devout_Prayer",
 }
 
+--- @class TheSaint.Items.Collectibles.Devout_Prayer.Counters
+--- @field Damage integer
+--- @field Luck integer
+
 --[[
 	local variables with persistent data. for use with the save data manager.<br>
 	-> increases to luck and damage are tracked in "level"<br>
 	-> current kill count for the charge mechanic is stored in "run"
 ]]
 local v = {
-	run = {},
-	level = {}
+	run = {
+		--- @type table<string, integer>
+		Kills = {},
+	},
+	level = {
+		--- @type table<string, TheSaint.Items.Collectibles.Devout_Prayer.Counters>
+		Counters = {},
+	},
 }
 
 -- flag to check wether any Pocket Item other than "Devout Prayer" was used
@@ -39,31 +49,41 @@ local otherPocketItemUsed = false
 -- (should never happen because "Devout Prayer" has the "hidden"-attribute in items.xml and should only be accessible as a Pocket Active)
 local questionMarkCardUsed_CurrentCharge = 0
 
+--- @param player EntityPlayer
+--- @return string
+local function getPlayerIndex(player)
+	return ("Devout_Prayer_"..isc:getPlayerIndex(player))
+end
+
 --- charge mechanic
+--- @param player EntityPlayer
 --- @param pointValue integer
-local function chargeDevoutPrayer(pointValue)
-	for i = 0, game:GetNumPlayers() - 1 do
-		local player = Isaac.GetPlayer(i)
-		if player:HasCollectible(Devout_Prayer.Target.Type) then
-			if (player:GetEternalHearts() == 1) then
-				pointValue = pointValue * 2
-			end
-			local playerIndex = "DevoutPrayer_Kills_"..isc:getPlayerIndex(player)
-			v.run[playerIndex] = (v.run[playerIndex] and (v.run[playerIndex] + pointValue)) or pointValue
-			while (v.run[playerIndex] >= 10) do
-				v.run[playerIndex] = v.run[playerIndex] - 10
-				for _, slot in ipairs(isc:getActiveItemSlots(player, Devout_Prayer.Target.Type)) do
-					local currentCharge = player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)
-					if (player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY) and (currentCharge < 24))
-					or (currentCharge < 12) then
-						player:SetActiveCharge(currentCharge + 1, slot)
-						hud:FlashChargeBar(player, slot)
-						isc:playChargeSoundEffect(player, slot)
-					end
-				end
+local function addPoints(player, pointValue)
+	if (player:GetEternalHearts() == 1) then pointValue = (pointValue * 2) end
+
+	local playerIndex = getPlayerIndex(player)
+	v.run.Kills[playerIndex] = ((v.run.Kills[playerIndex] and (v.run.Kills[playerIndex] + pointValue)) or pointValue)
+	while (v.run.Kills[playerIndex] >= 10) do
+		v.run.Kills[playerIndex] = (v.run.Kills[playerIndex] - 10)
+		for _, slot in ipairs(isc:getActiveItemSlots(player, Devout_Prayer.Target.Type)) do
+			local currentCharge = (player:GetActiveCharge(slot) + player:GetBatteryCharge(slot))
+			if ((player:HasCollectible(CollectibleType.COLLECTIBLE_BATTERY) and (currentCharge < 24)) or (currentCharge < 12)) then
+				player:SetActiveCharge(currentCharge + 1, slot)
+				hud:FlashChargeBar(player, slot)
+				isc:playChargeSoundEffect(player, slot)
 			end
 		end
 	end
+end
+
+--- alter charge counter for all players
+--- @param pointValue integer
+local function chargeDevoutPrayer(pointValue)
+	local playersWithItem = isc:getPlayersWithCollectible(Devout_Prayer.Target.Type)
+	--- @param player EntityPlayer
+	isc:forEach(playersWithItem, function (_, player)
+		addPoints(player, pointValue)
+	end)
 end
 
 --- increase charge counter by 1 per killed enemy
@@ -119,7 +139,7 @@ end
 --- @param slot ActiveSlot
 local function tryUseDevoutPrayer(player, slot)
 	local charge = player:GetActiveCharge(slot)
-	if (charge > 0) and (charge < 12) then
+	if ((charge > 0) and (charge < 12)) then
 		player:UseActiveItem(Devout_Prayer.Target.Type, UseFlag.USE_OWNED, slot)
 	end
 end
@@ -129,29 +149,30 @@ end
 local function postPlayerUpdate(_, player)
 	local isInPrimary = hasDevoutPrayerInPrimary(player)
 	local isInPocket = hasDevoutPrayerInPocket(player)
-	if ((isInPrimary) or (isInPocket)) then
-		if ((isInPrimary) and (Input.IsActionTriggered(ButtonAction.ACTION_ITEM, player.ControllerIndex))) then
-			tryUseDevoutPrayer(player, ActiveSlot.SLOT_PRIMARY)
-		elseif ((isInPocket) and (Input.IsActionTriggered(ButtonAction.ACTION_PILLCARD, player.ControllerIndex))) then
-			if (not otherPocketItemUsed) then
-				tryUseDevoutPrayer(player, ActiveSlot.SLOT_POCKET)
-			else
-				otherPocketItemUsed = false
-			end
+	if (not ((isInPrimary) or (isInPocket))) then return end
+
+	if ((isInPrimary) and (Input.IsActionTriggered(ButtonAction.ACTION_ITEM, player.ControllerIndex))) then
+		tryUseDevoutPrayer(player, ActiveSlot.SLOT_PRIMARY)
+	elseif ((isInPocket) and (Input.IsActionTriggered(ButtonAction.ACTION_PILLCARD, player.ControllerIndex))) then
+		if (not otherPocketItemUsed) then
+			tryUseDevoutPrayer(player, ActiveSlot.SLOT_POCKET)
+		else
+			otherPocketItemUsed = false
 		end
 	end
 end
 
 --- @param player EntityPlayer
+--- @return TheSaint.Items.Collectibles.Devout_Prayer.Counters
 local function getPlayerCounters(player)
-	local playerIndex = "DevoutPrayer_Counters_"..isc:getPlayerIndex(player)
-	if (not v.level[playerIndex]) then
-		v.level[playerIndex] = {
-			damage = 0,
-			luck = 0
+	local playerIndex = getPlayerIndex(player)
+	if (not v.level.Counters[playerIndex]) then
+		v.level.Counters[playerIndex] = {
+			Damage = 0,
+			Luck = 0,
 		}
 	end
-	return v.level[playerIndex]
+	return v.level.Counters[playerIndex]
 end
 
 --- Increases the given players Luck by 0.1 per charge spent.<br>
@@ -161,11 +182,10 @@ end
 --- @param extraEffect boolean
 local function effectAddLuck(chargeValue, player, extraEffect)
 	local counters = getPlayerCounters(player)
-	counters.luck = counters.luck + chargeValue
-	if (extraEffect == true) then
-		counters.damage = counters.damage + chargeValue
+	counters.Luck = (counters.Luck + chargeValue)
+	if (extraEffect) then
+		counters.Damage = (counters.Damage + chargeValue)
 	end
-	player:EvaluateItems()
 end
 
 --- re-evaluates the given players stats after using "Devout Prayer"
@@ -175,11 +195,11 @@ local function evaluateStats(_, player, flag)
 	local counters = getPlayerCounters(player)
 
 	if (flag == CacheFlag.CACHE_DAMAGE) then
-		player.Damage = player.Damage + (0.25 * counters.damage)
+		player.Damage = (player.Damage + (0.25 * counters.Damage))
 	end
 
 	if (flag == CacheFlag.CACHE_LUCK) then
-		player.Luck = player.Luck + (0.1 * counters.luck)
+		player.Luck = (player.Luck + (0.1 * counters.Luck))
 	end
 end
 
@@ -187,7 +207,7 @@ end
 --- @param stage LevelStage
 --- @param stageType StageType
 local function postNewLevelReordered_resetCounters(_, stage, stageType)
-	for i = 0, game:GetNumPlayers() - 1 do
+	for i = 0, (game:GetNumPlayers() - 1) do
 		local player = Isaac.GetPlayer(i)
 		local flags = (CacheFlag.CACHE_DAMAGE | CacheFlag.CACHE_LUCK)
 		--- @cast flags CacheFlag
@@ -201,12 +221,14 @@ end
 --- @param player EntityPlayer
 --- @param extraEffect boolean
 local function effectSpawnHeart(player, extraEffect)
-	Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_ETERNAL, game:GetRoom():FindFreePickupSpawnPosition(player.Position, 0, true), Vector.Zero, nil)
-	if (extraEffect == true) then
-		local flags = (UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER | UseFlag.USE_NOHUD)
-		--- @cast flags UseFlag
-		player:UseCard(Card.CARD_HOLY, flags)
-	end
+	local pos = game:GetRoom():FindFreePickupSpawnPosition(player.Position, 0, true)
+	Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_ETERNAL, pos, Vector.Zero, nil)
+
+	if (not extraEffect) then return end
+
+	local flags = (UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER | UseFlag.USE_NOHUD)
+	--- @cast flags UseFlag
+	player:UseCard(Card.CARD_HOLY, flags)
 end
 
 --- Spawns an Eternal Chest.<br>
@@ -214,11 +236,13 @@ end
 --- @param player EntityPlayer
 --- @param extraEffect boolean
 local function effectSpawnChest(player, extraEffect)
-	Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_ETERNALCHEST, ChestSubType.CHEST_CLOSED, game:GetRoom():FindFreePickupSpawnPosition(player.Position, 0, true), Vector.Zero, nil)
-	if (extraEffect == true) then
-		game:GetLevel():AddAngelRoomChance(0.1)
-		hud:ShowFortuneText("You feel blessed!")
-	end
+	local pos = game:GetRoom():FindFreePickupSpawnPosition(player.Position, 0, true)
+	Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_ETERNALCHEST, utils.ChestSubType_CHEST_CLOSED_ETERNAL, pos, Vector.Zero, nil)
+
+	if (not extraEffect) then return end
+
+	game:GetLevel():AddAngelRoomChance(0.1)
+	hud:ShowFortuneText("You feel blessed!")
 end
 
 --- Checks all item pedestals in the room and returns the highest value of OptionsPickupIndex.
@@ -226,11 +250,9 @@ end
 local function getOptionIndex()
 	local optionIndex = 2
 	for _, entity in ipairs(Isaac.GetRoomEntities()) do
-		if (entity.Type == EntityType.ENTITY_PICKUP and entity.Variant == PickupVariant.PICKUP_COLLECTIBLE) then
-			local entCollectible = entity:ToPickup()
-			if (entCollectible) then
-				optionIndex = math.max(optionIndex, entCollectible.OptionsPickupIndex)
-			end
+		if ((entity.Type == EntityType.ENTITY_PICKUP) and (entity.Variant == PickupVariant.PICKUP_COLLECTIBLE)) then
+			local entCollectible = entity:ToPickup() --- @cast entCollectible -?
+			optionIndex = math.max(optionIndex, entCollectible.OptionsPickupIndex)
 		end
 	end
 	return (optionIndex + 1)
@@ -245,40 +267,39 @@ end
 local function effectSpawnItem(rng, player, extraEffect)
 	local optionIndex = getOptionIndex()
 	local ddTaken = ddTracking:HasDevilDealBeenTaken()
-	local SHOP_ITEM_DEVIL = -2
-	if ((extraEffect == true) and (ddTaken == false)) then
-		optionIndex = 0
-	end
+	if ((extraEffect) and (not ddTaken)) then optionIndex = 0 end
+
 	local pool = game:GetItemPool()
 	local room = game:GetRoom()
-	local collectibles = {
-		[0] = CollectibleType.COLLECTIBLE_NULL,
-		[1] = CollectibleType.COLLECTIBLE_NULL
-	}
+	local collectible = CollectibleType.COLLECTIBLE_NULL
+	local pos = Vector.Zero
+	local SHOP_ITEM_DEVIL = -2
 
 	-- 1st item from current pool
-	collectibles[0] = pool:GetCollectible(pool:GetPoolForRoom(room:GetType(), rng:RandomInt(math.maxinteger)), false, rng:RandomInt(math.maxinteger))
-	Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, collectibles[0], room:FindFreePickupSpawnPosition(player.Position, 0, true), Vector.Zero, nil):ToPickup().OptionsPickupIndex = optionIndex
+	collectible = pool:GetCollectible(pool:GetPoolForRoom(room:GetType(), rng:RandomInt(math.maxinteger)), true, rng:RandomInt(math.maxinteger))
+	pos = room:FindFreePickupSpawnPosition(player.Position, 0, true)
+	Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, collectible, pos, Vector.Zero, nil):ToPickup().OptionsPickupIndex = optionIndex
 
 	-- 2nd item from Angel pool OR Devil pool, if a Devil Deal has been taken before
 	-- if it's from the Devil pool:
 	-- - must be paid for with health
 	-- - w/o an Eternal Heart has a 50% chance to be an empty pedestal instead
-	local poolAngelOrDevil = ((ddTaken and ItemPoolType.POOL_DEVIL) or ItemPoolType.POOL_ANGEL)
-	if (game:IsGreedMode()) then
-		poolAngelOrDevil = ((ddTaken and ItemPoolType.POOL_GREED_DEVIL) or ItemPoolType.POOL_GREED_ANGEL)
-	end
-	collectibles[1] = pool:GetCollectible(poolAngelOrDevil, false, rng:RandomInt(math.maxinteger))
-	local pos = room:FindFreePickupSpawnPosition(player.Position, 0, true)
-	if ((ddTaken == true) and (extraEffect == false) and (rng:RandomInt(math.maxinteger) % 2) == 1) then
+	local isGreedMode = game:IsGreedMode()
+	local poolAngel = ((isGreedMode and ItemPoolType.POOL_GREED_ANGEL) or ItemPoolType.POOL_ANGEL)
+	local poolDevil = ((isGreedMode and ItemPoolType.POOL_GREED_DEVIL) or ItemPoolType.POOL_DEVIL)
+	local poolAngelOrDevil = ((ddTaken and poolDevil) or poolAngel)
+	pos = room:FindFreePickupSpawnPosition(player.Position, 0, true)
+	if ((ddTaken) and (not extraEffect) and (rng:RandomInt(math.maxinteger) % 2 == 1)) then
 		isc:spawnEmptyCollectible(pos, rng)
 	else
-		local itemAngelDevil = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, collectibles[1], pos, Vector.Zero, nil):ToPickup() --- @cast itemAngelDevil -?
+		collectible = pool:GetCollectible(poolAngelOrDevil, true, rng:RandomInt(math.maxinteger))
+		local itemAngelDevil = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, collectible, pos, Vector.Zero, nil):ToPickup() --- @cast itemAngelDevil -?
 		itemAngelDevil.OptionsPickupIndex = optionIndex
-		if (ddTaken) then
-			itemAngelDevil.ShopItemId = SHOP_ITEM_DEVIL
-			itemAngelDevil.Price = 1
-		end
+
+		if (not ddTaken) then return end
+
+		itemAngelDevil.ShopItemId = SHOP_ITEM_DEVIL
+		itemAngelDevil.Price = 1
 	end
 end
 
@@ -297,52 +318,51 @@ local function useItem(_, collectible, rng, player, flags, slot)
 
 	local extraEffect = false
 	if (player:GetEternalHearts() == 1) then
-		--player:AddEternalHearts(-1)
 		extraEffect = true
 	end
 	local charge = ((isVoid and 1) or (player:GetActiveCharge(slot) + player:GetBatteryCharge(slot)))
 
-	if (charge >= 1) then
-		-- only remove up to 12 charges
-		local chargeSpent = (((charge > 12) and 12) or charge)
+	if (charge < 1) then return end
 
-		-- 1+ charge(s)
-		local numWisps = 1
-		effectAddLuck(chargeSpent, player, extraEffect)
-		if ((charge >= 3) and (charge < 6)) then
-			-- 3-5 charges
-			numWisps = 2
-			effectSpawnHeart(player, extraEffect)
-		elseif ((charge >= 6) and (charge < 12)) then
-			-- 6-11 charges
-			numWisps = 3
-			effectSpawnChest(player, extraEffect)
-		elseif (charge >= 12) then
-			-- 12 charges
-			numWisps = 4
-			effectSpawnItem(rng, player, extraEffect)
-		end
+	-- only remove up to 12 charges
+	local chargeSpent = (((charge > 12) and 12) or charge)
 
-		-- manually remove charges, except when used through "Void"
-		if (not isVoid) then
-			questionMarkCardUsed_CurrentCharge = charge
-			player:SetActiveCharge(charge - chargeSpent, slot)
-		end
-
-		-- if holding "Book of Virtues", spawn wisps
-		if (player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES)) then
-			local wispType = ((extraEffect and CollectibleType.COLLECTIBLE_BIBLE) or Devout_Prayer.Target.Type)
-			for _ = 1, numWisps do
-				player:AddWisp(wispType, player.Position, true)
-			end
-		end
-
-		return {
-			Discharge = false,
-			Remove = false,
-			ShowAnim = (flags & UseFlag.USE_NOANIM ~= UseFlag.USE_NOANIM),
-		}
+	-- 1+ charge(s)
+	local numWisps = 1
+	effectAddLuck(chargeSpent, player, extraEffect)
+	if ((charge >= 3) and (charge < 6)) then
+		-- 3-5 charges
+		numWisps = 2
+		effectSpawnHeart(player, extraEffect)
+	elseif ((charge >= 6) and (charge < 12)) then
+		-- 6-11 charges
+		numWisps = 3
+		effectSpawnChest(player, extraEffect)
+	elseif (charge >= 12) then
+		-- 12 charges
+		numWisps = 4
+		effectSpawnItem(rng, player, extraEffect)
 	end
+
+	-- manually remove charges, except when used through "Void"
+	if (not isVoid) then
+		questionMarkCardUsed_CurrentCharge = charge
+		player:SetActiveCharge(charge - chargeSpent, slot)
+	end
+
+	-- if holding "Book of Virtues", spawn wisps
+	if (player:HasCollectible(CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES)) then
+		local wispType = ((extraEffect and CollectibleType.COLLECTIBLE_BIBLE) or Devout_Prayer.Target.Type)
+		for _ = 1, numWisps do
+			player:AddWisp(wispType, player.Position, true)
+		end
+	end
+
+	return {
+		Discharge = false,
+		Remove = false,
+		ShowAnim = (flags & UseFlag.USE_NOANIM ~= UseFlag.USE_NOANIM),
+	}
 end
 
 --- Initialize the item's functionality.
