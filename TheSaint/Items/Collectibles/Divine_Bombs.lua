@@ -1,5 +1,7 @@
+local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local featureTarget = require("TheSaint.structures.FeatureTarget")
+local utils = include("TheSaint.utils")
 
 --- "Divine Bombs"
 --- - +5 bombs
@@ -9,14 +11,13 @@ local Divine_Bombs = {
 	IsInitialized = false,
 	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
 	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS),
-	SaveDataKey = "Divine_Bombs",
 }
 
-local targetFlag = TearFlags.TEAR_LIGHT_FROM_HEAVEN
+local TARGET_FLAG = TearFlags.TEAR_LIGHT_FROM_HEAVEN
 
-local v = {
-	room = {}
-}
+--- @class TheSaint.Items.Collectibles.Divine_Bombs.ExplosionData
+--- @field FirstFrame boolean
+--- @field SpawnerPlayer EntityPlayer
 
 --- Spawn a "Holy Light"-beam
 --- @param pos Vector
@@ -30,57 +31,58 @@ end
 --- @param spawner? Entity default: `nil`
 local function triggerHolyLight(pos, spawner)
 	spawnHolyLight(pos, spawner)
-	local entities = Isaac.GetRoomEntities()
-	for i = 1, #entities do
-		local enemy = entities[i]
-		if enemy:IsVulnerableEnemy() then
-			if ((enemy.Position - pos):Length() <= 150) then
-				spawnHolyLight(enemy.Position, spawner)
-			end
+	for _, ent in ipairs(Isaac.GetRoomEntities()) do
+		if (utils:IsValidEnemy(ent, false) and ((ent.Position - pos):Length() <= 150)) then
+			spawnHolyLight(ent.Position, spawner)
 		end
 	end
 end
 
---- Add effect only to bombs spawned by the player
+--- Luck formula for "Dr. Fetus" and "Epic Fetus"/"Doctor's Remote"
+--- @param player EntityPlayer
+--- @param item CollectibleType
+--- @return boolean
+local function shouldApplyEffectToFetus(player, item)
+	local rng = player:GetCollectibleRNG(item)
+	--- @type number
+	local chance = isc:clamp((0.11 + (0.03 * player.Luck)), 0.0, 1.0)
+
+	return (rng:RandomFloat() < chance)
+end
+
+--- Add "Holy Light"-TearFlag to bombs spawned by the player
 --- @param bomb EntityBomb
-local function postBombInit(_, bomb)
+local function postBombInitLate(_, bomb)
 	if (bomb.Variant == BombVariant.BOMB_GIGA) then return end
 
 	local player = (bomb.SpawnerEntity and bomb.SpawnerEntity:ToPlayer())
-	if player then
-		local ptr = GetPtrHash(bomb)
-		v.room[ptr] = {["firstFrame"] = true}
+	if (not player) then return end
+
+	if (player:HasCollectible(Divine_Bombs.Target.Type)) then
+		bomb:AddTearFlags(TARGET_FLAG)
 	end
+
+	-- bombs from "Dr. Fetus" only have a chance to apply bomb effects from items
+	-- same luck formula as for "Sad Bombs" and "Brimstone Bombs"
+	if (not bomb.IsFetus) then return end
+
+	-- effect has already been applied to the bomb -> rng-check for removal
+	if (shouldApplyEffectToFetus(player, CollectibleType.COLLECTIBLE_DR_FETUS)) then return end
+
+	bomb:ClearTearFlags(TARGET_FLAG)
 end
 
---- Add "Holy Light"-effect to bombs
+--- Spawn light beams on explosion
 --- @param bomb EntityBomb
 local function postBombUpdate(_, bomb)
 	if (bomb.Variant == BombVariant.BOMB_GIGA) then return end
 
 	local player = (bomb.SpawnerEntity and bomb.SpawnerEntity:ToPlayer())
-	if player then
-		local ptr = GetPtrHash(bomb)
-		local data = v.room[ptr]
-		if (data and data["firstFrame"] == true) then
-			if player:HasCollectible(Divine_Bombs.Target.Type) then
-				bomb:AddTearFlags(targetFlag)
-			end
-			data["firstFrame"] = nil
-			if bomb.IsFetus then
-				-- bombs from "Dr. Fetus" only have a chance to apply bomb effects from items
-				local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_DR_FETUS)
-				local chance = (30 + (5 * player.Luck))
-				if ((rng:RandomInt(100) + 1) > chance) then
-					bomb:ClearTearFlags(targetFlag)
-				end
-			end
-		end
-		if bomb:HasTearFlags(targetFlag) then
-			if bomb:GetSprite():IsPlaying("Explode") then
-				triggerHolyLight(bomb.Position, player)
-			end
-		end
+	if (not ((player) and (bomb:HasTearFlags(TARGET_FLAG)))) then return end
+
+	-- spawn light beams on explosion
+	if (bomb:GetSprite():IsPlaying("Explode")) then
+		triggerHolyLight(bomb.Position, player)
 	end
 end
 
@@ -88,39 +90,32 @@ end
 --- @param effect EntityEffect
 local function postEffectInit(_, effect)
 	local parentEffect = (effect.SpawnerEntity and effect.SpawnerEntity:ToEffect())
-	if parentEffect and (parentEffect.Variant == EffectVariant.ROCKET) then
-		local player = (parentEffect.SpawnerEntity and parentEffect.SpawnerEntity:ToPlayer())
-		if player then
-			local ptr = GetPtrHash(effect)
-			v.room[ptr] = {
-				["firstFrame"] = true,
-				["spawnerPlayer"] = player
-			}
-		end
-	end
+	if (not ((parentEffect) and (parentEffect.Variant == EffectVariant.ROCKET))) then return end
+
+	local player = (parentEffect.SpawnerEntity and parentEffect.SpawnerEntity:ToPlayer())
+	if (not player) then return end
+
+	-- using `GetData()` here, because it'll be accessed on the next frame
+	effect:GetData().TheSaint = {
+		SpawnerPlayer = player,
+	}
 end
 
 --- Synergy "Epic Fetus" (or "Doctor's Remote") + "Divine Bombs" or "Holy Light" (due to TearFlags.LIGHT_FROM_HEAVEN)
---- @param effect EntityEffect
-local function postEffectUpdate(_, effect)
-	local parentEffect = (effect.SpawnerEntity and effect.SpawnerEntity:ToEffect())
-	if (parentEffect and (parentEffect.Variant == EffectVariant.ROCKET)) then
-		local ptr = GetPtrHash(effect)
-		local data = v.room[ptr]
-		if (data and data["firstFrame"] == true) then
-			local player = data["spawnerPlayer"]
-			if player:HasCollectible(CollectibleType.COLLECTIBLE_HOLY_LIGHT)
-			or player:HasCollectible(Divine_Bombs.Target.Type) then
-				local rng = player:GetCollectibleRNG(CollectibleType.COLLECTIBLE_EPIC_FETUS)
-				local chance = (30 + (5 * player.Luck))
-				if ((rng:RandomInt(100) + 1) <= chance) then
-					triggerHolyLight(effect.Position, player)
-				end
-			end
-			data["firstFrame"] = nil
-			data["spawnerPlayer"] = nil
-		end
-	end
+--- @param explosion EntityEffect
+local function postEffectInitLate(_, explosion)
+	if (not ((explosion.SpawnerType == EntityType.ENTITY_EFFECT) and (explosion.SpawnerVariant == EffectVariant.ROCKET))) then return end
+
+	local data = explosion:GetData().TheSaint
+	if (not data) then return end
+
+	--- @type EntityPlayer
+	local player = data.SpawnerPlayer
+	if (not ((player) and (isc:hasCollectible(player, CollectibleType.COLLECTIBLE_HOLY_LIGHT, Divine_Bombs.Target.Type)))) then return end
+
+	if (not shouldApplyEffectToFetus(player, CollectibleType.COLLECTIBLE_EPIC_FETUS)) then return end
+
+	triggerHolyLight(explosion.Position, player)
 end
 
 --- Initialize the item's functionality.
@@ -128,11 +123,10 @@ end
 function Divine_Bombs:Init(mod)
 	if (self.IsInitialized) then return end
 
-	mod:saveDataManager(self.SaveDataKey, v)
-	mod:AddCallback(ModCallbacks.MC_POST_BOMB_INIT, postBombInit)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_BOMB_INIT_LATE, postBombInitLate)
 	mod:AddCallback(ModCallbacks.MC_POST_BOMB_UPDATE, postBombUpdate)
 	mod:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, postEffectInit, EffectVariant.BOMB_EXPLOSION)
-	mod:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, postEffectUpdate, EffectVariant.BOMB_EXPLOSION)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_EFFECT_INIT_LATE, postEffectInitLate, EffectVariant.BOMB_EXPLOSION)
 end
 
 return Divine_Bombs
