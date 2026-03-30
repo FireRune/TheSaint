@@ -18,6 +18,8 @@ local Red_Joker = {
 	Target = featureTarget:new(enums.Card.CARD_RED_JOKER),
 }
 
+local SPECIAL_DEVIL_VARIANT = 101
+
 local playVoiceline = false
 
 --- @param card Card
@@ -28,7 +30,7 @@ local function useCard(_, card, player, flags)
 	-- check wether Devil/Angel room has already been generated
 	if (level:GetRoomByIdx(GridRooms.ROOM_DEVIL_IDX).Data == nil) then
 		level:InitializeDevilAngelRoom(false, true)
-		local roomData = isc:getRoomDataForTypeVariant(RoomType.ROOM_DEVIL, 101)
+		local roomData = isc:getRoomDataForTypeVariant(RoomType.ROOM_DEVIL, SPECIAL_DEVIL_VARIANT)
 		isc:setRoomData(GridRooms.ROOM_DEVIL_IDX, roomData)
 	end
 	if (flags & UseFlag.USE_NOANNOUNCER ~= UseFlag.USE_NOANNOUNCER) then
@@ -42,13 +44,14 @@ end
 --- @param room RoomType
 local function postNewRoomReordered(_, room)
 	if ((room ~= RoomType.ROOM_DEVIL) and (room ~= RoomType.ROOM_ANGEL)) then return end
-	if (playVoiceline) then
-		local rng = Isaac.GetPlayer(0):GetCardRNG(Red_Joker.Target.Type)
-		if ((Options.AnnouncerVoiceMode == 2) or ((Options.AnnouncerVoiceMode == 0) and (rng:RandomInt(2) == 0))) then
-			sfx:Play(enums.SoundEffect.SOUND_REVERSE_JOKER)
-		end
-		playVoiceline = false
+
+	if (not playVoiceline) then return end
+
+	local rng = Isaac.GetPlayer(0):GetCardRNG(Red_Joker.Target.Type)
+	if ((Options.AnnouncerVoiceMode == 2) or ((Options.AnnouncerVoiceMode == 0) and (rng:RandomInt(2) == 0))) then
+		sfx:Play(enums.SoundEffect.SOUND_REVERSE_JOKER)
 	end
+	playVoiceline = false
 end
 
 local spawnFromPlayer = false
@@ -61,14 +64,10 @@ local spawnFromPlayer = false
 --- @param spawner Entity
 --- @param seed integer
 --- @return { Type: EntityType, Variant: integer, SubType: integer, Seed: integer }?
-local function preEntitySpawn(_, type, variant, subtype, position, velocity, spawner, seed)
-	if ((type == EntityType.ENTITY_PICKUP)
-	and (variant == PickupVariant.PICKUP_TAROTCARD)
-	and ((subtype == Card.CARD_JOKER) or (subtype == Red_Joker.Target.Type))) then
-		-- if `spawner` is a player, then it is most likely due to dropping said item, therefore don't morph
-		if (spawner and spawner:ToPlayer()) then
-			spawnFromPlayer = true
-		end
+local function preEntitySpawnFilter(_, type, variant, subtype, position, velocity, spawner, seed)
+	-- if `spawner` is a player, then it is most likely due to dropping said item, therefore don't morph
+	if (spawner and spawner:ToPlayer()) then
+		spawnFromPlayer = true
 	end
 end
 
@@ -81,13 +80,13 @@ local function postPickupInitFirst_Joker(_, pickup)
 		spawnFromPlayer = false
 		return
 	end
-	if (unlockManager:IsPickupUnlocked(PickupVariant.PICKUP_TAROTCARD, Red_Joker.Target.Type)) then
-		local rng = pickup:GetDropRNG()
-		if (rng:RandomInt(100) < 10) then
-			redJokerSpawn = true
-			pickup:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, Red_Joker.Target.Type, false, false, true)
-		end
-	end
+	if (not unlockManager:IsPickupUnlocked(PickupVariant.PICKUP_TAROTCARD, Red_Joker.Target.Type)) then return end
+
+	local rng = pickup:GetDropRNG()
+	if (rng:RandomFloat() >= 0.1) then return end
+
+	redJokerSpawn = true
+	pickup:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, Red_Joker.Target.Type, false, false, true)
 end
 
 --- Every "Red Joker" that naturally spawns will turn into "Joker"
@@ -97,7 +96,8 @@ local function postPickupInitFirst_RedJoker(_, pickup)
 		spawnFromPlayer = false
 		return
 	end
-	if (redJokerSpawn == false) then
+
+	if (not redJokerSpawn) then
 		pickup:Morph(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, Card.CARD_JOKER, false, false, true)
 	else
 		redJokerSpawn = false
@@ -111,7 +111,8 @@ function Red_Joker:Init(mod)
 
 	mod:AddCallback(ModCallbacks.MC_USE_CARD, useCard, self.Target.Type)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_ROOM_REORDERED, postNewRoomReordered)
-	mod:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, preEntitySpawn)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.PRE_ENTITY_SPAWN_FILTER, preEntitySpawnFilter, EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, Card.CARD_JOKER)
+	mod:AddCallbackCustom(isc.ModCallbackCustom.PRE_ENTITY_SPAWN_FILTER, preEntitySpawnFilter, EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, self.Target.Type)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst_RedJoker, PickupVariant.PICKUP_TAROTCARD, self.Target.Type)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_PICKUP_INIT_FIRST, postPickupInitFirst_Joker, PickupVariant.PICKUP_TAROTCARD, Card.CARD_JOKER)
 end

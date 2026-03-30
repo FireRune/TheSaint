@@ -18,10 +18,12 @@ local Library_Card = {
 --- @param flags UseFlag
 local function useCard(_, card, player, flags)
 	local level = game:GetLevel()
+
 	-- first get all available Library rooms on the current floor
 	local libraries = {}
 	local libraries_notVisited = {}
-	for i = 0, #level:GetRooms() - 1 do
+
+	for i = 0, (#level:GetRooms() - 1) do
 		local room = level:GetRooms():Get(i)
 		if (room.Data.Type == RoomType.ROOM_LIBRARY) then
 			table.insert(libraries, room.SafeGridIndex)
@@ -30,6 +32,7 @@ local function useCard(_, card, player, flags)
 			end
 		end
 	end
+
 	local rng = player:GetCardRNG(card)
 	if (#libraries > 0) then
 		-- current floor has at least 1 Library -> teleport to 1 of them (prioritize unvisited rooms)

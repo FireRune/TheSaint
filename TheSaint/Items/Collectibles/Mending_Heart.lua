@@ -16,14 +16,14 @@ local Mending_Heart = {
 	SaveDataKey = "Mending_Heart",
 }
 
---- @class MendingHeart_Counters
---- @field heartsRestored integer
+--- @class TheSaint.Items.Collectibles.Mending_Heart.Counters
+--- @field HeartsRestored integer
 
 local v = {
 	run = {
-		blockNewRun = true,
-		--- @type table<string, MendingHeart_Counters>
-		counters = {},
+		BlockNewRun = true,
+		--- @type table<string, TheSaint.Items.Collectibles.Mending_Heart.Counters>
+		Counters = {},
 	},
 }
 
@@ -42,15 +42,15 @@ local function hasMendingHeart(player)
 end
 
 --- @param player EntityPlayer
---- @return MendingHeart_Counters
+--- @return TheSaint.Items.Collectibles.Mending_Heart.Counters
 local function getPlayerCounters(player)
 	local playerIndex = "MendingHeart_"..isc:getPlayerIndex(player)
-	if (not v.run.counters[playerIndex]) then
-		v.run.counters[playerIndex] = {
-			heartsRestored = 0,
+	if (not v.run.Counters[playerIndex]) then
+		v.run.Counters[playerIndex] = {
+			HeartsRestored = 0,
 		}
 	end
-	return v.run.counters[playerIndex]
+	return v.run.Counters[playerIndex]
 end
 
 --- When entering a new floor, replace Broken Heart(s) with empty Heart Container(s), then set the animation flag
@@ -58,31 +58,34 @@ end
 --- @param stageType StageType
 local function postNewLevelReordered(_, stage, stageType)
 	-- prevent accidental trigger when starting a new run
-	if (v.run.blockNewRun == true) then
-		v.run.blockNewRun = false
-	else
-		for i = 0, game:GetNumPlayers() - 1 do
-			local player = Isaac.GetPlayer(i)
-			local hasCollectible, collectibleNum = hasMendingHeart(player)
-			if (hasCollectible) then
-				local brokenHearts = player:GetBrokenHearts()
-				if (brokenHearts > 0) then
-					-- set how many broken hearts to replace
-					local amount = 1
-					if (game:GetStagesWithoutDamage() > 0) then amount = 2 end
-					-- multiply amount of hearts to restore by number of copies of "Mending Heart"
-					amount = (amount * collectibleNum)
-					-- replace broken hearts
-					player:AddBrokenHearts(-amount)
-					player:AddMaxHearts(2 * amount)
-					-- add counters for damage up effect
-					local heartsReplaced = (brokenHearts - player:GetBrokenHearts())
-					local counters = getPlayerCounters(player)
-					counters.heartsRestored = counters.heartsRestored + heartsReplaced
-					-- set animation state flag
-					playMovie = 0
-				end
-			end
+	if (v.run.BlockNewRun) then
+		v.run.BlockNewRun = false
+		return
+	end
+
+	for i = 0, (game:GetNumPlayers() - 1) do
+		local player = Isaac.GetPlayer(i)
+		local hasCollectible, collectibleNum = hasMendingHeart(player)
+		local brokenHearts = player:GetBrokenHearts()
+		if ((hasCollectible) and (brokenHearts > 0)) then
+			-- set how many broken hearts to replace
+			local amount = 1
+			if (game:GetStagesWithoutDamage() > 0) then amount = 2 end
+
+			-- multiply amount of hearts to restore by number of copies of "Mending Heart"
+			amount = (amount * collectibleNum)
+
+			-- replace broken hearts
+			player:AddBrokenHearts(-amount)
+			player:AddMaxHearts(2 * amount)
+
+			-- add counters for damage up effect
+			local heartsReplaced = (brokenHearts - player:GetBrokenHearts())
+			local counters = getPlayerCounters(player)
+			counters.HeartsRestored = (counters.HeartsRestored + heartsReplaced)
+
+			-- set animation state flag
+			playMovie = 0
 		end
 	end
 end
@@ -100,7 +103,7 @@ local function postRender()
 		mov:SetOverlayRenderPriority(true)
 		mov:Render(Vector(240, 135), Vector.Zero, Vector.Zero)
 	elseif (playMovie == 1) then
-		if (mov:GetFrame() < 28 and game:GetFrameCount() % 2 == 0) then
+		if ((mov:GetFrame() < 28) and (game:GetFrameCount() % 2 == 0)) then
 			mov:SetFrame("Appear", mov:GetFrame() + 1)
 		end
 		mov:SetOverlayRenderPriority(true)
@@ -115,12 +118,11 @@ end
 --- @param player EntityPlayer
 --- @param flag CacheFlag
 local function evaluateStats(_, player, flag)
-	if (hasMendingHeart(player)) then
-		local counters = getPlayerCounters(player)
+	if (not hasMendingHeart(player)) then return end
 
-		if (flag == CacheFlag.CACHE_DAMAGE) then
-			player.Damage = player.Damage + (0.25 * counters.heartsRestored)
-		end
+	local counters = getPlayerCounters(player)
+	if (flag == CacheFlag.CACHE_DAMAGE) then
+		player.Damage = (player.Damage + (0.25 * counters.HeartsRestored))
 	end
 end
 

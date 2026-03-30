@@ -37,10 +37,6 @@ local Sinful_Chest = {
 
 --#region constants
 
--- SubType of a fresh, unopened Eternal Chest is 2. After it closes itself again it's SubType changes to 1 (CHEST_CLOSED)
-local CHEST_CLOSED_INIT = 2
--- local CHEST_OPENED_REMOVE = 3
-
 -- paths to alternate spritesheets
 
 local SPRITESHEET_SUFFIXES = {
@@ -120,9 +116,9 @@ end
 local function replaceChestSpritesheet(sprite, reloadGraphics)
 	local suffix = getNewSuffix()
 	sprite:ReplaceSpritesheet(0, SPRITESHEET_CHEST(suffix))
-	if (reloadGraphics) then
-		sprite:LoadGraphics()
-	end
+
+	if (not reloadGraphics) then return end
+	sprite:LoadGraphics()
 end
 
 --- Replace the spritesheet of an item pedestal from a Red Chest (Sinful) with the regular/lock/coinslot variant, and optionally reload graphics
@@ -131,9 +127,9 @@ end
 --- @param reloadGraphics? boolean	@ default: `false`
 local function replacePedestalSpritesheet(sprite, chestData, reloadGraphics)
 	sprite:ReplaceSpritesheet(5, SPRITESHEET_PEDESTAL(chestData.SpritesheetSuffix))
-	if (reloadGraphics) then
-		sprite:LoadGraphics()
-	end
+
+	if (not reloadGraphics) then return end
+	sprite:LoadGraphics()
 end
 
 --- Return `true` if the given player is able to unlock a Sinful Chest, otherwise `false`
@@ -179,13 +175,15 @@ end
 --- @param pickup EntityPickup
 local function postPickupInitFirst_RedChest(_, pickup)
 	-- only change Red Chests when Sinful Chests are unlocked
-	if (unlockManager:IsPickupUnlocked(Sinful_Chest.Target.Type, 0) == false) then return end
+	if (not unlockManager:IsPickupUnlocked(Sinful_Chest.Target.Type, 0)) then return end
 
 	local level = game:GetLevel()
 	local room = game:GetRoom()
 
 	-- don't change Red Chests in the starting room of the "Chest"/"Dark Room" floor
-	if ((not game:IsGreedMode()) and (level:GetAbsoluteStage() == LevelStage.STAGE6) and (isc:inStartingRoom())) then
+	if ((not game:IsGreedMode())
+	and (level:GetAbsoluteStage() == LevelStage.STAGE6)
+	and (isc:inStartingRoom())) then
 		return
 	end
 
@@ -196,10 +194,10 @@ local function postPickupInitFirst_RedChest(_, pickup)
 	end
 end
 
---- First Init: set SubType to `CHEST_CLOSED_INIT` (2) and add entry to chest table for current room
+--- First Init: set SubType to `CHEST_CLOSED_ETERNAL` (2) and add entry to chest table for current room
 --- @param pickup EntityPickup
 local function postPickupInitFirst_SinfulChest(_, pickup)
-	pickup.SubType = CHEST_CLOSED_INIT
+	pickup.SubType = utils.ChestSubType_CHEST_CLOSED_ETERNAL
 	local chestIdx = getChestIdx(pickup)
 	updateRoomSinfulChestTable(chestIdx, { NextPayoutEmpty = false, })
 end
@@ -244,7 +242,7 @@ local function postPickupInit_RedChest_Sinful(_, pickup)
 
 	local sprite = pickup:GetSprite()
 	sprite:Load("gfx/sinful_chest.anm2", true)
-	if (pickup.SubType ~= CHEST_CLOSED_INIT) then
+	if (pickup.SubType ~= utils.ChestSubType_CHEST_CLOSED_ETERNAL) then
 		replaceChestSpritesheet(sprite, true)
 		chestData.SpritesheetSuffix = getNewSuffix()
 	end
@@ -270,12 +268,10 @@ end
 --- @param pickup EntityPickup
 local function postPickupUpdate_SinfulChest(_, pickup)
 	local sprite = pickup:GetSprite()
-	local animName = sprite:GetAnimation() --- @cast animName TheSaint.Items.Pickups.Sinful_Chest.ChestAnimation
+	if (not sprite:IsPlaying("Appear")) then return end
 
-	if (animName == "Appear") then
-		if (sprite:IsEventTriggered("DropSound")) then
-			sfx:Play(SoundEffect.SOUND_CHEST_DROP)
-		end
+	if (sprite:IsEventTriggered("DropSound")) then
+		sfx:Play(SoundEffect.SOUND_CHEST_DROP)
 	end
 end
 
@@ -290,28 +286,28 @@ local function postPickupUpdate_RedChest_Sinful(_, pickup)
 	if (not chestData) then return end
 
 	local sprite = pickup:GetSprite()
-	if ((pickup.SubType == ChestSubType.CHEST_OPENED) and (sprite:IsFinished("Open"))) then
-		local chestTimer = chestData.Timer
-		if (not chestTimer) then
-			chestTimer = 40
-		else
-			chestTimer = (chestTimer - 1)
-		end
-		if (chestTimer <= 0) then
-			sprite:LoadGraphics()
-			sprite:Play("Close")
-			sfx:Play(SoundEffect.SOUND_CHEST_DROP)
-			pickup.SubType = ChestSubType.CHEST_CLOSED
-			chestTimer = nil
-			if (chestData.NextPayoutEmpty) then
-				pickup.Variant = Sinful_Chest.Target.Type
-			end
-			game:GetRoom():InvalidatePickupVision()
-			chestData.SpritesheetSuffix = getNewSuffix()
-		end
-		chestData.Timer = chestTimer
-		updateRoomSinfulChestTable(chestIdx, chestData)
+	if (not ((pickup.SubType == ChestSubType.CHEST_OPENED) and (sprite:IsFinished("Open")))) then return end
+
+	local chestTimer = chestData.Timer
+	if (not chestTimer) then
+		chestTimer = 40
+	else
+		chestTimer = (chestTimer - 1)
 	end
+	if (chestTimer <= 0) then
+		sprite:LoadGraphics()
+		sprite:Play("Close")
+		sfx:Play(SoundEffect.SOUND_CHEST_DROP)
+		pickup.SubType = ChestSubType.CHEST_CLOSED
+		chestTimer = nil
+		if (chestData.NextPayoutEmpty) then
+			pickup.Variant = Sinful_Chest.Target.Type
+		end
+		game:GetRoom():InvalidatePickupVision()
+		chestData.SpritesheetSuffix = getNewSuffix()
+	end
+	chestData.Timer = chestTimer
+	updateRoomSinfulChestTable(chestIdx, chestData)
 end
 
 --- Only triggered if Chest entity has it's true variant, meaning next payout will be empty
@@ -323,14 +319,14 @@ local function prePickupCollision_SinfulChest(_, pickup, collider, low)
 	if ((not player) or (pickup.Wait > 0)) then return end
 
 	local sprite = pickup:GetSprite()
-	if (((sprite:GetAnimation() == "Idle") or (sprite:IsFinished("Close"))) and (hasResourceToUnlock(player))) then
-		local chestIdx = getChestIdx(pickup)
-		pickup.SubType = ChestSubType.CHEST_OPENED
-		sprite:Play("Open")
-		sfx:Play(SoundEffect.SOUND_UNLOCK00)
-		sfx:Play(SoundEffect.SOUND_CHEST_OPEN)
-		updateRoomSinfulChestTable(chestIdx, nil)
-	end
+	if (not (((sprite:IsPlaying("Idle") or sprite:IsFinished("Close"))) and (hasResourceToUnlock(player)))) then return end
+
+	local chestIdx = getChestIdx(pickup)
+	pickup.SubType = ChestSubType.CHEST_OPENED
+	sprite:Play("Open")
+	sfx:Play(SoundEffect.SOUND_UNLOCK00)
+	sfx:Play(SoundEffect.SOUND_CHEST_OPEN)
+	updateRoomSinfulChestTable(chestIdx, nil)
 end
 
 --- After opening a Sinful Chest, determine whether the payout will be nothing
@@ -349,23 +345,24 @@ local function prePickupCollision_RedChest_Sinful(_, pickup, collider, low)
 	if ((not player) or (pickup.Wait > 0)) then return end
 
 	local sprite = pickup:GetSprite()
-	if ((sprite:GetAnimation() == "Idle") or (sprite:IsFinished("Close"))) then
-		local chance = 0.75
-		if (pickup.SubType == CHEST_CLOSED_INIT) then
-			chance = 1.0
-			replaceChestSpritesheet(sprite)
-		else
-			-- player lacks resource to unlock chest -> only collide
-			if (not hasResourceToUnlock(player)) then return false end
-			sfx:Play(SoundEffect.SOUND_UNLOCK00)
-		end
-		local seed = pickup:GetDropRNG():GetSeed()
-		local rng = utils:CreateNewRNG(seed)
-		if (rng:RandomFloat() >= chance) then
-			chestData.NextPayoutEmpty = true
-		end
-		updateRoomSinfulChestTable(chestIdx, chestData)
+	if (not (sprite:IsPlaying("Idle") or (sprite:IsFinished("Close")))) then return end
+
+	local chance = 0.75
+	if (pickup.SubType == utils.ChestSubType_CHEST_CLOSED_ETERNAL) then
+		chance = 1.0
+		replaceChestSpritesheet(sprite)
+	else
+		-- player lacks resource to unlock chest -> only collide
+		if (not hasResourceToUnlock(player)) then return false end
+
+		sfx:Play(SoundEffect.SOUND_UNLOCK00)
 	end
+	local seed = pickup:GetDropRNG():GetSeed()
+	local rng = utils:CreateNewRNG(seed)
+	if (rng:RandomFloat() >= chance) then
+		chestData.NextPayoutEmpty = true
+	end
+	updateRoomSinfulChestTable(chestIdx, chestData)
 end
 
 --#endregion

@@ -57,7 +57,7 @@ local CANDLE_INIT_CHARGE = -9
 --- @return integer
 local function CANDLE_MAX_CHARGE(player)
 	local maxCharge = 142
-	if (player:HasTrinket(TrinketType.TRINKET_MATCH_STICK) or player:HasTrinket(TrinketType.TRINKET_LIGHTER)) then
+	if ((player:HasTrinket(TrinketType.TRINKET_MATCH_STICK)) or (player:HasTrinket(TrinketType.TRINKET_LIGHTER))) then
 		maxCharge = (maxCharge - 30)
 	end
 	if (isc:isCharacter(player, table.unpack(Protective_Candle.Target.Character))) then
@@ -103,7 +103,7 @@ barSprite:Load("gfx/chargebar_protective_candle.anm2", true)
 --- @param player EntityPlayer
 --- @return boolean @ `true` if the player has "Protective Candle" or is "The Saint", otherwise `false`
 local function hasProtectiveCandle(player)
-	return (player:HasCollectible(Protective_Candle.Target.Type) or (isc:isCharacter(player, table.unpack(Protective_Candle.Target.Character))))
+	return ((player:HasCollectible(Protective_Candle.Target.Type)) or (isc:isCharacter(player, table.unpack(Protective_Candle.Target.Character))))
 end
 
 --- @param player EntityPlayer
@@ -123,22 +123,28 @@ local function createCandle(player)
 end
 
 --- @param player EntityPlayer
+--- @return CandleRef
+local function newCandleRef(player)
+	return {
+		Pointer = createCandle(player),
+		FlameDirection = Vector.Zero,
+		TargetOffset = CANDLE_DEFAULT_OFFSET(),
+		InitFlame = false,
+		CurrentCharge = CANDLE_INIT_CHARGE,
+		ChargeBar = {
+			RenderOffset = CHARGEBAR_DEFAULT_OFFSET(),
+			CurrentFrame = 0,
+		},
+	}
+end
+
+--- @param player EntityPlayer
 --- @return CandleRef?
 local function getCandleRef(player)
 	local playerIndex = "PC_"..isc:getPlayerIndex(player)
-	if (hasProtectiveCandle(player) == true) then
+	if (hasProtectiveCandle(player)) then
 		if (not playerCandles[playerIndex]) then
-			playerCandles[playerIndex] = {
-				Pointer = createCandle(player),
-				FlameDirection = Vector.Zero,
-				TargetOffset = CANDLE_DEFAULT_OFFSET(),
-				InitFlame = false,
-				CurrentCharge = CANDLE_INIT_CHARGE,
-				ChargeBar = {
-					RenderOffset = CHARGEBAR_DEFAULT_OFFSET(),
-					CurrentFrame = 0,
-				},
-			}
+			playerCandles[playerIndex] = newCandleRef(player)
 		elseif (not playerCandles[playerIndex].Pointer.Ref) then
 			playerCandles[playerIndex].Pointer = createCandle(player)
 		end
@@ -153,8 +159,8 @@ end
 --- @return Vector
 local function getShootingVector(player)
 	local sVector = Vector.Zero
-	local mouse = (Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_LEFT) and Input.GetMousePosition(true))
-	if mouse then
+	local mouse = ((Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_LEFT)) and (Input.GetMousePosition(true)))
+	if (mouse) then
 		sVector = (mouse - player.Position)
 	else
 		sVector = player:GetShootingInput()
@@ -188,61 +194,59 @@ end
 --- @param player EntityPlayer
 local function postPlayerUpdate(_, player)
 	local candleRef = getCandleRef(player)
-	if (candleRef) then
-		local entCandle = candleRef.Pointer.Ref:ToEffect() --- @cast entCandle -?
-		local shootingInput = getShootingVector(player)
+	if (not candleRef) then return end
 
-		-- in case the player decides to press opposing shoot directions, maintain previous input
-		if (player:AreOpposingShootDirectionsPressed()) then
-			shootingInput = candleRef.FlameDirection
-		end
+	local entCandle = candleRef.Pointer.Ref:ToEffect() --- @cast entCandle -?
+	local shootingInput = getShootingVector(player)
 
-		if (shootingInput:Length() > 0.01) then
-			-- charging up the flame projectile
-			candleRef.CurrentCharge = math.min(candleRef.CurrentCharge + 1, CANDLE_MAX_CHARGE(player))
-
-			-- handle shooting direction and candle rotation
-			candleRef.FlameDirection = shootingInput
-			local shootAngle = getAngleDegreesForSpriteRotation(shootingInput)
-			candleRef.TargetOffset = CANDLE_DEFAULT_OFFSET():Rotated(shootAngle)
-
-			-- handle charge bar
-			if ((not candleRef.ChargeBar.State) and (candleRef.CurrentCharge >= 0)) then
-				candleRef.ChargeBar.State = "Charging"
-				candleRef.ChargeBar.CurrentFrame = 0
-			end
-		else
-			-- check whether or not to shoot flame projectile
-			if (candleRef.CurrentCharge == CANDLE_MAX_CHARGE(player)) then
-				candleRef.InitFlame = true
-				player:ShootRedCandle(candleRef.FlameDirection)
-			end
-			candleRef.FlameDirection = Vector.Zero
-			candleRef.CurrentCharge = CANDLE_INIT_CHARGE
-			if ((candleRef.ChargeBar.State ~= nil) and (candleRef.ChargeBar.State ~= "Disappear")) then
-				candleRef.ChargeBar.State = "Disappear"
-				candleRef.ChargeBar.CurrentFrame = 0
-			end
-		end
-
-		-- Position & Sprite rotation
-		local angleCandle = (entCandle.Position - player.Position):GetAngleDegrees()
-		local angleTarget = candleRef.TargetOffset:GetAngleDegrees()
-		local angleNext = lerpAngle(angleCandle, angleTarget, 0.2)
-		entCandle.SpriteRotation = (angleNext - CANDLE_DEFAULT_OFFSET():GetAngleDegrees())
-		entCandle.Position = (player.Position + (Vector.FromAngle(angleNext) * CANDLE_DEFAULT_OFFSET():Length()))
+	-- in case the player decides to press opposing shoot directions, maintain previous input
+	if (player:AreOpposingShootDirectionsPressed()) then
+		shootingInput = candleRef.FlameDirection
 	end
+
+	if (shootingInput:Length() > 0.01) then
+		-- charging up the flame projectile
+		candleRef.CurrentCharge = math.min(candleRef.CurrentCharge + 1, CANDLE_MAX_CHARGE(player))
+
+		-- handle shooting direction and candle rotation
+		candleRef.FlameDirection = shootingInput
+		local shootAngle = getAngleDegreesForSpriteRotation(shootingInput)
+		candleRef.TargetOffset = CANDLE_DEFAULT_OFFSET():Rotated(shootAngle)
+
+		-- handle charge bar
+		if ((not candleRef.ChargeBar.State) and (candleRef.CurrentCharge >= 0)) then
+			candleRef.ChargeBar.State = "Charging"
+			candleRef.ChargeBar.CurrentFrame = 0
+		end
+	else
+		-- check whether or not to shoot flame projectile
+		if (candleRef.CurrentCharge == CANDLE_MAX_CHARGE(player)) then
+			candleRef.InitFlame = true
+			player:ShootRedCandle(candleRef.FlameDirection)
+		end
+		candleRef.FlameDirection = Vector.Zero
+		candleRef.CurrentCharge = CANDLE_INIT_CHARGE
+		if ((candleRef.ChargeBar.State ~= nil) and (candleRef.ChargeBar.State ~= "Disappear")) then
+			candleRef.ChargeBar.State = "Disappear"
+			candleRef.ChargeBar.CurrentFrame = 0
+		end
+	end
+
+	-- Position & Sprite rotation
+	local angleCandle = (entCandle.Position - player.Position):GetAngleDegrees()
+	local angleTarget = candleRef.TargetOffset:GetAngleDegrees()
+	local angleNext = lerpAngle(angleCandle, angleTarget, 0.2)
+	entCandle.SpriteRotation = (angleNext - CANDLE_DEFAULT_OFFSET():GetAngleDegrees())
+	entCandle.Position = (player.Position + (Vector.FromAngle(angleNext) * CANDLE_DEFAULT_OFFSET():Length()))
 end
 
 --- @param effect EntityEffect
 --- @return EntityPlayer?
 local function getPlayerFromEffect(effect)
-	local player = nil
 	local spawner = effect.SpawnerEntity
-	if (spawner) then
-		player = spawner:ToPlayer()
-	end
-	return player
+	if (not spawner) then return end
+
+	return spawner:ToPlayer()
 end
 
 --- Alter the flame projectile
@@ -252,15 +256,15 @@ local function postEffectInit_RedCandleFlame(_, entFlame)
 	if (not player) then return end
 
 	local candleRef = getCandleRef(player)
-	if (candleRef and candleRef.InitFlame) then
-		if (isc:hasSpectral(player)) then
-			entFlame.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_WALLS
-		end
-		entFlame:GetData().TheSaint = {}
+	if (not ((candleRef) and (candleRef.InitFlame))) then return end
 
-		-- initialization finished
-		candleRef.InitFlame = false
+	if (isc:hasSpectral(player)) then
+		entFlame.GridCollisionClass = EntityGridCollisionClass.GRIDCOLL_WALLS
 	end
+	entFlame:GetData().TheSaint = {}
+
+	-- initialization finished
+	candleRef.InitFlame = false
 end
 
 --- check for collision with static TNT and handle effects of homing and "Continuum"
@@ -270,20 +274,20 @@ local function postEffectUpdate_RedCandleFlame(_, entFlame)
 	if (not player) then return end
 
 	local data = entFlame:GetData().TheSaint
-	if (data) then
-		local room = game:GetRoom()
-		local sourceRef = EntityRef(entFlame)
+	if (not data) then return end
 
-		-- handle static TNT
-		local gridEnt = room:GetGridEntityFromPos(entFlame.Position)
-		-- TNT.State has a value from 0 to 4, with 4 being the destroyed TNT; therefore ignore that state
-		if ((gridEnt) and (gridEnt:GetType() == GridEntityType.GRID_TNT) and (gridEnt.State < 4)) then
-			if (REPENTANCE_PLUS) then
-				--- @diagnostic disable-next-line: undefined-field
-				gridEnt:DestroyWithSource(false, sourceRef)
-			else
-				gridEnt:Destroy(false)
-			end
+	local room = game:GetRoom()
+	local sourceRef = EntityRef(entFlame)
+
+	-- handle static TNT
+	local gridEnt = room:GetGridEntityFromPos(entFlame.Position)
+	-- TNT.State has a value from 0 to 4, with 4 being the destroyed TNT; therefore ignore that state
+	if ((gridEnt) and (gridEnt:GetType() == GridEntityType.GRID_TNT) and (gridEnt.State < 4)) then
+		if (REPENTANCE_PLUS) then
+			--- @diagnostic disable-next-line: undefined-field
+			gridEnt:DestroyWithSource(false, sourceRef)
+		else
+			gridEnt:Destroy(false)
 		end
 	end
 end
@@ -294,7 +298,7 @@ local function postEffectUpdate_ProtectiveCandle(_, entCandle)
 	local player = getPlayerFromEffect(entCandle)
 	if (not player) then
 		return
-	elseif (hasProtectiveCandle(player) == false) then
+	elseif (not hasProtectiveCandle(player)) then
 		entCandle:Remove()
 		return
 	end
@@ -310,7 +314,7 @@ local function postEffectUpdate_ProtectiveCandle(_, entCandle)
 	local chance = (1 / math.max(1, (10 - math.floor(player.Luck * 0.7))))
 
 	for _, enemy in ipairs(enemies) do
-		if (utils:IsValidEnemy(enemy) == true) then
+		if (utils:IsValidEnemy(enemy)) then
 			enemy:TakeDamage(player.Damage, DamageFlag.DAMAGE_FIRE, sourceRef, 30)
 			if (rng:RandomFloat() < chance) then
 				enemy:AddBurn(sourceRef, 30, player.Damage)
@@ -321,13 +325,13 @@ local function postEffectUpdate_ProtectiveCandle(_, entCandle)
 	-- handle damaging grid entity at candle position (poops and static tnt)
 	local room = game:GetRoom()
 	local gridEnt = room:GetGridEntityFromPos(entCandle.Position)
-	if (gridEnt) then
-		if (REPENTANCE_PLUS) then
-			--- @diagnostic disable-next-line: undefined-field
-			gridEnt:HurtWithSource(1, sourceRef)
-		else
-			gridEnt:Hurt(1)
-		end
+	if (not gridEnt) then return end
+
+	if (REPENTANCE_PLUS) then
+		--- @diagnostic disable-next-line: undefined-field
+		gridEnt:HurtWithSource(1, sourceRef)
+	else
+		gridEnt:Hurt(1)
 	end
 end
 
@@ -346,34 +350,34 @@ end
 --- @param player EntityPlayer
 local function renderChargeBar(_, player)
 	-- only show charge bar if enabled
-	if (Options.ChargeBars == false) then return end
+	if (not Options.ChargeBars) then return end
 
 	-- don't render for reflected player in rooms with water
 	if (game:GetRoom():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT) then return end
 
 	local candleRef = getCandleRef(player)
-	if ((candleRef) and (candleRef.ChargeBar.State)) then
-		if (not game:IsPaused()) then
-			local frameCount = FRAME_COUNTS[candleRef.ChargeBar.State]
+	if (not ((candleRef) and (candleRef.ChargeBar.State))) then return end
 
-			-- set frame
-			barSprite:SetFrame(candleRef.ChargeBar.State, candleRef.ChargeBar.CurrentFrame)
+	if (not game:IsPaused()) then
+		local frameCount = FRAME_COUNTS[candleRef.ChargeBar.State]
 
-			-- calculate current charge
-			if (candleRef.ChargeBar.State == "Charging") then
-				candleRef.ChargeBar.CurrentFrame = math.floor(math.min((candleRef.CurrentCharge / CANDLE_MAX_CHARGE(player)) * frameCount, frameCount))
-				tryNextState(candleRef, frameCount, "StartCharged")
-			else
-				candleRef.ChargeBar.CurrentFrame = math.min(candleRef.ChargeBar.CurrentFrame + 1, frameCount)
-				if ((candleRef.ChargeBar.State == "StartCharged") or (candleRef.ChargeBar.State == "Charged")) then
-					tryNextState(candleRef, frameCount, "Charged")
-				elseif (candleRef.ChargeBar.State == "Disappear") then
-					tryNextState(candleRef, frameCount, nil)
-				end
+		-- set frame
+		barSprite:SetFrame(candleRef.ChargeBar.State, candleRef.ChargeBar.CurrentFrame)
+
+		-- calculate current charge
+		if (candleRef.ChargeBar.State == "Charging") then
+			candleRef.ChargeBar.CurrentFrame = math.floor(math.min((candleRef.CurrentCharge / CANDLE_MAX_CHARGE(player)) * frameCount, frameCount))
+			tryNextState(candleRef, frameCount, "StartCharged")
+		else
+			candleRef.ChargeBar.CurrentFrame = math.min(candleRef.ChargeBar.CurrentFrame + 1, frameCount)
+			if ((candleRef.ChargeBar.State == "StartCharged") or (candleRef.ChargeBar.State == "Charged")) then
+				tryNextState(candleRef, frameCount, "Charged")
+			elseif (candleRef.ChargeBar.State == "Disappear") then
+				tryNextState(candleRef, frameCount, nil)
 			end
 		end
-		barSprite:Render(Isaac.WorldToScreen(player.Position) + candleRef.ChargeBar.RenderOffset)
 	end
+	barSprite:Render(Isaac.WorldToScreen(player.Position) + candleRef.ChargeBar.RenderOffset)
 end
 
 --#endregion

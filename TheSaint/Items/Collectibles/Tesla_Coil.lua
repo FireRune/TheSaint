@@ -90,12 +90,12 @@ local function familiarUpdate_TeslaCoil(_, familiar)
 		-- shoot targeted spark
 		local enemies = Isaac.FindInRadius(familiar.Position, TARGETED_SPARK_RADIUS, EntityPartition.ENEMY)
 		--- @type Entity?
-		local clostEnemy = isc:getClosestEntityTo(familiar, enemies, function (_, ent)
+		local closestEnemy = isc:getClosestEntityTo(familiar, enemies, function (_, ent)
 			local enemy = ((utils:IsValidEnemy(ent, false) and ent:ToNPC()) or nil)
 			return (enemy ~= nil)
 		end)
-		if (clostEnemy) then
-			local sparkVector = (clostEnemy.Position - familiar.Position)
+		if (closestEnemy) then
+			local sparkVector = (closestEnemy.Position - familiar.Position)
 			local angle = sparkVector:GetAngleDegrees()
 			local distance = sparkVector:Length()
 			spawnSpark(angle, distance, familiar, player)
@@ -107,16 +107,22 @@ local function familiarUpdate_TeslaCoil(_, familiar)
 end
 
 --- @param wisp EntityFamiliar
-local function familiarUpdate_Wisp(_, wisp)
+--- @param collisionDetected boolean
+local function setWispData(wisp, collisionDetected)
 	local wispData = wisp:GetData().TheSaint
 	if (wispData) then
-		wispData.CollisionDetected = false
+		wispData.CollisionDetected = collisionDetected
 	else
 		wispData = {
-			CollisionDetected = false,
+			CollisionDetected = collisionDetected,
 		}
 	end
 	wisp:GetData().TheSaint = wispData
+end
+
+--- @param wisp EntityFamiliar
+local function familiarUpdate_Wisp(_, wisp)
+	setWispData(wisp, false)
 end
 
 --- @param wisp EntityFamiliar
@@ -126,15 +132,7 @@ local function preFamiliarCollision_TeslaCoilWisp(_, wisp, collider, low)
 	local enemy = ((utils:IsValidEnemy(collider, false) and collider:ToNPC()) or nil)
 	if (not enemy) then return end
 
-	local wispData = wisp:GetData().TheSaint
-	if (wispData) then
-		wispData.CollisionDetected = true
-	else
-		wispData = {
-			CollisionDetected = true,
-		}
-	end
-	wisp:GetData().TheSaint = wispData
+	setWispData(wisp, true)
 end
 
 --- Apply "Electrified" status when damaged from "Tesla Coil" entity OR contact damage from "Tesla Coil" wisp
@@ -158,7 +156,7 @@ local function entityTakeDamage(_, ent, amount, flags, source, countdown)
 		famCheck = true
 	elseif ((familiar.Variant == FamiliarVariant.WISP) and (familiar.SubType == Tesla_Coil.Target.Type)) then
 		local wispData = familiar:GetData().TheSaint
-		if (wispData) and (wispData.CollisionDetected) then
+		if ((wispData) and (wispData.CollisionDetected)) then
 			famCheck = true
 		end
 	end
@@ -195,7 +193,6 @@ function Tesla_Coil:Init(mod)
 		sparkPreventer = false
 	end)
 	mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, function (_, shouldSave)
-		if (not shouldSave) then return end
 		sparkPreventer = true
 	end)
 end

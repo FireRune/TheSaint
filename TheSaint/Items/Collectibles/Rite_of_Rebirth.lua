@@ -65,15 +65,21 @@ local v = {
 	},
 	level = {
 		NextPickupPosition_Index = 1,
-	}
+	},
 }
 
 --#region PlayerLoadout helper
 
+--- @param player EntityPlayer
+--- @return string
+local function getPlayerIndex(player)
+	return "RoR_Loadout_"..isc:getPlayerIndex(player)
+end
+
 --- Clears the saved loadout of the given player
 --- @param player EntityPlayer
 local function clearLoadout(player)
-	local playerIndex = "RoR_Loadout_"..isc:getPlayerIndex(player)
+	local playerIndex = getPlayerIndex(player)
 	v.run.PlayerLoadouts[playerIndex] = nil
 end
 
@@ -81,14 +87,14 @@ end
 --- @param player EntityPlayer
 --- @return SerializablePlayerLoadout?
 local function getLoadout(player)
-	local playerIndex = "RoR_Loadout_"..isc:getPlayerIndex(player)
+	local playerIndex = getPlayerIndex(player)
 	return v.run.PlayerLoadouts[playerIndex]
 end
 
 --- Save the given player's current loadout
 --- @param player EntityPlayer
 local function saveLoadout(player)
-	local playerIndex = "RoR_Loadout_"..isc:getPlayerIndex(player)
+	local playerIndex = getPlayerIndex(player)
 
 	local loadout = PlayerLoadout.createFromPlayer(player)
 	loadout.Collectibles.Passive = isc:filter(loadout.Collectibles.Passive, function (_, passiveItem)
@@ -111,49 +117,49 @@ end
 --- @param player EntityPlayer
 local function clearInventory(player)
 	local loadout = getLoadout(player)
-	if (loadout) then
-		-- Pickups
-		local pickups = loadout.Pickups
-		local playerType = player:GetPlayerType()
+	if (not loadout) then return end
 
-		player:AddCoins(-pickups.Coins)
-		if (playerType == PlayerType.PLAYER_BLUEBABY_B) then
-			player:AddPoopMana(-pickups.Bombs)
-		else
-			player:AddGigaBombs(-pickups.GigaBombs)
-			player:AddBombs(-pickups.Bombs)
-		end
-		player:AddKeys(-pickups.Keys)
-		if (playerType == PlayerType.PLAYER_BETHANY) then
-			player:SetSoulCharge(0)
-		elseif (playerType == PlayerType.PLAYER_BETHANY_B) then
-			player:SetBloodCharge(0)
-		end
+	-- Pickups
+	local pickups = loadout.Pickups
+	local playerType = player:GetPlayerType()
 
-		-- Collectibles
-		--- @param activeItem PlayerActiveItem
-		isc:forEach(loadout.Collectibles.Active, function (_, activeItem)
-			player:RemoveCollectible(activeItem.ID, nil, nil, false)
-		end)
-		--- @param passiveItem CollectibleType
-		isc:forEach(loadout.Collectibles.Passive, function (_, passiveItem)
-			player:RemoveCollectible(passiveItem, nil, nil, false)
-		end)
-
-		-- Trinkets
-		--- @param trinket TrinketType
-		isc:forEach(loadout.Trinkets, function (_, trinket)
-			player:TryRemoveTrinket(trinket)
-		end)
-
-		-- Cards/Pills
-		--- @param pocketItem { slot: integer, type: integer, subType: integer }
-		isc:forEach(isc:getPocketItems(player), function (_, pocketItem)
-			if (pocketItem.type ~= isc.PocketItemType.ACTIVE_ITEM) then
-				player:SetCard(pocketItem.slot, Card.CARD_NULL)
-			end
-		end)
+	player:AddCoins(-pickups.Coins)
+	if (playerType == PlayerType.PLAYER_BLUEBABY_B) then
+		player:AddPoopMana(-pickups.Bombs)
+	else
+		player:AddGigaBombs(-pickups.GigaBombs)
+		player:AddBombs(-pickups.Bombs)
 	end
+	player:AddKeys(-pickups.Keys)
+	if (playerType == PlayerType.PLAYER_BETHANY) then
+		player:SetSoulCharge(0)
+	elseif (playerType == PlayerType.PLAYER_BETHANY_B) then
+		player:SetBloodCharge(0)
+	end
+
+	-- Collectibles
+	--- @param activeItem PlayerActiveItem
+	isc:forEach(loadout.Collectibles.Active, function (_, activeItem)
+		player:RemoveCollectible(activeItem.ID, nil, nil, false)
+	end)
+	--- @param passiveItem CollectibleType
+	isc:forEach(loadout.Collectibles.Passive, function (_, passiveItem)
+		player:RemoveCollectible(passiveItem, nil, nil, false)
+	end)
+
+	-- Trinkets
+	--- @param trinket TrinketType
+	isc:forEach(loadout.Trinkets, function (_, trinket)
+		player:TryRemoveTrinket(trinket)
+	end)
+
+	-- Cards/Pills
+	--- @param pocketItem { slot: integer, type: integer, subType: integer }
+	isc:forEach(isc:getPocketItems(player), function (_, pocketItem)
+		if (pocketItem.type ~= isc.PocketItemType.ACTIVE_ITEM) then
+			player:SetCard(pocketItem.slot, Card.CARD_NULL)
+		end
+	end)
 end
 
 --- @param player EntityPlayer
@@ -162,7 +168,7 @@ local function postCustomRevive(_, player, revivalType)
 	player:RemoveCollectible(Rite_of_Rebirth.Target.Type)
 
 	-- during "The Beast" fight, functions as a simple extra life
-	if (isc:inBeastRoom() == false) then
+	if (not isc:inBeastRoom()) then
 		saveLoadout(player)
 		local effects = player:GetEffects()
 
@@ -242,13 +248,13 @@ local function restoreInventory(player, loadout)
 
 	if (isTaintedIsaac) then
 		local numCurrentPassives = #(Rite_of_Rebirth.ThisMod:getPlayerCollectibleTypes(player, false))
-		if (hasBirthright == true) then
+		if (hasBirthright) then
 			numCurrentPassives = (numCurrentPassives - 1)
 		end
 
 		--- @param collectible CollectibleType
-		if (isc:find(passives, function (_, collectible) return (collectible == CollectibleType.COLLECTIBLE_BIRTHRIGHT) end) == true) then
-			if (hasBirthright == false) then
+		if (isc:find(passives, function (_, collectible) return (collectible == CollectibleType.COLLECTIBLE_BIRTHRIGHT) end)) then
+			if (not hasBirthright) then
 				player:AddCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT, nil, false)
 				hasBirthright = true
 			end
@@ -266,9 +272,9 @@ local function restoreInventory(player, loadout)
 			else
 				pos = getNextPickupPosition()
 				entCollectible = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, passiveItem, pos, Vector.Zero, player):ToPickup()
-				if (entCollectible) then
-					isc:preventCollectibleRotation(entCollectible)
-				end
+				if (not entCollectible) then return end
+
+				isc:preventCollectibleRotation(entCollectible)
 			end
 		end)
 	else
@@ -286,9 +292,9 @@ local function restoreInventory(player, loadout)
 		else
 			pos = getNextPickupPosition()
 			entCollectible = Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COLLECTIBLE, activeItem.ID, pos, Vector.Zero, player):ToPickup()
-			if (entCollectible) then
-				isc:preventCollectibleRotation(entCollectible)
-			end
+			if (not entCollectible) then return end
+
+			isc:preventCollectibleRotation(entCollectible)
 		end
 	end)
 
@@ -336,7 +342,7 @@ end
 local function postNewLevelReordered(_, stage, stageType)
 	--- @type EntityPlayer[]
 	local players = {}
-	for i = 0, game:GetNumPlayers() - 1 do
+	for i = 0, (game:GetNumPlayers() - 1) do
 		local player = Isaac.GetPlayer(i)
 		table.insert(players, player)
 		local pType = player:GetPlayerType()
@@ -350,11 +356,11 @@ local function postNewLevelReordered(_, stage, stageType)
 	--- @param player EntityPlayer
 	isc:forEach(players, function (_, player)
 		local loadout = getLoadout(player)
-		if (loadout) then
-			player:GetEffects():RemoveNullEffect(NullItemID.ID_LOST_CURSE, -1)
-			restoreInventory(player, loadout)
-			clearLoadout(player)
-		end
+		if (not loadout) then return end
+
+		player:GetEffects():RemoveNullEffect(NullItemID.ID_LOST_CURSE, -1)
+		restoreInventory(player, loadout)
+		clearLoadout(player)
 	end)
 end
 
@@ -365,7 +371,6 @@ function Rite_of_Rebirth:Init(mod)
 	self.ThisMod = mod
 
 	mod:saveDataManager(self.SaveDataKey, v)
-
 	mod:AddPriorityCallbackCustom(isc.ModCallbackCustom.PRE_CUSTOM_REVIVE, utils.CallbackPriority_VERY_LATE, preCustomRevive, 0)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_CUSTOM_REVIVE, postCustomRevive, self.Target.Type)
 	mod:AddCallbackCustom(isc.ModCallbackCustom.POST_NEW_LEVEL_REORDERED, postNewLevelReordered)

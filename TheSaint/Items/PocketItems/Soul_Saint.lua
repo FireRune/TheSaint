@@ -20,28 +20,33 @@ local Soul_Saint = {
 
 local v = {
 	level = {
-		specialAngelRoom = {
-			generated = false,
-			firstVisit = true
-		}
-	}
+		SpecialAngelRoom = {
+			Generated = false,
+			FirstVisit = true,
+		},
+	},
 }
+
+local SPECIAL_ANGEL_VARIANT = 101
 
 --- @param card Card
 --- @param player EntityPlayer
 --- @param flags UseFlag
 local function useCard(_, card, player, flags)
 	local level = game:GetLevel()
+
 	-- check wether Devil/Angel room has already been generated
 	if (level:GetRoomByIdx(GridRooms.ROOM_DEVIL_IDX).Data == nil) then
 		level:InitializeDevilAngelRoom(true, false)
+
 		-- if no Devil deal has been taken, change Angel Room to special variant
-		if (ddTracking:HasDevilDealBeenTaken() == false) then
-			v.level.specialAngelRoom.generated = true
-			local roomData = isc:getRoomDataForTypeVariant(RoomType.ROOM_ANGEL, 101)
+		if (not ddTracking:HasDevilDealBeenTaken()) then
+			v.level.SpecialAngelRoom.Generated = true
+			local roomData = isc:getRoomDataForTypeVariant(RoomType.ROOM_ANGEL, SPECIAL_ANGEL_VARIANT)
 			isc:setRoomData(GridRooms.ROOM_DEVIL_IDX, roomData)
 		end
 	end
+
 	local useFlag = (UseFlag.USE_NOANIM | UseFlag.USE_NOANNOUNCER | UseFlag.USE_NOHUD)
 	--- @cast useFlag UseFlag
 	player:UseCard(Card.CARD_JOKER, useFlag)
@@ -51,17 +56,17 @@ end
 --- @param room RoomType
 local function postNewRoomReordered(_, room)
 	local level = game:GetLevel()
-	if (level:GetCurrentRoomIndex() == GridRooms.ROOM_DEVIL_IDX) then
-		if (v.level.specialAngelRoom.generated and v.level.specialAngelRoom.firstVisit) then
-			for _, ent in ipairs(Isaac.GetRoomEntities()) do
-				local entItem = ent:ToPickup()
-				if (entItem and entItem.Variant == 100) then
-					entItem.OptionsPickupIndex = 0
-				end
-			end
-			v.level.specialAngelRoom.firstVisit = false
+
+	if (level:GetCurrentRoomIndex() ~= GridRooms.ROOM_DEVIL_IDX) then return end
+	if (not (v.level.SpecialAngelRoom.Generated and v.level.SpecialAngelRoom.FirstVisit)) then return end
+
+	for _, ent in ipairs(Isaac.GetRoomEntities()) do
+		local entItem = ent:ToPickup()
+		if ((entItem) and (entItem.Variant == 100)) then
+			entItem.OptionsPickupIndex = 0
 		end
 	end
+	v.level.SpecialAngelRoom.FirstVisit = false
 end
 
 --- Initialize this item's functionality

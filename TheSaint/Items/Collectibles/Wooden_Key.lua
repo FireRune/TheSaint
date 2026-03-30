@@ -2,6 +2,7 @@ local enums = require("TheSaint.Enums")
 local featureTarget = require("TheSaint.structures.FeatureTarget")
 
 local game = Game()
+local sfx = SFXManager()
 
 --- "Wooden Key"
 --- - 3 Room Charge
@@ -17,8 +18,8 @@ local Wooden_Key = {
 
 local v = {
 	room = {
-		checkedDoorSlots = {}
-	}
+		CheckedDoorSlots = {},
+	},
 }
 
 --- Returns a table containing all possible DoorSlots for the given RoomShape
@@ -52,7 +53,7 @@ end
 --- @return integer
 local function getNumCheckedDoorSlots()
 	local counter = 0
-	for _, _ in pairs(v.room.checkedDoorSlots) do
+	for _, _ in pairs(v.room.CheckedDoorSlots) do
 		counter = (counter + 1)
 	end
 	return counter
@@ -64,39 +65,40 @@ end
 local function openDoors(rng, source)
 	local room = game:GetRoom()
 	local doors = getPossibleRoomDoors(room:GetRoomShape())
-	if (doors) then
-		-- only check doors if not all have been checked
-		if (#doors > getNumCheckedDoorSlots()) then
-			local door = nil
-			repeat
-				local randInt = rng:RandomInt(#doors) + 1
-				door = doors[randInt]
-			until (not v.room.checkedDoorSlots[door])
-			v.room.checkedDoorSlots[door] = true
-			if (room:IsDoorSlotAllowed(door)) then
-				local gridEntDoor = room:GetDoor(door)
-				local isClosed = false
-				if (gridEntDoor) then
-					isClosed = (not gridEntDoor:IsOpen())
-					if (gridEntDoor:IsRoomType(RoomType.ROOM_SECRET)
-					or gridEntDoor:IsRoomType(RoomType.ROOM_SUPERSECRET)) then
-						gridEntDoor:TryBlowOpen(false, source)
-						gridEntDoor:Close(true)
-					else
-						if (gridEntDoor:IsLocked()) then
-							gridEntDoor:SetLocked(false)
-						end
-					end
-					gridEntDoor:Open()
-				else
-					local level = game:GetLevel()
-					local currentRoomIdx = level:GetCurrentRoomIndex()
-					level:MakeRedRoomDoor(currentRoomIdx, door)
-				end
-				if (isClosed) then SFXManager():Play(SoundEffect.SOUND_UNLOCK00) end
+	if (not doors) then return end
+
+	-- only check doors if not all have been checked
+	if (getNumCheckedDoorSlots() >= #doors) then return end
+
+	local door = nil
+	repeat
+		local randInt = (rng:RandomInt(#doors) + 1)
+		door = doors[randInt]
+	until (not v.room.CheckedDoorSlots[door])
+	v.room.CheckedDoorSlots[door] = true
+
+	if (not room:IsDoorSlotAllowed(door)) then return end
+
+	local gridEntDoor = room:GetDoor(door)
+	local isClosed = false
+	if (gridEntDoor) then
+		isClosed = (not gridEntDoor:IsOpen())
+		if ((gridEntDoor:IsRoomType(RoomType.ROOM_SECRET))
+		or (gridEntDoor:IsRoomType(RoomType.ROOM_SUPERSECRET))) then
+			gridEntDoor:TryBlowOpen(false, source)
+			gridEntDoor:Close(true)
+		else
+			if (gridEntDoor:IsLocked()) then
+				gridEntDoor:SetLocked(false)
 			end
 		end
+		gridEntDoor:Open()
+	else
+		local level = game:GetLevel()
+		local currentRoomIdx = level:GetCurrentRoomIndex()
+		level:MakeRedRoomDoor(currentRoomIdx, door)
 	end
+	if (isClosed) then sfx:Play(SoundEffect.SOUND_UNLOCK00) end
 end
 
 --- @param collectible CollectibleType

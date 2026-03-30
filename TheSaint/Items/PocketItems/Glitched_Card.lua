@@ -39,7 +39,7 @@ local function useCard(_, card, player, flags)
 
 	local isMimic = (flags & UseFlag.USE_MIMIC == UseFlag.USE_MIMIC)
 	if (isMimic) then
-		flags = (flags ~ UseFlag.USE_MIMIC)
+		flags = (flags & ~UseFlag.USE_MIMIC)
 	end
 	player:UseCard(newCard, flags)
 

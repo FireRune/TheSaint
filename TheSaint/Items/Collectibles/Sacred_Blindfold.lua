@@ -65,7 +65,7 @@ local function preNewLevel(_, player)
 
 	-- finally re-add the saved Trinkets (if any), starting with the 2nd one to preserve the order they were in before
 	if (t1 ~= TrinketType.TRINKET_NULL) then
-		if (t2 and (t2 ~= TrinketType.TRINKET_NULL)) then
+		if ((t2) and (t2 ~= TrinketType.TRINKET_NULL)) then
 			player:AddTrinket(t2, false)
 		end
 		player:AddTrinket(t1, false)

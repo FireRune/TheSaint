@@ -13,7 +13,7 @@ utils.CallbackPriority_LATER = CallbackPriority_LATER
 utils.CallbackPriority_VERY_LATE = CallbackPriority_VERY_LATE
 
 local ChestSubType_CHEST_CLOSED_ETERNAL = 2	--- @cast ChestSubType_CHEST_CLOSED_ETERNAL ChestSubType
---- 2
+--- SubType of a fresh, unopened Eternal Chest is 2. After it closes itself again it's SubType changes to 1 (CHEST_CLOSED)
 utils.ChestSubType_CHEST_CLOSED_ETERNAL = ChestSubType_CHEST_CLOSED_ETERNAL
 
 --#endregion

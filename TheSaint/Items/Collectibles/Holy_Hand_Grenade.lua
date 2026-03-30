@@ -23,10 +23,10 @@ local TARGET_FLAG = TearFlags.TEAR_LIGHT_FROM_HEAVEN
 
 local v = {
 	room = {
-		--- @type table<integer, table<string, boolean>>
-		bombList = {},
-		bigExplosion = false,
-	}
+		--- @type table<integer, { Holy_Hand_Grenade: boolean }>
+		BombList = {},
+		BigExplosion = false,
+	},
 }
 
 -- flag to check if "Holy Hand Grenade" is triggered from "? Card"
@@ -36,10 +36,10 @@ local questionMarkCardUsed = false
 --- @param player EntityPlayer
 --- @param flags UseFlag
 local function useCard_QuestionMark(_, card, player, flags)
-	if (player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) == Holy_Hand_Grenade.Target.Type) then
-		questionMarkCardUsed = true
-		TIL.Utility:ScheduleLift(player, Holy_Hand_Grenade.Target.Type, TIL.Type.ACTIVE, ActiveSlot.SLOT_PRIMARY)
-	end
+	if (player:GetActiveItem(ActiveSlot.SLOT_PRIMARY) ~= Holy_Hand_Grenade.Target.Type) then return end
+
+	questionMarkCardUsed = true
+	TIL.Utility:ScheduleLift(player, Holy_Hand_Grenade.Target.Type, TIL.Type.ACTIVE, ActiveSlot.SLOT_PRIMARY)
 end
 
 --- @param player EntityPlayer
@@ -57,7 +57,9 @@ local function throwGrenade(player, vect, slot, mimic)
 
 	-- set flag
 	local ptr = GetPtrHash(grenade)
-	v.room.bombList[ptr] = {["Holy_Hand_Grenade"] = true}
+	v.room.BombList[ptr] = {
+		Holy_Hand_Grenade = true,
+	}
 
 	-- throw grenade
 	player:TryHoldEntity(grenade)
@@ -89,20 +91,19 @@ TIL:RegisterThrowableItem({
 --- @param bomb EntityBomb
 local function postBombUpdate(_, bomb)
 	local player = (bomb.SpawnerEntity and bomb.SpawnerEntity:ToPlayer())
-	if (player) then
-		local ptr = GetPtrHash(bomb)
-		local data = v.room.bombList[ptr]
-		if (data and (data["Holy_Hand_Grenade"] == true)) then
-			bomb:AddTearFlags(TARGET_FLAG)
-			data["Holy_Hand_Grenade"] = nil
-		end
-		if (bomb:HasTearFlags(TARGET_FLAG)) then
-			if (bomb:GetSprite():IsPlaying("Explode")) then
-				v.room.bigExplosion = true
-				game:GetRoom():MamaMegaExplosion(bomb.Position)
-			end
-		end
+	if (not player) then return end
+
+	local ptr = GetPtrHash(bomb)
+	local data = v.room.BombList[ptr]
+	if ((data) and (data.Holy_Hand_Grenade)) then
+		bomb:AddTearFlags(TARGET_FLAG)
+		data.Holy_Hand_Grenade = false
 	end
+
+	if (not ((bomb:HasTearFlags(TARGET_FLAG)) and (bomb:GetSprite():IsPlaying("Explode")))) then return end
+
+	v.room.BigExplosion = true
+	game:GetRoom():MamaMegaExplosion(bomb.Position)
 end
 
 --- Spawn a "Holy Light"-beam
@@ -118,19 +119,18 @@ end
 --- @param source EntityRef
 --- @param countdownFrames integer
 local function entityTakeDamage(_, entity, amount, dmgFlags, source, countdownFrames)
-	if (v.room.bigExplosion) then
-		if ((source.Type == EntityType.ENTITY_EFFECT) and (source.Variant == EffectVariant.MAMA_MEGA_EXPLOSION)) then
-			entity:Die()
-			return false
-		end
+	if (not v.room.BigExplosion) then return end
+
+	if ((source.Type == EntityType.ENTITY_EFFECT) and (source.Variant == EffectVariant.MAMA_MEGA_EXPLOSION)) then
+		entity:Die()
+		return false
 	end
 end
 
 --- @param entity Entity
 local function postEntityKill(_, entity)
-	if (v.room.bigExplosion) then
-		spawnHolyLight(entity.Position)
-	end
+	if (not v.room.BigExplosion) then return end
+	spawnHolyLight(entity.Position)
 end
 
 --- Initialize this item's functionality
