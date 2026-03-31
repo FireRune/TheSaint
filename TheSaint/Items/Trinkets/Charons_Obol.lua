@@ -39,17 +39,17 @@ function TheSaintAPI:AddRedHeartOnlyCharacter(mod, char)
 	addRedHeartOnlyCharacter(mod.Name, char)
 end
 
+--- Returns whether the player is normally able to pick up a Soul/Black Heart
 --- @param player EntityPlayer
 --- @param isBlackHeart boolean
 --- @return boolean
 local function canPickSoulOrBlackHearts(player, isBlackHeart)
-	if ((utils:AlabasterBoxNeedsCharge(player))
-	or (isc:isCharacter(player, redHeartOnlyChars) == false)
-	or ((not isBlackHeart) and (player:CanPickSoulHearts()))
-	or ((isBlackHeart) and (player:CanPickBlackHearts()))) then
-		return true
-	end
-	return false
+	return (
+		(utils:AlabasterBoxNeedsCharge(player)) or
+		(not isc:isCharacter(player, redHeartOnlyChars)) or
+		((not isBlackHeart) and (player:CanPickSoulHearts())) or
+		((isBlackHeart) and (player:CanPickBlackHearts()))
+	)
 end
 
 --- @param pickup EntityPickup
@@ -69,6 +69,7 @@ local function prePickupCollision_Hearts(_, pickup, collider, low)
 	local isBlackHeart = false
 	local numWisps = 2
 	if ((subType == HeartSubType.HEART_SOUL)) then
+		-- no alteration forr regular soul hearts
 	elseif (subType == HeartSubType.HEART_BLACK) then
 		isBlackHeart = true
 	elseif (subType == HeartSubType.HEART_HALF_SOUL) then
@@ -79,25 +80,24 @@ local function prePickupCollision_Hearts(_, pickup, collider, low)
 	end
 
 	local chance = ((canPickSoulOrBlackHearts(player, isBlackHeart) and 0.5) or 1)
-
 	local rng = player:GetTrinketRNG(Charons_Obol.Target.Type)
-	if (rng:RandomFloat() < chance) then
-		-- play "Collect" animation
-		local sprite = pickup:GetSprite()
-		sprite:Play("Collect")
-		pickup:Die()
+	if (rng:RandomFloat() >= chance) then return end
 
-		-- play corresponding sfx
-		local sfxId = (((isBlackHeart) and SoundEffect.SOUND_UNHOLY) or SoundEffect.SOUND_HOLY)
-		sfx:Play(sfxId)
+	-- play "Collect" animation
+	local sprite = pickup:GetSprite()
+	sprite:Play("Collect")
+	pickup:Die()
 
-		-- spawn wisps
-		local wispType = (((isBlackHeart) and CollectibleType.COLLECTIBLE_NECRONOMICON) or CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES)
-		for _ = 1, (numWisps * trinketMult) do
-			player:AddWisp(wispType, player.Position, true)
-		end
-		return true
+	-- play corresponding sfx
+	local sfxId = (((isBlackHeart) and SoundEffect.SOUND_UNHOLY) or SoundEffect.SOUND_HOLY)
+	sfx:Play(sfxId)
+
+	-- spawn wisps
+	local wispType = (((isBlackHeart) and CollectibleType.COLLECTIBLE_NECRONOMICON) or CollectibleType.COLLECTIBLE_BOOK_OF_VIRTUES)
+	for _ = 1, (numWisps * trinketMult) do
+		player:AddWisp(wispType, player.Position, true)
 	end
+	return true
 end
 
 --- @param mod ModUpgraded

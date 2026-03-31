@@ -16,6 +16,11 @@ local ChestSubType_CHEST_CLOSED_ETERNAL = 2	--- @cast ChestSubType_CHEST_CLOSED_
 --- SubType of a fresh, unopened Eternal Chest is 2. After it closes itself again it's SubType changes to 1 (CHEST_CLOSED)
 utils.ChestSubType_CHEST_CLOSED_ETERNAL = ChestSubType_CHEST_CLOSED_ETERNAL
 
+local PickupPrice_PRICE_SACRIFICE = -10	--- @cast PickupPrice_PRICE_SACRIFICE PickupPrice
+
+--- -10
+utils.PickupPrice_PRICE_SACRIFICE = PickupPrice_PRICE_SACRIFICE
+
 --#endregion
 
 local RECOMMENDED_SHIFT_IDX = 35
@@ -112,6 +117,7 @@ end
 --- @param player EntityPlayer
 --- @return boolean
 function utils:AlabasterBoxNeedsCharge(player)
+	--- @type ActiveSlot[]
 	local slots = isc:getActiveItemSlots(player, CollectibleType.COLLECTIBLE_ALABASTER_BOX)
 	if (#slots > 0) then
 		local isFull = true
@@ -175,8 +181,8 @@ end
 function utils:IsValidEnemy(enemy, includeTNT)
 	if (includeTNT == nil) then includeTNT = true end
 
-	local isActiveEnemy = (enemy:IsActiveEnemy() == true)
-	local isNotFriendly = (enemy:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) == false)
+	local isActiveEnemy = enemy:IsActiveEnemy()
+	local isNotFriendly = (not enemy:HasEntityFlags(EntityFlag.FLAG_FRIENDLY))
 	local isTNT = (includeTNT and (enemy.Type == EntityType.ENTITY_MOVABLE_TNT))
 	return ((isActiveEnemy and isNotFriendly) or isTNT)
 end

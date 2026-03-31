@@ -70,9 +70,6 @@ local UnlockManager = {
 
 --#region fields
 
-local saint = enums.PlayerType.PLAYER_THE_SAINT
-local tSaint = enums.PlayerType.PLAYER_THE_SAINT_B
-
 --- mapping of isc.BossID to `CharacterCompletionMarks` field names + allowed Levels (to prevent awarding the mark on the "Void"-floor)
 --- @type TheSaint.UnlockManager.BossCompletionMark_Map
 local bossMarks = {
@@ -156,10 +153,10 @@ local function createUnlock(player, marks, difficulty, typeOfPickup, unlockable,
 		variant = PickupVariant.PICKUP_TAROTCARD
 	elseif (typeOfPickup == "other") then
 		if (not fallback) then
-			utils:PrintAndLog("[The Saint] (WARN) createUnlock(player, marks, difficulty, typeOfPickup, unlockable, fallback?, otherSubType?)")
-			utils:PrintAndLog("[The Saint] Message: Couldn't create unlock of type 'other', due to missing fallback value!")
+			utils:PrintAndLogWithHeader("(WARN) createUnlock(player, marks, difficulty, typeOfPickup, unlockable, fallback?, otherSubType?)")
+			utils:PrintAndLogWithHeader("Message: Couldn't create unlock of type 'other', due to missing fallback value!")
 			local marksStr = table.concat(marks, "', '")
-			utils:PrintAndLog("[The Saint] Parameter values: "..utils:Stringify(player)..", {'"..marksStr.."'}, "..utils:Stringify(difficulty)..", "..utils:Stringify(typeOfPickup)..", "..utils:Stringify(unlockable)..", nil, "..utils:Stringify(otherSubType))
+			utils:PrintAndLogWithHeader("Parameter values: "..utils:Stringify(player)..", {'"..marksStr.."'}, "..utils:Stringify(difficulty)..", "..utils:Stringify(typeOfPickup)..", "..utils:Stringify(unlockable)..", nil, "..utils:Stringify(otherSubType))
 			return
 		end
 		--- @cast fallback -?
@@ -241,7 +238,7 @@ end
 local v = {
 	persistent = {
 		--- @type TheSaint.UnlockManager.CharacterCompletionMarks_Map
-		characterMarks = {
+		CharacterMarks = {
 			["Saint"] = {
 				[enums.CompletionMarks.BOSS_RUSH] = "none",
 				[enums.CompletionMarks.MOMS_HEART] = "none",
@@ -270,17 +267,17 @@ local v = {
 				[enums.CompletionMarks.MOTHER] = "none",
 				[enums.CompletionMarks.THE_BEAST] = "none",
 			},
-		}
-	}
+		},
+	},
 }
 
 --- @param targetMark TheSaint.Enums.CompletionMarks
 --- @param difficulty Difficulty
 local function awardCompletionMarks(targetMark, difficulty)
-	--- @type string[]
+	--- @type TheSaint.UnlockManager.UnlockPlayer[]
 	local targetPlayers = {}
-	if (isc:anyPlayerIs(saint)) then table.insert(targetPlayers, "Saint") end
-	if (isc:anyPlayerIs(tSaint)) then table.insert(targetPlayers, "T_Saint") end
+	if (isc:anyPlayerIs(enums.PlayerType.PLAYER_THE_SAINT)) then table.insert(targetPlayers, "Saint") end
+	if (isc:anyPlayerIs(enums.PlayerType.PLAYER_THE_SAINT_B)) then table.insert(targetPlayers, "T_Saint") end
 	for _, char in ipairs(targetPlayers) do
 		--- @type TheSaint.UnlockManager.CompletionState
 		local state = "none"
@@ -289,7 +286,7 @@ local function awardCompletionMarks(targetMark, difficulty)
 		elseif ((difficulty == Difficulty.DIFFICULTY_HARD) or (difficulty == Difficulty.DIFFICULTY_GREEDIER)) then
 			state = "hard"
 		end
-		local marks = v.persistent.characterMarks[char]
+		local marks = v.persistent.CharacterMarks[char]
 		if (marks and (
 			((marks[targetMark] == "none") and (state ~= "none")) or
 			((marks[targetMark] == "normal") and (state == "hard"))
@@ -301,30 +298,29 @@ end
 
 --- Boss Rush
 local function postAmbushFinished(_, ambush)
-	if (UnlockManager.ThisMod:canRunUnlockAchievements()) then
-		awardCompletionMarks(enums.CompletionMarks.BOSS_RUSH, game.Difficulty)
-	end
+	if (not UnlockManager.ThisMod:canRunUnlockAchievements()) then return end
+	awardCompletionMarks(enums.CompletionMarks.BOSS_RUSH, game.Difficulty)
 end
 
 --- All other Completion Marks
 --- @param rng RNG
 --- @param spawnPos Vector
 local function preSpawnCleanAward(_, rng, spawnPos)
-	if (UnlockManager.ThisMod:canRunUnlockAchievements()) then
-		local bossId = isc:getBossID()
-		if (bossId) then
-			local mark = bossMarks[bossId]
-			if (mark) then
-				-- to obtain the Boss Mark, check wether the current floor is valid
-				if (mark.Floor) then
-					-- no floor-check for Greed(ier) Mode
-					-- this shouldn't normally happen, but just to make sure
-					if (game:IsGreedMode() or (game:GetLevel():GetAbsoluteStage() ~= mark.Floor)) then return end
-				end
-				awardCompletionMarks(mark.Mark, game.Difficulty)
-			end
-		end
+	if (not UnlockManager.ThisMod:canRunUnlockAchievements()) then return end
+
+	local bossId = isc:getBossID()
+	if (not bossId) then return end
+
+	local mark = bossMarks[bossId]
+	if (not mark) then return end
+
+	-- to obtain the Boss Mark, check wether the current floor is valid
+	if (mark.Floor) then
+		-- no floor-check for Greed(ier) Mode
+		-- this shouldn't normally happen, but just to make sure
+		if (game:IsGreedMode() or (game:GetLevel():GetAbsoluteStage() ~= mark.Floor)) then return end
 	end
+	awardCompletionMarks(mark.Mark, game.Difficulty)
 end
 
 --#region Handling of locked stuff
@@ -334,14 +330,13 @@ end
 --- @param unlockableSubType integer
 --- @return boolean
 local function pickupCheck(pickup, variant, unlockableSubType)
-	if (pickup.Variant == variant) then
-		if (variant == PickupVariant.PICKUP_TRINKET) then
-			return ((pickup.SubType % TrinketType.TRINKET_GOLDEN_FLAG) == unlockableSubType)
-		else
-			return (pickup.SubType == unlockableSubType)
-		end
+	if (pickup.Variant ~= variant) then return false end
+
+	if (variant == PickupVariant.PICKUP_TRINKET) then
+		return ((pickup.SubType % TrinketType.TRINKET_GOLDEN_FLAG) == unlockableSubType)
+	else
+		return (pickup.SubType == unlockableSubType)
 	end
-	return false
 end
 
 --- @param states TheSaint.UnlockManager.CompletionState[] @ current completion status
@@ -353,7 +348,7 @@ local function stateCheck(states, unlockDifficulty)
 	--- @param state TheSaint.UnlockManager.CompletionState
 	isc:forEach(states, function (_, state)
 		-- no need to further check states once `retVal` is set to `false`
-		if (retVal == false) then return end
+		if (not retVal) then return end
 
 		if ((state == "none")
 		or ((state == "normal") and (unlockDifficulty == "hard"))) then
@@ -382,35 +377,38 @@ local function rerollItem(pickup, unlock)
 		-- if a collectible spawns that has already been removed from the pools (i.e. starting active items)
 		-- then `RemoveCollectible` will return `false`, which can be used to prevent starting active items
 		-- from being rerolled when picking up a different active item
-		if (pool:RemoveCollectible(lockedSubType)) then
-			variant = PickupVariant.PICKUP_COLLECTIBLE
-			local room = game:GetRoom()
-			local seed = game:GetSeeds():GetStartSeed()
-			local itemPool = pool:GetPoolForRoom(room:GetType(), seed)
-			newSubType = pool:GetCollectible(itemPool, true, pickup.InitSeed)
-			pool:RemoveCollectible(newSubType)
-		end
+		if (not pool:RemoveCollectible(lockedSubType)) then return end
+
+		variant = PickupVariant.PICKUP_COLLECTIBLE
+		local room = game:GetRoom()
+		local seed = game:GetSeeds():GetStartSeed()
+		local itemPool = pool:GetPoolForRoom(room:GetType(), seed)
+		newSubType = pool:GetCollectible(itemPool, true, pickup.InitSeed)
+		pool:RemoveCollectible(newSubType)
+
 	elseif (typeOfPickup == "trinket") then
 		variant = PickupVariant.PICKUP_TRINKET
 		local isGold = (pickup.SubType > TrinketType.TRINKET_GOLDEN_FLAG)
 		pool:RemoveTrinket(lockedSubType)
 		newSubType = pool:GetTrinket(false)
 		pool:RemoveTrinket(newSubType)
-		if (isGold) then newSubType = newSubType + TrinketType.TRINKET_GOLDEN_FLAG end
+		if (isGold) then newSubType = (newSubType + TrinketType.TRINKET_GOLDEN_FLAG) end
+
 	elseif ((typeOfPickup == "card") or (typeOfPickup == "rune")) then
 		variant = PickupVariant.PICKUP_TAROTCARD
 		local isRune = (typeOfPickup == "rune")
 		repeat
 			newSubType = pool:GetCard(pickup.InitSeed, false, isRune, isRune)
 		until (newSubType ~= lockedSubType)
+
 	elseif (typeOfPickup == "other") then
 		local fallback = unlock.Fallback --- @cast fallback -?
 		variant = fallback.Variant
 		newSubType = fallback.SubType
 	end
-	if (variant ~= PickupVariant.PICKUP_NULL) then
-		pickup:Morph(EntityType.ENTITY_PICKUP, variant, newSubType, true)
-	end
+	if (variant == PickupVariant.PICKUP_NULL) then return end
+
+	pickup:Morph(EntityType.ENTITY_PICKUP, variant, newSubType, true)
 end
 
 --- @param unlockPlayer TheSaint.UnlockManager.UnlockPlayer
@@ -418,10 +416,10 @@ end
 --- @param unlockDifficulty TheSaint.UnlockManager.UnlockDifficulty
 --- @return boolean
 local function isUnlocked(unlockPlayer, compMarks, unlockDifficulty)
-	if (mcm:getSetting(enums.Setting.UNLOCK_ALL) == true) then return true end
+	if (mcm:getSetting(enums.Setting.UNLOCK_ALL)) then return true end
 
 	--- @type TheSaint.UnlockManager.CharacterCompletionMarks
-	local charMarks = v.persistent.characterMarks[unlockPlayer]
+	local charMarks = v.persistent.CharacterMarks[unlockPlayer]
 
 	--- @type TheSaint.UnlockManager.CompletionState[]
 	local states = {}
@@ -444,12 +442,8 @@ local function postPickupInitFirst(_, pickup)
 	end)
 	--- @cast unlockForPickup TheSaint.UnlockManager.Unlock?
 
-	if (unlockForPickup) then
-		if (isUnlocked(unlockForPickup.Player, unlockForPickup.Marks, unlockForPickup.Difficulty) == false) then
-			rerollItem(pickup, unlockForPickup)
-		end
-	end
-
+	if ((not unlockForPickup) or (isUnlocked(unlockForPickup.Player, unlockForPickup.Marks, unlockForPickup.Difficulty))) then return end
+	rerollItem(pickup, unlockForPickup)
 end
 
 --- @param rng RNG
@@ -462,7 +456,7 @@ local function getCard(_, rng, card, includePlaying, includeRunes, onlyRunes)
 	local pool = game:GetItemPool()
 
 	local newCard = card
-	while (UnlockManager:IsPickupUnlocked(PickupVariant.PICKUP_TAROTCARD, newCard) == false) do
+	while (not UnlockManager:IsPickupUnlocked(PickupVariant.PICKUP_TAROTCARD, newCard)) do
 		newCard = pool:GetCard(rng:Next(), includePlaying, includeRunes, onlyRunes)
 	end
 	return newCard
@@ -480,9 +474,9 @@ end
 local function showCommandHelp(char, operation, mark, diff)
 	if (char == "?") then
 		utils:PrintWithHeader("1st argument (<character>)")
-		utils:PrintWithHeader("allowed values (case-sensitive):")
-		utils:PrintWithHeader("- 'Saint' (The Saint)")
-		utils:PrintWithHeader("- 'T_Saint' (Tainted Saint)")
+		utils:PrintWithHeader("allowed values:")
+		utils:PrintWithHeader("- 'saint' (The Saint)")
+		utils:PrintWithHeader("- 'tsaint' (Tainted Saint)")
 	end
 	if (operation == "?") then
 		utils:PrintWithHeader("2nd argument (show, set, clear)")
@@ -559,7 +553,7 @@ local function isValidMark(mark)
 	end)
 	--- @cast retVal boolean
 
-	if (retVal == false) then
+	if (not retVal) then
 		utils:PrintWithHeader("invalid argument <completion mark>")
 	end
 	return retVal
@@ -570,46 +564,48 @@ end
 --- @param mark? TheSaint.Enums.CompletionMarks | "all"
 --- @param diff? TheSaint.UnlockManager.UnlockDifficulty
 local function executeCommand(char, operation, mark, diff)
-	if (char and ((char == "saint") or (char == "tsaint"))) then
-		-- set default values
-		if (not operation) then operation = "show" end
-		if (not mark) then mark = "all" end
-		if (not diff) then diff = "normal" end
-
-		--- @type TheSaint.UnlockManager.UnlockPlayer
-		local character = (((char == "saint") and "Saint") or "T_Saint")
-		local charName = (((char == "saint") and "The Saint") or "Tainted Saint")
-		local marks = v.persistent.characterMarks[character]
-
-		if (operation == "show") then
-			utils:PrintWithHeader("completion marks for '"..charName.."':")
-			listMarks(marks)
-		else
-			if (isValidMark(mark)) then
-				--- @type TheSaint.UnlockManager.CompletionState
-				local status = "none"
-				if (operation == "set") then
-					status = diff
-				end
-				local msg = {
-					["set"] = "set @ for '"..charName.."' to '"..diff.."'",
-					["clear"] = "cleared @ for '"..charName.."'",
-				}
-				if (mark == "all") then
-					for field, _ in pairs(marks) do
-						marks[field] = status
-					end
-					local output = msg[operation]:gsub("@", "all completion marks")
-					utils:PrintWithHeader(output)
-				else
-					marks[mark] = status
-					local output = msg[operation]:gsub("@", "completion mark '"..mark.."'")
-					utils:PrintWithHeader(output)
-				end
-			end
-		end
-	else
+	if (not ((char) and ((char == "saint") or (char == "tsaint")))) then
 		utils:PrintWithHeader("invalid argument <character>")
+		return
+	end
+
+	-- set default values
+	if (not operation) then operation = "show" end
+	if (not mark) then mark = "all" end
+	if (not diff) then diff = "normal" end
+
+	--- @type TheSaint.UnlockManager.UnlockPlayer
+	local character = (((char == "saint") and "Saint") or "T_Saint")
+	local charName = (((char == "saint") and "The Saint") or "Tainted Saint")
+	local marks = v.persistent.CharacterMarks[character]
+
+	if (operation == "show") then
+		utils:PrintWithHeader("completion marks for '"..charName.."':")
+		listMarks(marks)
+		return
+	end
+
+	if (not isValidMark(mark)) then return end
+
+	--- @type TheSaint.UnlockManager.CompletionState
+	local status = "none"
+	if (operation == "set") then
+		status = diff
+	end
+	local msg = {
+		["set"] = "set @ for '"..charName.."' to '"..diff.."'",
+		["clear"] = "cleared @ for '"..charName.."'",
+	}
+	if (mark == "all") then
+		for field, _ in pairs(marks) do
+			marks[field] = status
+		end
+		local output = msg[operation]:gsub("@", "all completion marks")
+		utils:PrintWithHeader(output)
+	else
+		marks[mark] = status
+		local output = msg[operation]:gsub("@", "completion mark '"..mark.."'")
+		utils:PrintWithHeader(output)
 	end
 end
 
@@ -621,38 +617,39 @@ local function thesaint_marks(params)
 		param = param:gsub("'", "")
 		table.insert(paramList, param)
 	end
-	if ((#paramList == 0)) then
+	if (#paramList == 0) then
 		utils:PrintWithHeader("incomplete command, use the following syntax (without quotation marks):")
 		utils:PrintWithHeader("'thesaint_marks <character> [show|{set|clear} [<completion mark> [normal|hard]]]'")
 		utils:PrintWithHeader("using '?' as any argument will show a list of all valid values")
-	else
-		local showHelp = false
-		--- @type string, string?, string?, string?, string?
-		local val, char, operation, mark, diff
-		for i = 1, #paramList do
-			-- currently only 4 arguments allowed at most
-			if (i >= 5) then break end
+		return
+	end
 
-			val = paramList[i]
-			if (i ~= 3) then
-				val = string.lower(val)
-				if ((i == 1) and ((val == "?") or (val == "saint") or (val == "tsaint"))) then
-					char = val
-				elseif ((i == 2) and ((val == "?") or (val == "show") or (val == "set") or (val == "clear"))) then
-					operation = val
-				elseif ((i == 4) and ((val == "?") or (val == "normal") or (val == "hard"))) then
-					diff = val
-				end
-			else
-				mark = val
+	local showHelp = false
+	--- @type string, string?, string?, string?, string?
+	local val, char, operation, mark, diff
+	for i = 1, #paramList do
+		-- currently only 4 arguments allowed at most
+		if (i >= 5) then break end
+
+		val = paramList[i]
+		if (i ~= 3) then
+			val = string.lower(val)
+			if ((i == 1) and ((val == "?") or (val == "saint") or (val == "tsaint"))) then
+				char = val
+			elseif ((i == 2) and ((val == "?") or (val == "show") or (val == "set") or (val == "clear"))) then
+				operation = val
+			elseif ((i == 4) and ((val == "?") or (val == "normal") or (val == "hard"))) then
+				diff = val
 			end
-			showHelp = (showHelp or (val == "?"))
-		end
-		if (showHelp) then
-			showCommandHelp(char, operation, mark, diff)
 		else
-			executeCommand(char, operation, mark, diff)
+			mark = val
 		end
+		showHelp = (showHelp or (val == "?"))
+	end
+	if (showHelp) then
+		showCommandHelp(char, operation, mark, diff)
+	else
+		executeCommand(char, operation, mark, diff)
 	end
 end
 --#endregion

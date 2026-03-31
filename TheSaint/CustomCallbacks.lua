@@ -28,7 +28,6 @@ local function entityTakeDamage(_, ent, amount, flags, source, countdown)
 			DmgFrame = true,
 		}
 	end
-	data.CollidingLasers = nil
 	playerOrEnemy:GetData().TheSaint = data
 end
 
@@ -40,7 +39,7 @@ local function isCollidingWithLaser(entity, laser)
 	--- @type Vector?
 	local sample
 
-	for i = 0, #samples - 1 do
+	for i = 0, (#samples - 1) do
 		local nextSample = samples:Get(i)
 		if (sample) then
 			local topLeft = Vector(math.min(sample.X, nextSample.X) - laser.Size, math.min(sample.Y, nextSample.Y) - laser.Size)
@@ -85,15 +84,13 @@ local function postLaserUpdate(_, laser)
 			end
 		end
 		local entData = collider:GetData().TheSaint
-		if (entData) then
-			if (entData.DmgFrame) then
-				for _, callback in ipairs(callbacks_LASER_DAMAGE) do
-					if ((callback.Param == nil) or (callback.Param == -1) or (callback.Param == laser.Variant)) then
-						callback.Function(callback.Mod, laser, collider)
-					end
+		if ((entData) and (entData.DmgFrame)) then
+			for _, callback in ipairs(callbacks_LASER_DAMAGE) do
+				if ((callback.Param == nil) or (callback.Param == -1) or (callback.Param == laser.Variant)) then
+					callback.Function(callback.Mod, laser, collider)
 				end
-				entData.DmgFrame = false
 			end
+			entData.DmgFrame = false
 		end
 		collider:GetData().TheSaint = entData
 	end

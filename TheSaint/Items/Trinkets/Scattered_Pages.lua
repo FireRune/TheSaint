@@ -1,6 +1,7 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local featureTarget = require("TheSaint.structures.FeatureTarget")
+local utils = include("TheSaint.utils")
 
 --- Using an active item has a 33/66/100% chance to trigger the effect of a random `book`-item
 --- @class TheSaint.Items.Trinkets.Scattered_Pages : TheSaint.classes.ModFeatureTargeted<TrinketType>
@@ -40,39 +41,45 @@ end
 local function useItem(_, collectible, rng, player, flags)
 	-- possible values: 0, 1, 2, 3
 	local trinketMult = math.min(3, player:GetTrinketMultiplier(Scattered_Pages.Target.Type))
-	if ((not effectPreventer) and (not v.room.EffectTriggered) and (not effectIsRunning) and (trinketMult > 0)) then
-		effectIsRunning = true
+	if ((effectPreventer) or
+		(v.room.EffectTriggered) or
+		(effectIsRunning) or
+		(trinketMult <= 0)
+	) then return end
 
-		-- at this point `trinketMult` can only have 1, 2 or 3 as its value
-		local chance = (trinketMult / 3)
+	effectIsRunning = true
 
-		local effectTriggers = (rng:RandomFloat() < chance)
-		if (effectTriggers == true) then
-			v.room.EffectTriggered = true
-			local useFromCarBattery = false
-			if (flags & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then
-				useFromCarBattery = true
-			end
-
-			local newFlags = (UseFlag.USE_NOANIM | UseFlag.USE_CUSTOMVARDATA)
-			if (useFromCarBattery == true) then
-				newFlags = (newFlags | UseFlag.USE_CARBATTERY)
-			end
-			--- @cast newFlags UseFlag
-
-			local custVarData = enums.CustomVarData.Almanach.SCATTERED_PAGES
-			-- Synergy for using "Almanach" (the actual item) while holding "Scattered Pages": triggers 4 `book`-items
-			if ((collectible == enums.CollectibleType.COLLECTIBLE_ALMANACH) and (flags & UseFlag.USE_OWNED == UseFlag.USE_OWNED)) then
-				custVarData = enums.CustomVarData.Almanach.NORMAL
-			end
-
-			--- necessary until the `Binding of Isaac Lua API` VSCode extension adds the `customVarData` parameter to this function
-			--- @diagnostic disable-next-line: param-type-mismatch
-			player:UseActiveItem(enums.CollectibleType.COLLECTIBLE_ALMANACH, newFlags, -1, custVarData)
-		end
-
+	-- at this point `trinketMult` can only have 1, 2 or 3 as its value
+	local chance = (trinketMult / 3)
+	local newRNG = player:GetTrinketRNG(Scattered_Pages.Target.Type)
+	if (newRNG:RandomFloat() >= chance) then
 		effectIsRunning = false
+		return
 	end
+
+	v.room.EffectTriggered = true
+	local useFromCarBattery = false
+	if (flags & UseFlag.USE_CARBATTERY == UseFlag.USE_CARBATTERY) then
+		useFromCarBattery = true
+	end
+
+	local newFlags = (UseFlag.USE_NOANIM | UseFlag.USE_CUSTOMVARDATA)
+	if (useFromCarBattery) then
+		newFlags = (newFlags | UseFlag.USE_CARBATTERY)
+	end
+	--- @cast newFlags UseFlag
+
+	local custVarData = enums.CustomVarData.Almanach.SCATTERED_PAGES
+	-- Synergy for using "Almanach" (the actual item) while holding "Scattered Pages": triggers 4 `book`-items
+	if ((collectible == enums.CollectibleType.COLLECTIBLE_ALMANACH) and (flags & UseFlag.USE_OWNED == UseFlag.USE_OWNED)) then
+		custVarData = enums.CustomVarData.Almanach.NORMAL
+	end
+
+	--- necessary until the `Binding of Isaac Lua API` VSCode extension adds the `customVarData` parameter to this function
+	--- @diagnostic disable-next-line: param-type-mismatch
+	player:UseActiveItem(enums.CollectibleType.COLLECTIBLE_ALMANACH, newFlags, -1, custVarData)
+
+	effectIsRunning = false
 end
 
 --- @param mod ModUpgraded
