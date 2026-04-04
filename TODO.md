@@ -101,7 +101,7 @@ add character costumes/entity sprites for:
 - [x] Protective Candle (entity)
 - [ ] Copper Stakes (costume)
 - [x] Tesla Coil (entity)
-- [ ] Sacred Blindfold (costume)
+- [x] Sacred Blindfold (costume)
 
 add front/back sprites + anims for:
 - [x] Library Card
