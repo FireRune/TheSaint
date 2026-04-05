@@ -76,7 +76,7 @@ add item sprites for:
 	- [x] Protective Candle
 	- [x] Copper Stakes
 	- [x] Tesla Coil
-	- [ ] Sacred Blindfold
+	- [x] Sacred Blindfold
 - trinkets:
 	- [x] Scattered Pages
 	- [x] Charon's Obol
