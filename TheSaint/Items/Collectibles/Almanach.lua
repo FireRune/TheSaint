@@ -54,10 +54,10 @@ end
 --- Exposed API version of `addItemToBookBlacklist`<br>
 --- Adds the given item(s) to the book-blacklist if not already set
 --- @param mod ModReference
---- @param item CollectibleType | CollectibleType[]
-function TheSaintAPI:AddItemToBookBlacklist(mod, item)
-	if (type(item) ~= "table") then item = {item} end
-	addItemToBookBlacklist(mod.Name, item)
+--- @param ... CollectibleType
+function TheSaintAPI:AddItemToBookBlacklist(mod, ...)
+	local items = {...}
+	addItemToBookBlacklist(mod.Name, items)
 end
 
 --- checks wether the given item is in the books-blacklist

@@ -10,6 +10,7 @@ include("TheSaint.lib.status_effect_library")
 
 local stats = include("TheSaint.stats")
 local utils = include("TheSaint.utils")
+local enums = require("TheSaint.Enums")
 
 --- Obtained by using the `upgradeMod` function
 --- @class ModUpgraded : ModReference
@@ -244,3 +245,5 @@ if (type(imports) == "table") then
 end
 
 utils:PrintWithHeader("Type 'thesaint_help' for a list of commands")
+
+Isaac.RunCallback("TheSaint_POST_LOAD")
