@@ -416,7 +416,7 @@ end
 --- @param unlockDifficulty TheSaint.UnlockManager.UnlockDifficulty
 --- @return boolean
 local function isUnlocked(unlockPlayer, compMarks, unlockDifficulty)
-	if (mcm:getSetting(enums.Setting.UNLOCK_ALL)) then return true end
+	if (mcm:GetSetting(enums.Setting.UNLOCK_ALL)) then return true end
 
 	--- @type TheSaint.UnlockManager.CharacterCompletionMarks
 	local charMarks = v.persistent.CharacterMarks[unlockPlayer]

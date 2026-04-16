@@ -64,7 +64,7 @@ end
 
 --- @param setting TheSaint.Enums.Setting
 --- @return any
-function MCM:getSetting(setting)
+function MCM:GetSetting(setting)
 	return v.persistent[setting]
 end
 
