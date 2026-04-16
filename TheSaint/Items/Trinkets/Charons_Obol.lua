@@ -33,10 +33,10 @@ end
 --- Exposed API version of `addRedHeartOnlyCharacter`<br>
 --- Adds the given character(s) to the `redHeartOnlyChars`-table, if not already set
 --- @param mod ModReference
---- @param char PlayerType | PlayerType[]
-function TheSaintAPI:AddRedHeartOnlyCharacter(mod, char)
-	if (type(char) ~= "table") then char = {char} end
-	addRedHeartOnlyCharacter(mod.Name, char)
+--- @param ... PlayerType
+function TheSaintAPI:AddRedHeartOnlyCharacter(mod, ...)
+	local chars = {...}
+	addRedHeartOnlyCharacter(mod.Name, chars)
 end
 
 --- Returns whether the player is normally able to pick up a Soul/Black Heart

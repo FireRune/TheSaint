@@ -9,5 +9,5 @@
     <!-- Rite of Rebirth -->
     <costume anm2path="costume_rite_of_rebirth.anm2" type="passive" id="7" priority="0" />
     <!-- Sacred Blindfold -->
-    <costume anm2path="n014_blindfold.anm2" type="passive" id="12" priority="101" />
+    <costume anm2path="costume_sacred_blindfold.anm2" type="passive" id="12" priority="100" />
 </costumes>
