@@ -10,7 +10,6 @@ local utils = include("TheSaint.utils")
 --- @class TheSaint.Items.Collectibles.Copper_Stakes : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Copper_Stakes = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
 	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_COPPER_STAKES),
 }
 

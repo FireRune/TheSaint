@@ -10,7 +10,6 @@ local config = Isaac.GetItemConfig()
 --- @class TheSaint.Items.Trinkets.Old_Hive : TheSaint.classes.ModFeatureTargeted<TrinketType>
 local Old_Hive = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<TrinketType>
 	Target = featureTarget:new(enums.TrinketType.TRINKET_OLD_HIVE),
 }
 
@@ -22,9 +21,6 @@ local function getFlyOrSpiderItems()
 	if (#hiveItems > 0) then return end
 
 	utils:DebugStringWithHeader("(INFO) <Old Hive> generate list of passive items with 'fly' and/or 'spider'-tag")
-	--- API says that `GetCollectibles()` returns `userdata`, but it's actually `ItemConfigList`
-	--- @type ItemConfigList
-	--- @diagnostic disable-next-line
 	local collectibles = config:GetCollectibles()
 	for i = 0, (collectibles.Size - 1) do
 		local collectible = config:GetCollectible(i)

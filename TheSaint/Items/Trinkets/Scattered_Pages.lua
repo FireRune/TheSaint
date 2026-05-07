@@ -1,13 +1,11 @@
 local isc = require("TheSaint.lib.isaacscript-common")
 local enums = require("TheSaint.Enums")
 local featureTarget = require("TheSaint.structures.FeatureTarget")
-local utils = include("TheSaint.utils")
 
 --- Using an active item has a 33/66/100% chance to trigger the effect of a random `book`-item
 --- @class TheSaint.Items.Trinkets.Scattered_Pages : TheSaint.classes.ModFeatureTargeted<TrinketType>
 local Scattered_Pages = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<TrinketType>
 	Target = featureTarget:new(enums.TrinketType.TRINKET_SCATTERED_PAGES),
 	SaveDataKey = "Scattered_Pages",
 }
@@ -75,8 +73,6 @@ local function useItem(_, collectible, rng, player, flags)
 		custVarData = enums.CustomVarData.Almanach.NORMAL
 	end
 
-	--- necessary until the `Binding of Isaac Lua API` VSCode extension adds the `customVarData` parameter to this function
-	--- @diagnostic disable-next-line: param-type-mismatch
 	player:UseActiveItem(enums.CollectibleType.COLLECTIBLE_ALMANACH, newFlags, -1, custVarData)
 
 	effectIsRunning = false

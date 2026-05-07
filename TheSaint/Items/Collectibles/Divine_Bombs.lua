@@ -9,7 +9,6 @@ local utils = include("TheSaint.utils")
 --- @class TheSaint.Items.Collectibles.Divine_Bombs : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Divine_Bombs = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
 	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_DIVINE_BOMBS),
 }
 

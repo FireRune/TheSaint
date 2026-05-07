@@ -13,7 +13,6 @@ local TIL = ThrowableItemLib
 --- @class TheSaint.Items.Collectibles.Holy_Hand_Grenade : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Holy_Hand_Grenade = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
 	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_HOLY_HAND_GRENADE),
 	SaveDataKey = "Holy_Hand_Grenade",
 }

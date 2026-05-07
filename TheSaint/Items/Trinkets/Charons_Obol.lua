@@ -13,7 +13,6 @@ local sfx = SFXManager()
 --- @class TheSaint.Items.Trinkets.Charons_Obol : TheSaint.classes.ModFeatureTargeted<TrinketType>
 local Charons_Obol = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<TrinketType>
 	Target = featureTarget:new(enums.TrinketType.TRINKET_CHARONS_OBOL),
 }
 
@@ -69,7 +68,7 @@ local function prePickupCollision_Hearts(_, pickup, collider, low)
 	local isBlackHeart = false
 	local numWisps = 2
 	if ((subType == HeartSubType.HEART_SOUL)) then
-		-- no alteration forr regular soul hearts
+		-- no alteration for regular soul hearts
 	elseif (subType == HeartSubType.HEART_BLACK) then
 		isBlackHeart = true
 	elseif (subType == HeartSubType.HEART_HALF_SOUL) then

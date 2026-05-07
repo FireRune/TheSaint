@@ -9,7 +9,6 @@ local game = Game()
 --- @class TheSaint.Items.PocketItems.Library_Card : TheSaint.classes.ModFeatureTargeted<Card>
 local Library_Card = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<Card>
 	Target = featureTarget:new(enums.Card.CARD_LIBRARY),
 }
 

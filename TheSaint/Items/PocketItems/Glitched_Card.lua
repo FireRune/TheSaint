@@ -13,7 +13,6 @@ local conf = Isaac.GetItemConfig()
 --- @class TheSaint.Items.PocketItems.Glitched_Card : TheSaint.classes.ModFeatureTargeted<Card>
 local Glitched_Card = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<Card>
 	Target = featureTarget:new(enums.Card.CARD_GLITCHED),
 }
 

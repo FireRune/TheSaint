@@ -53,7 +53,6 @@ local game = Game()
 --- @class TheSaint.Items.Collectibles.Rite_of_Rebirth : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Rite_of_Rebirth = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
 	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_RITE_OF_REBIRTH),
 	SaveDataKey = "Rite_of_Rebirth",
 }

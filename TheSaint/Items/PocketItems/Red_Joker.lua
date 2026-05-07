@@ -14,7 +14,6 @@ local sfx = SFXManager()
 --- @class TheSaint.Items.PocketItems.Red_Joker : TheSaint.classes.ModFeatureTargeted<Card>
 local Red_Joker = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<Card>
 	Target = featureTarget:new(enums.Card.CARD_RED_JOKER),
 }
 

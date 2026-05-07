@@ -9,7 +9,6 @@ local game = Game()
 --- @class TheSaint.Items.Trinkets.Holy_Penny : TheSaint.classes.ModFeatureTargeted<TrinketType>
 local Holy_Penny = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<TrinketType>
 	Target = featureTarget:new(enums.TrinketType.TRINKET_HOLY_PENNY),
 }
 

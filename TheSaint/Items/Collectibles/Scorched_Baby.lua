@@ -5,7 +5,6 @@ local featureTarget = require("TheSaint.structures.FeatureTarget")
 --- @class TheSaint.Items.Collectibles.Scorched_Baby : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Scorched_Baby = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
 	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_SCORCHED_BABY, {EntityType.ENTITY_FAMILIAR, enums.FamiliarVariant.SCORCHED_BABY}),
 }
 

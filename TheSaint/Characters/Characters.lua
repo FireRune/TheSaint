@@ -4,7 +4,6 @@ local utils = include("TheSaint.utils")
 
 local game = Game()
 local pool = game:GetItemPool()
-local config = Isaac.GetItemConfig()
 
 --- @class TheSaint.Characters.Characters : TheSaint.classes.ModFeature
 local Characters = {

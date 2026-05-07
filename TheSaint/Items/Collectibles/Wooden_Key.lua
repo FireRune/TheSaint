@@ -11,7 +11,6 @@ local sfx = SFXManager()
 --- @class TheSaint.Items.Collectibles.Wooden_Key : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Wooden_Key = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
 	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_WOODEN_KEY),
 	SaveDataKey = "Wooden_Key",
 }

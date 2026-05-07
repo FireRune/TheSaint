@@ -15,7 +15,6 @@ local config = Isaac.GetItemConfig()
 --- @class TheSaint.Items.Collectibles.Almanach : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Almanach = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
 	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_ALMANACH),
 }
 
@@ -77,9 +76,6 @@ local function getBooks()
 	if (#books > 0) then return end
 	utils:DebugStringWithHeader("(INFO) <Almanach> generate list of items with 'book'-tag (except blacklisted items)")
 
-	--- API says that `GetCollectibles()` returns `userdata`, but it's actually `ItemConfigList`
-	--- @type ItemConfigList
-	--- @diagnostic disable-next-line
 	local collectibles = config:GetCollectibles()
 	for i = 0, (collectibles.Size - 1) do
 		local collectible = config:GetCollectible(i)

@@ -14,7 +14,6 @@ local game = Game()
 --- @class TheSaint.Items.Collectibles.Tesla_Coil : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Tesla_Coil = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
 	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_TESLA_COIL, {EntityType.ENTITY_FAMILIAR, enums.FamiliarVariant.TESLA_COIL}),
 }
 

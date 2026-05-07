@@ -13,7 +13,6 @@ local game = Game()
 --- @class TheSaint.Items.PocketItems.Soul_Saint : TheSaint.classes.ModFeatureTargeted<Card>
 local Soul_Saint = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<Card>
 	Target = featureTarget:new(enums.Card.CARD_SOUL_SAINT),
 	SaveDataKey = "Soul_Saint",
 }

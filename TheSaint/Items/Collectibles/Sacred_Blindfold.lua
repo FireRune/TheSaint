@@ -13,7 +13,6 @@ local conf = Isaac.GetItemConfig()
 --- @class TheSaint.Items.Collectibles.Sacred_Blindfold : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Sacred_Blindfold = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
 	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_SACRED_BLINDFOLD),
 }
 

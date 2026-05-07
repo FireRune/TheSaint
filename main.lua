@@ -231,6 +231,7 @@ local function thesaint_help()
 	utils:PrintWithHeader("list of commands (all commands and their parameters are case-insensitive, unless stated otherwise):")
 	utils:PrintWithHeader("- 'thesaint_help': shows this list")
 	utils:PrintWithHeader("- 'thesaint_reloadbooks': reloads the cache of 'book'-items for 'Almanach'")
+	utils:PrintWithHeader("- 'thesaint_reloadhive': reloads the cache of 'fly'- and 'spider'-items for 'Old Hive'")
 	utils:PrintWithHeader("- 'thesaint_marks': check progress for this mod's characters' completion marks")
 end
 TheSaint:addConsoleCommand("thesaint_help", thesaint_help)

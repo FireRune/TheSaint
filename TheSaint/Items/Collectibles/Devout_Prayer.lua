@@ -17,7 +17,6 @@ local hud = game:GetHUD()
 --- @class TheSaint.Items.Collectibles.Devout_Prayer : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Devout_Prayer = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
 	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_DEVOUT_PRAYER),
 	SaveDataKey = "Devout_Prayer",
 }

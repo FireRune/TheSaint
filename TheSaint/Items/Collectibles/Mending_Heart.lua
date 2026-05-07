@@ -11,7 +11,6 @@ local game = Game()
 --- @class TheSaint.Items.Collectibles.Mending_Heart : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Mending_Heart = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
 	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_MENDING_HEART, nil, enums.PlayerType.PLAYER_THE_SAINT_B),
 	SaveDataKey = "Mending_Heart",
 }

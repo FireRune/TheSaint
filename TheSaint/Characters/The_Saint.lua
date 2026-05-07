@@ -7,7 +7,6 @@ local game = Game()
 --- @class TheSaint.Characters.The_Saint : TheSaint.classes.ModFeatureTargeted<PlayerType>
 local The_Saint = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<PlayerType>
 	Target = featureTarget:new(enums.PlayerType.PLAYER_THE_SAINT),
 	SaveDataKey = "The_Saint",
 }

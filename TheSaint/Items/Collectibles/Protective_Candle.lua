@@ -20,7 +20,6 @@ local game = Game()
 --- @class TheSaint.Items.Collectibles.Protective_Candle : TheSaint.classes.ModFeatureTargeted<CollectibleType>
 local Protective_Candle = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<CollectibleType>
 	Target = featureTarget:new(enums.CollectibleType.COLLECTIBLE_PROTECTIVE_CANDLE, {EntityType.ENTITY_EFFECT, enums.EffectVariant.PROTECTIVE_CANDLE}, enums.PlayerType.PLAYER_THE_SAINT),
 }
 
@@ -284,7 +283,6 @@ local function postEffectUpdate_RedCandleFlame(_, entFlame)
 	-- TNT.State has a value from 0 to 4, with 4 being the destroyed TNT; therefore ignore that state
 	if ((gridEnt) and (gridEnt:GetType() == GridEntityType.GRID_TNT) and (gridEnt.State < 4)) then
 		if (REPENTANCE_PLUS) then
-			--- @diagnostic disable-next-line: undefined-field
 			gridEnt:DestroyWithSource(false, sourceRef)
 		else
 			gridEnt:Destroy(false)
@@ -328,7 +326,6 @@ local function postEffectUpdate_ProtectiveCandle(_, entCandle)
 	if (not gridEnt) then return end
 
 	if (REPENTANCE_PLUS) then
-		--- @diagnostic disable-next-line: undefined-field
 		gridEnt:HurtWithSource(1, sourceRef)
 	else
 		gridEnt:Hurt(1)

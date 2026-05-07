@@ -3,12 +3,9 @@ local enums = require("TheSaint.Enums")
 local featureTarget = require("TheSaint.structures.FeatureTarget")
 local utils = include("TheSaint.utils")
 
-local game = Game()
-
 --- @class TheSaint.Characters.Tainted_Saint : TheSaint.classes.ModFeatureTargeted<PlayerType>
 local Tainted_Saint = {
 	IsInitialized = false,
-	--- @type TheSaint.structures.FeatureTarget<PlayerType>
 	Target = featureTarget:new(enums.PlayerType.PLAYER_THE_SAINT_B),
 }
 
