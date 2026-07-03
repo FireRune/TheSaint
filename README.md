@@ -9,9 +9,9 @@ The final amount of content will change in the future.
 This version is designed to be used with the Repentance and Repentance+ DLCs.
 
 Using the following libraries:
-- [IsaacScript](https://isaacscript.github.io) (version 87.8.0)
-- [ThrowableItemLib](https://github.com/drpandacat/ThrowableItemLib) (version 1.5.2)
-- [status-effect-library](https://github.com/BenevolusGoat/status-effect-library) (version 1.1.2)
+- [IsaacScript](https://isaacscript.github.io) (version 87.9.5)
+- [ThrowableItemLib](https://github.com/drpandacat/ThrowableItemLib) (version 1.5.3)
+- [status-effect-library](https://github.com/BenevolusGoat/status-effect-library) (version 1.1.3)
 
 ## Current list of features
 
@@ -21,7 +21,7 @@ Using the following libraries:
 - 4 new cards/runes
 - integration for the following mods
 	- [External Item Descriptions](https://github.com/wofsauge/External-Item-Descriptions)
-	- [Mod Config Menu Pure](https://github.com/Zamiell/isaac-mod-config-menu)
+	- [Mod Config Menu Impure](https://github.com/piber20/Mod-Config-Menu-Impure)
 
 
 For a list of planned features, see [here](https://github.com/FireRune/TheSaint/blob/main/TODO.md)

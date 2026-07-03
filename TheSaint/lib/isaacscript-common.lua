@@ -1,6 +1,6 @@
 --[[
 
-isaacscript-common 87.8.0
+isaacscript-common 87.9.5
 
 This is the "isaacscript-common" library, which was created with the IsaacScript tool.
 
@@ -2295,7 +2295,7 @@ local function __TS__SourceMapTraceBack(fileName, sourceMap)
             end
             local result = string.gsub(
                 trace,
-                "(%S+)%.lua:(%d+)",
+                "([^%s<]+)%.lua:(%d+)",
                 function(file, line) return replacer(nil, file .. ".lua", file .. ".ts", line) end
             )
             local function stringReplacer(____, file, line)
@@ -3958,6 +3958,14 @@ do
     end
 end
 do
+    local ____export = require("lua_modules.isaac-typescript-definitions.dist.enums.DrawStringAlignment")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
     local ____export = require("lua_modules.isaac-typescript-definitions.dist.enums.EntityCollisionClass")
     for ____exportKey, ____exportValue in pairs(____export) do
         if ____exportKey ~= "default" then
@@ -4207,6 +4215,14 @@ do
 end
 do
     local ____export = require("lua_modules.isaac-typescript-definitions.dist.enums.ItemType")
+    for ____exportKey, ____exportValue in pairs(____export) do
+        if ____exportKey ~= "default" then
+            ____exports[____exportKey] = ____exportValue
+        end
+    end
+end
+do
+    local ____export = require("lua_modules.isaac-typescript-definitions.dist.enums.JacobEsauControls")
     for ____exportKey, ____exportValue in pairs(____export) do
         if ____exportKey ~= "default" then
             ____exports[____exportKey] = ____exportValue
@@ -6121,6 +6137,520 @@ ____exports.SoundEffect.G_FUEL_BULLET_RICOCHET = 831
 ____exports.SoundEffect[____exports.SoundEffect.G_FUEL_BULLET_RICOCHET] = "G_FUEL_BULLET_RICOCHET"
 ____exports.SoundEffect.G_FUEL_ROCKET_LAUNCHER = 832
 ____exports.SoundEffect[____exports.SoundEffect.G_FUEL_ROCKET_LAUNCHER] = "G_FUEL_ROCKET_LAUNCHER"
+____exports.SoundEffect.DEATHMATCH_INTRO = 833
+____exports.SoundEffect[____exports.SoundEffect.DEATHMATCH_INTRO] = "DEATHMATCH_INTRO"
+____exports.SoundEffect.ABYSS = 834
+____exports.SoundEffect[____exports.SoundEffect.ABYSS] = "ABYSS"
+____exports.SoundEffect.BIG_CHUBBY_ATTACK = 835
+____exports.SoundEffect[____exports.SoundEffect.BIG_CHUBBY_ATTACK] = "BIG_CHUBBY_ATTACK"
+____exports.SoundEffect.BOOMERANG_THROW = 836
+____exports.SoundEffect[____exports.SoundEffect.BOOMERANG_THROW] = "BOOMERANG_THROW"
+____exports.SoundEffect.BOOMERANG_LOOP = 837
+____exports.SoundEffect[____exports.SoundEffect.BOOMERANG_LOOP] = "BOOMERANG_LOOP"
+____exports.SoundEffect.BOOMERANG_CATCH = 838
+____exports.SoundEffect[____exports.SoundEffect.BOOMERANG_CATCH] = "BOOMERANG_CATCH"
+____exports.SoundEffect.BOOMERANG_HIT = 839
+____exports.SoundEffect[____exports.SoundEffect.BOOMERANG_HIT] = "BOOMERANG_HIT"
+____exports.SoundEffect.BOX_OF_FRIENDS = 840
+____exports.SoundEffect[____exports.SoundEffect.BOX_OF_FRIENDS] = "BOX_OF_FRIENDS"
+____exports.SoundEffect.BROWN_NUGGET = 841
+____exports.SoundEffect[____exports.SoundEffect.BROWN_NUGGET] = "BROWN_NUGGET"
+____exports.SoundEffect.BUMBO_1 = 842
+____exports.SoundEffect[____exports.SoundEffect.BUMBO_1] = "BUMBO_1"
+____exports.SoundEffect.BUMBO_2 = 843
+____exports.SoundEffect[____exports.SoundEffect.BUMBO_2] = "BUMBO_2"
+____exports.SoundEffect.BUMBO_3 = 844
+____exports.SoundEffect[____exports.SoundEffect.BUMBO_3] = "BUMBO_3"
+____exports.SoundEffect.BUMBO_4 = 845
+____exports.SoundEffect[____exports.SoundEffect.BUMBO_4] = "BUMBO_4"
+____exports.SoundEffect.PORTAL_ENTITY_LOOP = 846
+____exports.SoundEffect[____exports.SoundEffect.PORTAL_ENTITY_LOOP] = "PORTAL_ENTITY_LOOP"
+____exports.SoundEffect.PORTAL_ENTITY_ENTER = 847
+____exports.SoundEffect[____exports.SoundEffect.PORTAL_ENTITY_ENTER] = "PORTAL_ENTITY_ENTER"
+____exports.SoundEffect.CONVERTER = 848
+____exports.SoundEffect[____exports.SoundEffect.CONVERTER] = "CONVERTER"
+____exports.SoundEffect.LITTLE_CHUBBY_ATTACK = 849
+____exports.SoundEffect[____exports.SoundEffect.LITTLE_CHUBBY_ATTACK] = "LITTLE_CHUBBY_ATTACK"
+____exports.SoundEffect.CRACKED_ORB = 850
+____exports.SoundEffect[____exports.SoundEffect.CRACKED_ORB] = "CRACKED_ORB"
+____exports.SoundEffect.CROOKED_PENNY = 851
+____exports.SoundEffect[____exports.SoundEffect.CROOKED_PENNY] = "CROOKED_PENNY"
+____exports.SoundEffect.CUBE_BABY_KICK = 852
+____exports.SoundEffect[____exports.SoundEffect.CUBE_BABY_KICK] = "CUBE_BABY_KICK"
+____exports.SoundEffect.DARK_BUM_PAYOUT = 853
+____exports.SoundEffect[____exports.SoundEffect.DARK_BUM_PAYOUT] = "DARK_BUM_PAYOUT"
+____exports.SoundEffect.DATAMINER = 854
+____exports.SoundEffect[____exports.SoundEffect.DATAMINER] = "DATAMINER"
+____exports.SoundEffect.DR_REMOTE_WARNING = 855
+____exports.SoundEffect[____exports.SoundEffect.DR_REMOTE_WARNING] = "DR_REMOTE_WARNING"
+____exports.SoundEffect.FLIP_POOF = 856
+____exports.SoundEffect[____exports.SoundEffect.FLIP_POOF] = "FLIP_POOF"
+____exports.SoundEffect.ERASER_HIT = 857
+____exports.SoundEffect[____exports.SoundEffect.ERASER_HIT] = "ERASER_HIT"
+____exports.SoundEffect.GNAWED_LEAF = 858
+____exports.SoundEffect[____exports.SoundEffect.GNAWED_LEAF] = "GNAWED_LEAF"
+____exports.SoundEffect.LIL_HAUNT_CHASE = 859
+____exports.SoundEffect[____exports.SoundEffect.LIL_HAUNT_CHASE] = "LIL_HAUNT_CHASE"
+____exports.SoundEffect.LINGER_BEAN = 860
+____exports.SoundEffect[____exports.SoundEffect.LINGER_BEAN] = "LINGER_BEAN"
+____exports.SoundEffect.GLOWING_HOURGLASS_ACTIVATE = 861
+____exports.SoundEffect[____exports.SoundEffect.GLOWING_HOURGLASS_ACTIVATE] = "GLOWING_HOURGLASS_ACTIVATE"
+____exports.SoundEffect.GLOWING_HOURGLASS_FIZZLE = 862
+____exports.SoundEffect[____exports.SoundEffect.GLOWING_HOURGLASS_FIZZLE] = "GLOWING_HOURGLASS_FIZZLE"
+____exports.SoundEffect.INFAMY_DEFLECT = 863
+____exports.SoundEffect[____exports.SoundEffect.INFAMY_DEFLECT] = "INFAMY_DEFLECT"
+____exports.SoundEffect.IBS_GURGLE = 864
+____exports.SoundEffect[____exports.SoundEffect.IBS_GURGLE] = "IBS_GURGLE"
+____exports.SoundEffect.POOP_THROW = 865
+____exports.SoundEffect[____exports.SoundEffect.POOP_THROW] = "POOP_THROW"
+____exports.SoundEffect.GLITTER_BOOM = 866
+____exports.SoundEffect[____exports.SoundEffect.GLITTER_BOOM] = "GLITTER_BOOM"
+____exports.SoundEffect.GLITTER_FUSE = 867
+____exports.SoundEffect[____exports.SoundEffect.GLITTER_FUSE] = "GLITTER_FUSE"
+____exports.SoundEffect.LITTLE_HORN_SHOOT = 868
+____exports.SoundEffect[____exports.SoundEffect.LITTLE_HORN_SHOOT] = "LITTLE_HORN_SHOOT"
+____exports.SoundEffect.MEGA_BEAN_BLAST = 869
+____exports.SoundEffect[____exports.SoundEffect.MEGA_BEAN_BLAST] = "MEGA_BEAN_BLAST"
+____exports.SoundEffect.MOM_BOTTLE = 870
+____exports.SoundEffect[____exports.SoundEffect.MOM_BOTTLE] = "MOM_BOTTLE"
+____exports.SoundEffect.SUMMON_PENTAGRAM = 871
+____exports.SoundEffect[____exports.SoundEffect.SUMMON_PENTAGRAM] = "SUMMON_PENTAGRAM"
+____exports.SoundEffect.SUMMON_WAVE = 872
+____exports.SoundEffect[____exports.SoundEffect.SUMMON_WAVE] = "SUMMON_WAVE"
+____exports.SoundEffect.BIGHORN_APPEAR = 873
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_APPEAR] = "BIGHORN_APPEAR"
+____exports.SoundEffect.BIGHORN_CLOSE_BIG = 874
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_CLOSE_BIG] = "BIGHORN_CLOSE_BIG"
+____exports.SoundEffect.BIGHORN_CRACK_BIG = 875
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_CRACK_BIG] = "BIGHORN_CRACK_BIG"
+____exports.SoundEffect.BIGHORN_OPEN_BIG = 876
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_OPEN_BIG] = "BIGHORN_OPEN_BIG"
+____exports.SoundEffect.BIGHORN_SHAKE_BIG = 877
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_SHAKE_BIG] = "BIGHORN_SHAKE_BIG"
+____exports.SoundEffect.BIGHORN_DEATH = 878
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_DEATH] = "BIGHORN_DEATH"
+____exports.SoundEffect.BIGHORN_DIZZY_SHAKE = 879
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_DIZZY_SHAKE] = "BIGHORN_DIZZY_SHAKE"
+____exports.SoundEffect.BIGHORN_HAND_APPEAR = 880
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_HAND_APPEAR] = "BIGHORN_HAND_APPEAR"
+____exports.SoundEffect.BIGHORN_HAND_HIDE = 881
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_HAND_HIDE] = "BIGHORN_HAND_HIDE"
+____exports.SoundEffect.BIGHORN_HIDE = 882
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_HIDE] = "BIGHORN_HIDE"
+____exports.SoundEffect.BIGHORN_HURT = 883
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_HURT] = "BIGHORN_HURT"
+____exports.SoundEffect.BIGHORN_PRE_SPIT = 884
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_PRE_SPIT] = "BIGHORN_PRE_SPIT"
+____exports.SoundEffect.BIGHORN_CLOSE_SMALL = 885
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_CLOSE_SMALL] = "BIGHORN_CLOSE_SMALL"
+____exports.SoundEffect.BIGHORN_CRACK_SMALL = 886
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_CRACK_SMALL] = "BIGHORN_CRACK_SMALL"
+____exports.SoundEffect.BIGHORN_OPEN_SMALL = 887
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_OPEN_SMALL] = "BIGHORN_OPEN_SMALL"
+____exports.SoundEffect.BIGHORN_SHAKE_SMALL = 888
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_SHAKE_SMALL] = "BIGHORN_SHAKE_SMALL"
+____exports.SoundEffect.BIGHORN_SPIT = 889
+____exports.SoundEffect[____exports.SoundEffect.BIGHORN_SPIT] = "BIGHORN_SPIT"
+____exports.SoundEffect.MOMS_BOX = 890
+____exports.SoundEffect[____exports.SoundEffect.MOMS_BOX] = "MOMS_BOX"
+____exports.SoundEffect.MONSTRO_LUNG_BARF = 891
+____exports.SoundEffect[____exports.SoundEffect.MONSTRO_LUNG_BARF] = "MONSTRO_LUNG_BARF"
+____exports.SoundEffect.MOVING_BOX_PACK = 892
+____exports.SoundEffect[____exports.SoundEffect.MOVING_BOX_PACK] = "MOVING_BOX_PACK"
+____exports.SoundEffect.MOVING_BOX_UNPACK = 893
+____exports.SoundEffect[____exports.SoundEffect.MOVING_BOX_UNPACK] = "MOVING_BOX_UNPACK"
+____exports.SoundEffect.PANDORAS_BOX = 894
+____exports.SoundEffect[____exports.SoundEffect.PANDORAS_BOX] = "PANDORAS_BOX"
+____exports.SoundEffect.PAUSE_FREEZE = 895
+____exports.SoundEffect[____exports.SoundEffect.PAUSE_FREEZE] = "PAUSE_FREEZE"
+____exports.SoundEffect.MONSTRO_LUNG_CHARGE = 896
+____exports.SoundEffect[____exports.SoundEffect.MONSTRO_LUNG_CHARGE] = "MONSTRO_LUNG_CHARGE"
+____exports.SoundEffect.PLAN_C = 897
+____exports.SoundEffect[____exports.SoundEffect.PLAN_C] = "PLAN_C"
+____exports.SoundEffect.PORTABLE_SLOT_USE = 898
+____exports.SoundEffect[____exports.SoundEffect.PORTABLE_SLOT_USE] = "PORTABLE_SLOT_USE"
+____exports.SoundEffect.PORTABLE_SLOT_WIN = 899
+____exports.SoundEffect[____exports.SoundEffect.PORTABLE_SLOT_WIN] = "PORTABLE_SLOT_WIN"
+____exports.SoundEffect.SAFETY_SCISSORS = 900
+____exports.SoundEffect[____exports.SoundEffect.SAFETY_SCISSORS] = "SAFETY_SCISSORS"
+____exports.SoundEffect.BUTTER_DROP = 901
+____exports.SoundEffect[____exports.SoundEffect.BUTTER_DROP] = "BUTTER_DROP"
+____exports.SoundEffect.BUTTER_LAND = 902
+____exports.SoundEffect[____exports.SoundEffect.BUTTER_LAND] = "BUTTER_LAND"
+____exports.SoundEffect.PRIDE_ZAP = 903
+____exports.SoundEffect[____exports.SoundEffect.PRIDE_ZAP] = "PRIDE_ZAP"
+____exports.SoundEffect.R_KEY = 904
+____exports.SoundEffect[____exports.SoundEffect.R_KEY] = "R_KEY"
+____exports.SoundEffect.TEAR_BOUNCE = 905
+____exports.SoundEffect[____exports.SoundEffect.TEAR_BOUNCE] = "TEAR_BOUNCE"
+____exports.SoundEffect.SHARP_PLUG = 906
+____exports.SoundEffect[____exports.SoundEffect.SHARP_PLUG] = "SHARP_PLUG"
+____exports.SoundEffect.RIB_DEFLECT = 907
+____exports.SoundEffect[____exports.SoundEffect.RIB_DEFLECT] = "RIB_DEFLECT"
+____exports.SoundEffect.SMELTER = 908
+____exports.SoundEffect[____exports.SoundEffect.SMELTER] = "SMELTER"
+____exports.SoundEffect.TELEKINESIS = 909
+____exports.SoundEffect[____exports.SoundEffect.TELEKINESIS] = "TELEKINESIS"
+____exports.SoundEffect.D6_ROLL = 910
+____exports.SoundEffect[____exports.SoundEffect.D6_ROLL] = "D6_ROLL"
+____exports.SoundEffect.TICK_BURN = 911
+____exports.SoundEffect[____exports.SoundEffect.TICK_BURN] = "TICK_BURN"
+____exports.SoundEffect.TELEPORT_UNDEFINED = 912
+____exports.SoundEffect[____exports.SoundEffect.TELEPORT_UNDEFINED] = "TELEPORT_UNDEFINED"
+____exports.SoundEffect.VOID_CONSUME = 913
+____exports.SoundEffect[____exports.SoundEffect.VOID_CONSUME] = "VOID_CONSUME"
+____exports.SoundEffect.YO_LISTEN = 914
+____exports.SoundEffect[____exports.SoundEffect.YO_LISTEN] = "YO_LISTEN"
+____exports.SoundEffect.SPIN_TO_WIN = 915
+____exports.SoundEffect[____exports.SoundEffect.SPIN_TO_WIN] = "SPIN_TO_WIN"
+____exports.SoundEffect.SHOVEL_DIG_2 = 916
+____exports.SoundEffect[____exports.SoundEffect.SHOVEL_DIG_2] = "SHOVEL_DIG_2"
+____exports.SoundEffect.SHOVEL_HOLE_OPEN = 917
+____exports.SoundEffect[____exports.SoundEffect.SHOVEL_HOLE_OPEN] = "SHOVEL_HOLE_OPEN"
+____exports.SoundEffect.CAGE_DEATH = 918
+____exports.SoundEffect[____exports.SoundEffect.CAGE_DEATH] = "CAGE_DEATH"
+____exports.SoundEffect.CAGE_JUMP = 919
+____exports.SoundEffect[____exports.SoundEffect.CAGE_JUMP] = "CAGE_JUMP"
+____exports.SoundEffect.CAGE_RIBS = 920
+____exports.SoundEffect[____exports.SoundEffect.CAGE_RIBS] = "CAGE_RIBS"
+____exports.SoundEffect.CAGE_ROLL_START = 921
+____exports.SoundEffect[____exports.SoundEffect.CAGE_ROLL_START] = "CAGE_ROLL_START"
+____exports.SoundEffect.CAGE_PREP_SHOOT = 922
+____exports.SoundEffect[____exports.SoundEffect.CAGE_PREP_SHOOT] = "CAGE_PREP_SHOOT"
+____exports.SoundEffect.CAGE_ROLL_STOP = 923
+____exports.SoundEffect[____exports.SoundEffect.CAGE_ROLL_STOP] = "CAGE_ROLL_STOP"
+____exports.SoundEffect.CAGE_ROLL_BOUNCE = 924
+____exports.SoundEffect[____exports.SoundEffect.CAGE_ROLL_BOUNCE] = "CAGE_ROLL_BOUNCE"
+____exports.SoundEffect.DEATH_HOURGLASS = 925
+____exports.SoundEffect[____exports.SoundEffect.DEATH_HOURGLASS] = "DEATH_HOURGLASS"
+____exports.SoundEffect.DEATH_SICKLE = 926
+____exports.SoundEffect[____exports.SoundEffect.DEATH_SICKLE] = "DEATH_SICKLE"
+____exports.SoundEffect.DEATH_LEAN = 927
+____exports.SoundEffect[____exports.SoundEffect.DEATH_LEAN] = "DEATH_LEAN"
+____exports.SoundEffect.DEATH_VOX = 928
+____exports.SoundEffect[____exports.SoundEffect.DEATH_VOX] = "DEATH_VOX"
+____exports.SoundEffect.DEATH_SPAWN_PREP = 929
+____exports.SoundEffect[____exports.SoundEffect.DEATH_SPAWN_PREP] = "DEATH_SPAWN_PREP"
+____exports.SoundEffect.DEATH_HORSE_ATTACK = 930
+____exports.SoundEffect[____exports.SoundEffect.DEATH_HORSE_ATTACK] = "DEATH_HORSE_ATTACK"
+____exports.SoundEffect.DEATH_HORSE_WOOSH = 931
+____exports.SoundEffect[____exports.SoundEffect.DEATH_HORSE_WOOSH] = "DEATH_HORSE_WOOSH"
+____exports.SoundEffect.PIN_DIVE = 932
+____exports.SoundEffect[____exports.SoundEffect.PIN_DIVE] = "PIN_DIVE"
+____exports.SoundEffect.PIN_POPUP = 933
+____exports.SoundEffect[____exports.SoundEffect.PIN_POPUP] = "PIN_POPUP"
+____exports.SoundEffect.PIN_PUDDLE = 934
+____exports.SoundEffect[____exports.SoundEffect.PIN_PUDDLE] = "PIN_PUDDLE"
+____exports.SoundEffect.PIN_SPIT = 935
+____exports.SoundEffect[____exports.SoundEffect.PIN_SPIT] = "PIN_SPIT"
+____exports.SoundEffect.GISH_JUMP = 936
+____exports.SoundEffect[____exports.SoundEffect.GISH_JUMP] = "GISH_JUMP"
+____exports.SoundEffect.GISH_JUMP_HIGH = 937
+____exports.SoundEffect[____exports.SoundEffect.GISH_JUMP_HIGH] = "GISH_JUMP_HIGH"
+____exports.SoundEffect.GISH_SPIT = 938
+____exports.SoundEffect[____exports.SoundEffect.GISH_SPIT] = "GISH_SPIT"
+____exports.SoundEffect.GURDY_FACE_ATTACK_APPEAR = 939
+____exports.SoundEffect[____exports.SoundEffect.GURDY_FACE_ATTACK_APPEAR] = "GURDY_FACE_ATTACK_APPEAR"
+____exports.SoundEffect.GURDY_FACE_ATTACK_HIDE = 940
+____exports.SoundEffect[____exports.SoundEffect.GURDY_FACE_ATTACK_HIDE] = "GURDY_FACE_ATTACK_HIDE"
+____exports.SoundEffect.GURDY_FACE_SMILE_APPEAR = 941
+____exports.SoundEffect[____exports.SoundEffect.GURDY_FACE_SMILE_APPEAR] = "GURDY_FACE_SMILE_APPEAR"
+____exports.SoundEffect.GURDY_FACE_SMILE_HIDE = 942
+____exports.SoundEffect[____exports.SoundEffect.GURDY_FACE_SMILE_HIDE] = "GURDY_FACE_SMILE_HIDE"
+____exports.SoundEffect.GURGLING_ATTACK = 943
+____exports.SoundEffect[____exports.SoundEffect.GURGLING_ATTACK] = "GURGLING_ATTACK"
+____exports.SoundEffect.LITTLE_HORN_DEATH = 944
+____exports.SoundEffect[____exports.SoundEffect.LITTLE_HORN_DEATH] = "LITTLE_HORN_DEATH"
+____exports.SoundEffect.LITTLE_HORN_BOMB_DROP = 945
+____exports.SoundEffect[____exports.SoundEffect.LITTLE_HORN_BOMB_DROP] = "LITTLE_HORN_BOMB_DROP"
+____exports.SoundEffect.LITTLE_HORN_DIVE = 946
+____exports.SoundEffect[____exports.SoundEffect.LITTLE_HORN_DIVE] = "LITTLE_HORN_DIVE"
+____exports.SoundEffect.LITTLE_HORN_HOLE_OPEN = 947
+____exports.SoundEffect[____exports.SoundEffect.LITTLE_HORN_HOLE_OPEN] = "LITTLE_HORN_HOLE_OPEN"
+____exports.SoundEffect.LITTLE_HORN_HOLE_EXIT = 948
+____exports.SoundEffect[____exports.SoundEffect.LITTLE_HORN_HOLE_EXIT] = "LITTLE_HORN_HOLE_EXIT"
+____exports.SoundEffect.LOKI_GIGGLE = 949
+____exports.SoundEffect[____exports.SoundEffect.LOKI_GIGGLE] = "LOKI_GIGGLE"
+____exports.SoundEffect.LOKI_JUMP_OUT = 950
+____exports.SoundEffect[____exports.SoundEffect.LOKI_JUMP_OUT] = "LOKI_JUMP_OUT"
+____exports.SoundEffect.LOKI_JUMP_IN = 951
+____exports.SoundEffect[____exports.SoundEffect.LOKI_JUMP_IN] = "LOKI_JUMP_IN"
+____exports.SoundEffect.LOKI_SHOOT = 952
+____exports.SoundEffect[____exports.SoundEffect.LOKI_SHOOT] = "LOKI_SHOOT"
+____exports.SoundEffect.LOKI_SHOOT_8 = 953
+____exports.SoundEffect[____exports.SoundEffect.LOKI_SHOOT_8] = "LOKI_SHOOT_8"
+____exports.SoundEffect.MASK_INFAMY_MAD = 954
+____exports.SoundEffect[____exports.SoundEffect.MASK_INFAMY_MAD] = "MASK_INFAMY_MAD"
+____exports.SoundEffect.MASK_INFAMY_DASH = 955
+____exports.SoundEffect[____exports.SoundEffect.MASK_INFAMY_DASH] = "MASK_INFAMY_DASH"
+____exports.SoundEffect.MEGA_FATTY_GULP = 956
+____exports.SoundEffect[____exports.SoundEffect.MEGA_FATTY_GULP] = "MEGA_FATTY_GULP"
+____exports.SoundEffect.MEGA_FATTY_SUCKING = 957
+____exports.SoundEffect[____exports.SoundEffect.MEGA_FATTY_SUCKING] = "MEGA_FATTY_SUCKING"
+____exports.SoundEffect.MEGA_FATTY_VOMIT = 958
+____exports.SoundEffect[____exports.SoundEffect.MEGA_FATTY_VOMIT] = "MEGA_FATTY_VOMIT"
+____exports.SoundEffect.STAIN_ATTACK_VOX = 959
+____exports.SoundEffect[____exports.SoundEffect.STAIN_ATTACK_VOX] = "STAIN_ATTACK_VOX"
+____exports.SoundEffect.SISTERS_VIS_SCARE = 960
+____exports.SoundEffect[____exports.SoundEffect.SISTERS_VIS_SCARE] = "SISTERS_VIS_SCARE"
+____exports.SoundEffect.STEVEN_DEATH_BIG = 961
+____exports.SoundEffect[____exports.SoundEffect.STEVEN_DEATH_BIG] = "STEVEN_DEATH_BIG"
+____exports.SoundEffect.STEVEN_DEATH_SMALL = 963
+____exports.SoundEffect[____exports.SoundEffect.STEVEN_DEATH_SMALL] = "STEVEN_DEATH_SMALL"
+____exports.SoundEffect.FALLEN_FLAP_CHASE = 964
+____exports.SoundEffect[____exports.SoundEffect.FALLEN_FLAP_CHASE] = "FALLEN_FLAP_CHASE"
+____exports.SoundEffect.FALLEN_GROWL = 965
+____exports.SoundEffect[____exports.SoundEffect.FALLEN_GROWL] = "FALLEN_GROWL"
+____exports.SoundEffect.FALLEN_FLAP = 966
+____exports.SoundEffect[____exports.SoundEffect.FALLEN_FLAP] = "FALLEN_FLAP"
+____exports.SoundEffect.FALLEN_OPEN_WINGS = 967
+____exports.SoundEffect[____exports.SoundEffect.FALLEN_OPEN_WINGS] = "FALLEN_OPEN_WINGS"
+____exports.SoundEffect.TERATOMA_BOUNCE_BIG = 968
+____exports.SoundEffect[____exports.SoundEffect.TERATOMA_BOUNCE_BIG] = "TERATOMA_BOUNCE_BIG"
+____exports.SoundEffect.TERATOMA_BOUNCE_MEDIUM = 969
+____exports.SoundEffect[____exports.SoundEffect.TERATOMA_BOUNCE_MEDIUM] = "TERATOMA_BOUNCE_MEDIUM"
+____exports.SoundEffect.TERATOMA_BOUNCE_SMALL = 970
+____exports.SoundEffect[____exports.SoundEffect.TERATOMA_BOUNCE_SMALL] = "TERATOMA_BOUNCE_SMALL"
+____exports.SoundEffect.FORSAKEN_LASER = 971
+____exports.SoundEffect[____exports.SoundEffect.FORSAKEN_LASER] = "FORSAKEN_LASER"
+____exports.SoundEffect.FORSAKEN_ARMS_UP = 972
+____exports.SoundEffect[____exports.SoundEffect.FORSAKEN_ARMS_UP] = "FORSAKEN_ARMS_UP"
+____exports.SoundEffect.FORSAKEN_FADE = 973
+____exports.SoundEffect[____exports.SoundEffect.FORSAKEN_FADE] = "FORSAKEN_FADE"
+____exports.SoundEffect.FISTULA_BOUNCE_LARGE = 974
+____exports.SoundEffect[____exports.SoundEffect.FISTULA_BOUNCE_LARGE] = "FISTULA_BOUNCE_LARGE"
+____exports.SoundEffect.FISTULA_BOUNCE_MEDIUM = 975
+____exports.SoundEffect[____exports.SoundEffect.FISTULA_BOUNCE_MEDIUM] = "FISTULA_BOUNCE_MEDIUM"
+____exports.SoundEffect.FISTULA_BOUNCE_SMALL = 976
+____exports.SoundEffect[____exports.SoundEffect.FISTULA_BOUNCE_SMALL] = "FISTULA_BOUNCE_SMALL"
+____exports.SoundEffect.FISTULA_BURST_LARGE = 977
+____exports.SoundEffect[____exports.SoundEffect.FISTULA_BURST_LARGE] = "FISTULA_BURST_LARGE"
+____exports.SoundEffect.FISTULA_GROWL_LARGE = 978
+____exports.SoundEffect[____exports.SoundEffect.FISTULA_GROWL_LARGE] = "FISTULA_GROWL_LARGE"
+____exports.SoundEffect.FISTULA_GROWL_MEDIUM = 979
+____exports.SoundEffect[____exports.SoundEffect.FISTULA_GROWL_MEDIUM] = "FISTULA_GROWL_MEDIUM"
+____exports.SoundEffect.FISTULA_GROWL_SMALL = 980
+____exports.SoundEffect[____exports.SoundEffect.FISTULA_GROWL_SMALL] = "FISTULA_GROWL_SMALL"
+____exports.SoundEffect.RAG_MEGA_BALL_ATTACK = 981
+____exports.SoundEffect[____exports.SoundEffect.RAG_MEGA_BALL_ATTACK] = "RAG_MEGA_BALL_ATTACK"
+____exports.SoundEffect.RAG_MEGA_BEAM = 982
+____exports.SoundEffect[____exports.SoundEffect.RAG_MEGA_BEAM] = "RAG_MEGA_BEAM"
+____exports.SoundEffect.RAG_MEGA_INHALE = 983
+____exports.SoundEffect[____exports.SoundEffect.RAG_MEGA_INHALE] = "RAG_MEGA_INHALE"
+____exports.SoundEffect.RAG_MEGA_EXHALE = 984
+____exports.SoundEffect[____exports.SoundEffect.RAG_MEGA_EXHALE] = "RAG_MEGA_EXHALE"
+____exports.SoundEffect.RAG_MEGA_INVINCIBLE_ON = 985
+____exports.SoundEffect[____exports.SoundEffect.RAG_MEGA_INVINCIBLE_ON] = "RAG_MEGA_INVINCIBLE_ON"
+____exports.SoundEffect.RAG_MEGA_INVINCIBLE_OFF = 986
+____exports.SoundEffect[____exports.SoundEffect.RAG_MEGA_INVINCIBLE_OFF] = "RAG_MEGA_INVINCIBLE_OFF"
+____exports.SoundEffect.BLASTOCYST_JUMP_BIG = 987
+____exports.SoundEffect[____exports.SoundEffect.BLASTOCYST_JUMP_BIG] = "BLASTOCYST_JUMP_BIG"
+____exports.SoundEffect.BLASTOCYST_JUMP = 988
+____exports.SoundEffect[____exports.SoundEffect.BLASTOCYST_JUMP] = "BLASTOCYST_JUMP"
+____exports.SoundEffect.BLASTOCYST_JUMP_SMALL = 989
+____exports.SoundEffect[____exports.SoundEffect.BLASTOCYST_JUMP_SMALL] = "BLASTOCYST_JUMP_SMALL"
+____exports.SoundEffect.POOP_DROP = 990
+____exports.SoundEffect[____exports.SoundEffect.POOP_DROP] = "POOP_DROP"
+____exports.SoundEffect.CARRION_QUEEN_BOUNCE = 991
+____exports.SoundEffect[____exports.SoundEffect.CARRION_QUEEN_BOUNCE] = "CARRION_QUEEN_BOUNCE"
+____exports.SoundEffect.CARRION_QUEEN_DIAGONAL_START = 992
+____exports.SoundEffect[____exports.SoundEffect.CARRION_QUEEN_DIAGONAL_START] = "CARRION_QUEEN_DIAGONAL_START"
+____exports.SoundEffect.CARRION_QUEEN_DIAGONAL_VOX = 993
+____exports.SoundEffect[____exports.SoundEffect.CARRION_QUEEN_DIAGONAL_VOX] = "CARRION_QUEEN_DIAGONAL_VOX"
+____exports.SoundEffect.CARRION_QUEEN_ROAR = 994
+____exports.SoundEffect[____exports.SoundEffect.CARRION_QUEEN_ROAR] = "CARRION_QUEEN_ROAR"
+____exports.SoundEffect.HAUNT_CHARGE = 995
+____exports.SoundEffect[____exports.SoundEffect.HAUNT_CHARGE] = "HAUNT_CHARGE"
+____exports.SoundEffect.HAUNT_DEATH = 996
+____exports.SoundEffect[____exports.SoundEffect.HAUNT_DEATH] = "HAUNT_DEATH"
+____exports.SoundEffect.HAUNT_ROAR = 997
+____exports.SoundEffect[____exports.SoundEffect.HAUNT_ROAR] = "HAUNT_ROAR"
+____exports.SoundEffect.HAUNT_RELEASE_LIL = 998
+____exports.SoundEffect[____exports.SoundEffect.HAUNT_RELEASE_LIL] = "HAUNT_RELEASE_LIL"
+____exports.SoundEffect.LARRY_JR_DEATH_1 = 999
+____exports.SoundEffect[____exports.SoundEffect.LARRY_JR_DEATH_1] = "LARRY_JR_DEATH_1"
+____exports.SoundEffect.LARRY_JR_DEATH_2 = 1000
+____exports.SoundEffect[____exports.SoundEffect.LARRY_JR_DEATH_2] = "LARRY_JR_DEATH_2"
+____exports.SoundEffect.LARRY_JR_ROAR = 1001
+____exports.SoundEffect[____exports.SoundEffect.LARRY_JR_ROAR] = "LARRY_JR_ROAR"
+____exports.SoundEffect.MEGA_FATTY_MEGA_FART = 1002
+____exports.SoundEffect[____exports.SoundEffect.MEGA_FATTY_MEGA_FART] = "MEGA_FATTY_MEGA_FART"
+____exports.SoundEffect.HOLLOW_DEATH_1 = 1003
+____exports.SoundEffect[____exports.SoundEffect.HOLLOW_DEATH_1] = "HOLLOW_DEATH_1"
+____exports.SoundEffect.HOLLOW_DEATH_2 = 1004
+____exports.SoundEffect[____exports.SoundEffect.HOLLOW_DEATH_2] = "HOLLOW_DEATH_2"
+____exports.SoundEffect.HOLLOW_ROAR = 1005
+____exports.SoundEffect[____exports.SoundEffect.HOLLOW_ROAR] = "HOLLOW_ROAR"
+____exports.SoundEffect.WAR_KNOCKDOWN = 1006
+____exports.SoundEffect[____exports.SoundEffect.WAR_KNOCKDOWN] = "WAR_KNOCKDOWN"
+____exports.SoundEffect.WAR_CHARGE = 1007
+____exports.SoundEffect[____exports.SoundEffect.WAR_CHARGE] = "WAR_CHARGE"
+____exports.SoundEffect.BOSS_NEAR = 1008
+____exports.SoundEffect[____exports.SoundEffect.BOSS_NEAR] = "BOSS_NEAR"
+____exports.SoundEffect.CAMBION_CONCEPTION = 1009
+____exports.SoundEffect[____exports.SoundEffect.CAMBION_CONCEPTION] = "CAMBION_CONCEPTION"
+____exports.SoundEffect.IMMACULATE_CONCEPTION = 1010
+____exports.SoundEffect[____exports.SoundEffect.IMMACULATE_CONCEPTION] = "IMMACULATE_CONCEPTION"
+____exports.SoundEffect.CHARGED_BABY_BATTERY = 1011
+____exports.SoundEffect[____exports.SoundEffect.CHARGED_BABY_BATTERY] = "CHARGED_BABY_BATTERY"
+____exports.SoundEffect.CHARGED_BABY_CHARGE = 1012
+____exports.SoundEffect[____exports.SoundEffect.CHARGED_BABY_CHARGE] = "CHARGED_BABY_CHARGE"
+____exports.SoundEffect.CHARGED_BABY_STUN = 1013
+____exports.SoundEffect[____exports.SoundEffect.CHARGED_BABY_STUN] = "CHARGED_BABY_STUN"
+____exports.SoundEffect.ROCK_SHINE = 1014
+____exports.SoundEffect[____exports.SoundEffect.ROCK_SHINE] = "ROCK_SHINE"
+____exports.SoundEffect.BLUE_SPIDER_DIE = 1015
+____exports.SoundEffect[____exports.SoundEffect.BLUE_SPIDER_DIE] = "BLUE_SPIDER_DIE"
+____exports.SoundEffect.SISSY_LONGLEGS_CHARM = 1016
+____exports.SoundEffect[____exports.SoundEffect.SISSY_LONGLEGS_CHARM] = "SISSY_LONGLEGS_CHARM"
+____exports.SoundEffect.ITEM_RAISE = 1017
+____exports.SoundEffect[____exports.SoundEffect.ITEM_RAISE] = "ITEM_RAISE"
+____exports.SoundEffect.CLOG_POOP_SMOKE = 1018
+____exports.SoundEffect[____exports.SoundEffect.CLOG_POOP_SMOKE] = "CLOG_POOP_SMOKE"
+____exports.SoundEffect.FRIENDLY_BALL_CAPTURE = 1019
+____exports.SoundEffect[____exports.SoundEffect.FRIENDLY_BALL_CAPTURE] = "FRIENDLY_BALL_CAPTURE"
+____exports.SoundEffect.FRIENDLY_BALL_LAND = 1020
+____exports.SoundEffect[____exports.SoundEffect.FRIENDLY_BALL_LAND] = "FRIENDLY_BALL_LAND"
+____exports.SoundEffect.FRIENDLY_BALL_PICKUP = 1021
+____exports.SoundEffect[____exports.SoundEffect.FRIENDLY_BALL_PICKUP] = "FRIENDLY_BALL_PICKUP"
+____exports.SoundEffect.FRIENDLY_BALL_RAISE = 1022
+____exports.SoundEffect[____exports.SoundEffect.FRIENDLY_BALL_RAISE] = "FRIENDLY_BALL_RAISE"
+____exports.SoundEffect.FRIENDLY_BALL_RELEASE = 1023
+____exports.SoundEffect[____exports.SoundEffect.FRIENDLY_BALL_RELEASE] = "FRIENDLY_BALL_RELEASE"
+____exports.SoundEffect.FRIENDLY_BALL_THROW = 1024
+____exports.SoundEffect[____exports.SoundEffect.FRIENDLY_BALL_THROW] = "FRIENDLY_BALL_THROW"
+____exports.SoundEffect.BEST_FRIEND = 1025
+____exports.SoundEffect[____exports.SoundEffect.BEST_FRIEND] = "BEST_FRIEND"
+____exports.SoundEffect.BOOK_SHADOWS_START = 1026
+____exports.SoundEffect[____exports.SoundEffect.BOOK_SHADOWS_START] = "BOOK_SHADOWS_START"
+____exports.SoundEffect.BOOK_SHADOWS_END = 1027
+____exports.SoundEffect[____exports.SoundEffect.BOOK_SHADOWS_END] = "BOOK_SHADOWS_END"
+____exports.SoundEffect.BOOK_SHADOWS_SIGIL = 1028
+____exports.SoundEffect[____exports.SoundEffect.BOOK_SHADOWS_SIGIL] = "BOOK_SHADOWS_SIGIL"
+____exports.SoundEffect.BOX_SPIDERS = 1029
+____exports.SoundEffect[____exports.SoundEffect.BOX_SPIDERS] = "BOX_SPIDERS"
+____exports.SoundEffect.SUPLEX_ACTIVATE = 1030
+____exports.SoundEffect[____exports.SoundEffect.SUPLEX_ACTIVATE] = "SUPLEX_ACTIVATE"
+____exports.SoundEffect.SUPLEX_GRAB = 1031
+____exports.SoundEffect[____exports.SoundEffect.SUPLEX_GRAB] = "SUPLEX_GRAB"
+____exports.SoundEffect.SUPLEX_JUMP = 1032
+____exports.SoundEffect[____exports.SoundEffect.SUPLEX_JUMP] = "SUPLEX_JUMP"
+____exports.SoundEffect.SUPLEX_LAND = 1033
+____exports.SoundEffect[____exports.SoundEffect.SUPLEX_LAND] = "SUPLEX_LAND"
+____exports.SoundEffect.DEAD_SEA_SCROLLS = 1034
+____exports.SoundEffect[____exports.SoundEffect.DEAD_SEA_SCROLLS] = "DEAD_SEA_SCROLLS"
+____exports.SoundEffect.MOMS_BRA = 1035
+____exports.SoundEffect[____exports.SoundEffect.MOMS_BRA] = "MOMS_BRA"
+____exports.SoundEffect.RED_CANDLE = 1036
+____exports.SoundEffect[____exports.SoundEffect.RED_CANDLE] = "RED_CANDLE"
+____exports.SoundEffect.SATANIC_BIBLE = 1037
+____exports.SoundEffect[____exports.SoundEffect.SATANIC_BIBLE] = "SATANIC_BIBLE"
+____exports.SoundEffect.BIBLE = 1038
+____exports.SoundEffect[____exports.SoundEffect.BIBLE] = "BIBLE"
+____exports.SoundEffect.HOURGLASS = 1039
+____exports.SoundEffect[____exports.SoundEffect.HOURGLASS] = "HOURGLASS"
+____exports.SoundEffect.MEGA_MUSH_SHRINK = 1040
+____exports.SoundEffect[____exports.SoundEffect.MEGA_MUSH_SHRINK] = "MEGA_MUSH_SHRINK"
+____exports.SoundEffect.MAGIC_SKIN = 1041
+____exports.SoundEffect[____exports.SoundEffect.MAGIC_SKIN] = "MAGIC_SKIN"
+____exports.SoundEffect.BOOK_OF_SIN = 1042
+____exports.SoundEffect[____exports.SoundEffect.BOOK_OF_SIN] = "BOOK_OF_SIN"
+____exports.SoundEffect.BROKEN_SHOVEL = 1043
+____exports.SoundEffect[____exports.SoundEffect.BROKEN_SHOVEL] = "BROKEN_SHOVEL"
+____exports.SoundEffect.DULL_RAZOR = 1044
+____exports.SoundEffect[____exports.SoundEffect.DULL_RAZOR] = "DULL_RAZOR"
+____exports.SoundEffect.DARK_ARTS = 1045
+____exports.SoundEffect[____exports.SoundEffect.DARK_ARTS] = "DARK_ARTS"
+____exports.SoundEffect.DECAP_ACTIVATE = 1046
+____exports.SoundEffect[____exports.SoundEffect.DECAP_ACTIVATE] = "DECAP_ACTIVATE"
+____exports.SoundEffect.DECAP_THROW = 1047
+____exports.SoundEffect[____exports.SoundEffect.DECAP_THROW] = "DECAP_THROW"
+____exports.SoundEffect.ESAU_JR = 1048
+____exports.SoundEffect[____exports.SoundEffect.ESAU_JR] = "ESAU_JR"
+____exports.SoundEffect.NECROMANCER = 1049
+____exports.SoundEffect[____exports.SoundEffect.NECROMANCER] = "NECROMANCER"
+____exports.SoundEffect.GELLO = 1050
+____exports.SoundEffect[____exports.SoundEffect.GELLO] = "GELLO"
+____exports.SoundEffect.HEAVENS_DOOR_ENTER = 1051
+____exports.SoundEffect[____exports.SoundEffect.HEAVENS_DOOR_ENTER] = "HEAVENS_DOOR_ENTER"
+____exports.SoundEffect.TRAP_DOOR_LEVEL = 1052
+____exports.SoundEffect[____exports.SoundEffect.TRAP_DOOR_LEVEL] = "TRAP_DOOR_LEVEL"
+____exports.SoundEffect.CRYSTAL_BALL = 1053
+____exports.SoundEffect[____exports.SoundEffect.CRYSTAL_BALL] = "CRYSTAL_BALL"
+____exports.SoundEffect.FORGET_ME_NOW = 1054
+____exports.SoundEffect[____exports.SoundEffect.FORGET_ME_NOW] = "FORGET_ME_NOW"
+____exports.SoundEffect.HOW_TO_JUMP = 1055
+____exports.SoundEffect[____exports.SoundEffect.HOW_TO_JUMP] = "HOW_TO_JUMP"
+____exports.SoundEffect.IV_BAG = 1056
+____exports.SoundEffect[____exports.SoundEffect.IV_BAG] = "IV_BAG"
+____exports.SoundEffect.NOTCHED_AXE = 1057
+____exports.SoundEffect[____exports.SoundEffect.NOTCHED_AXE] = "NOTCHED_AXE"
+____exports.SoundEffect.RAZOR_BLADE = 1058
+____exports.SoundEffect[____exports.SoundEffect.RAZOR_BLADE] = "RAZOR_BLADE"
+____exports.SoundEffect.TELEPATHY_DUMMY = 1059
+____exports.SoundEffect[____exports.SoundEffect.TELEPATHY_DUMMY] = "TELEPATHY_DUMMY"
+____exports.SoundEffect.JAR_OF_FLIES = 1060
+____exports.SoundEffect[____exports.SoundEffect.JAR_OF_FLIES] = "JAR_OF_FLIES"
+____exports.SoundEffect.DIPLOPIA = 1061
+____exports.SoundEffect[____exports.SoundEffect.DIPLOPIA] = "DIPLOPIA"
+____exports.SoundEffect.MINE_CRAFTER = 1062
+____exports.SoundEffect[____exports.SoundEffect.MINE_CRAFTER] = "MINE_CRAFTER"
+____exports.SoundEffect.TEAR_DETONATOR = 1063
+____exports.SoundEffect[____exports.SoundEffect.TEAR_DETONATOR] = "TEAR_DETONATOR"
+____exports.SoundEffect.VENTRICLE_RAZOR = 1064
+____exports.SoundEffect[____exports.SoundEffect.VENTRICLE_RAZOR] = "VENTRICLE_RAZOR"
+____exports.SoundEffect.WOODEN_NICKEL = 1065
+____exports.SoundEffect[____exports.SoundEffect.WOODEN_NICKEL] = "WOODEN_NICKEL"
+____exports.SoundEffect.WOODEN_NICKEL_SPAWN = 1066
+____exports.SoundEffect[____exports.SoundEffect.WOODEN_NICKEL_SPAWN] = "WOODEN_NICKEL_SPAWN"
+____exports.SoundEffect.BLACK_HOLE_ACTIVATE = 1067
+____exports.SoundEffect[____exports.SoundEffect.BLACK_HOLE_ACTIVATE] = "BLACK_HOLE_ACTIVATE"
+____exports.SoundEffect.BLACK_HOLE_THROW = 1068
+____exports.SoundEffect[____exports.SoundEffect.BLACK_HOLE_THROW] = "BLACK_HOLE_THROW"
+____exports.SoundEffect.MR_ME = 1069
+____exports.SoundEffect[____exports.SoundEffect.MR_ME] = "MR_ME"
+____exports.SoundEffect.SPRINKLER_SPAWN = 1070
+____exports.SoundEffect[____exports.SoundEffect.SPRINKLER_SPAWN] = "SPRINKLER_SPAWN"
+____exports.SoundEffect.VOID_SUCCESS = 1071
+____exports.SoundEffect[____exports.SoundEffect.VOID_SUCCESS] = "VOID_SUCCESS"
+____exports.SoundEffect.VOID_FAIL = 1072
+____exports.SoundEffect[____exports.SoundEffect.VOID_FAIL] = "VOID_FAIL"
+____exports.SoundEffect.ABYSS_SUCCESS = 1073
+____exports.SoundEffect[____exports.SoundEffect.ABYSS_SUCCESS] = "ABYSS_SUCCESS"
+____exports.SoundEffect.BAG_OF_CRAFTING = 1074
+____exports.SoundEffect[____exports.SoundEffect.BAG_OF_CRAFTING] = "BAG_OF_CRAFTING"
+____exports.SoundEffect.GIANT_CHEST_OPEN = 1075
+____exports.SoundEffect[____exports.SoundEffect.GIANT_CHEST_OPEN] = "GIANT_CHEST_OPEN"
+____exports.SoundEffect.IMP_GROWL = 1076
+____exports.SoundEffect[____exports.SoundEffect.IMP_GROWL] = "IMP_GROWL"
+____exports.SoundEffect.IMP_SHOOT = 1077
+____exports.SoundEffect[____exports.SoundEffect.IMP_SHOOT] = "IMP_SHOOT"
+____exports.SoundEffect.IMP_WARP_OUT = 1078
+____exports.SoundEffect[____exports.SoundEffect.IMP_WARP_OUT] = "IMP_WARP_OUT"
+____exports.SoundEffect.IMP_WARP_IN = 1079
+____exports.SoundEffect[____exports.SoundEffect.IMP_WARP_IN] = "IMP_WARP_IN"
+____exports.SoundEffect.BRAIN_MOVE = 1080
+____exports.SoundEffect[____exports.SoundEffect.BRAIN_MOVE] = "BRAIN_MOVE"
+____exports.SoundEffect.POISON_MIND_HURT = 1081
+____exports.SoundEffect[____exports.SoundEffect.POISON_MIND_HURT] = "POISON_MIND_HURT"
+____exports.SoundEffect.KNIGHT_GROWL = 1082
+____exports.SoundEffect[____exports.SoundEffect.KNIGHT_GROWL] = "KNIGHT_GROWL"
+____exports.SoundEffect.SELFLESS_KNIGHT_GROWL = 1083
+____exports.SoundEffect[____exports.SoundEffect.SELFLESS_KNIGHT_GROWL] = "SELFLESS_KNIGHT_GROWL"
+____exports.SoundEffect.FLOATING_KNIGHT_GROWL = 1084
+____exports.SoundEffect[____exports.SoundEffect.FLOATING_KNIGHT_GROWL] = "FLOATING_KNIGHT_GROWL"
+____exports.SoundEffect.BUTTLICKER_GROWL = 1085
+____exports.SoundEffect[____exports.SoundEffect.BUTTLICKER_GROWL] = "BUTTLICKER_GROWL"
+____exports.SoundEffect.LADDER = 1086
+____exports.SoundEffect[____exports.SoundEffect.LADDER] = "LADDER"
+____exports.SoundEffect.OCULAR_RIFT_SHOOT = 1087
+____exports.SoundEffect[____exports.SoundEffect.OCULAR_RIFT_SHOOT] = "OCULAR_RIFT_SHOOT"
+____exports.SoundEffect.OCULAR_RIFT_PORTAL = 1088
+____exports.SoundEffect[____exports.SoundEffect.OCULAR_RIFT_PORTAL] = "OCULAR_RIFT_PORTAL"
+____exports.SoundEffect.UNBORN_GROWL = 1089
+____exports.SoundEffect[____exports.SoundEffect.UNBORN_GROWL] = "UNBORN_GROWL"
+____exports.SoundEffect.UNBORN_WARP = 1090
+____exports.SoundEffect[____exports.SoundEffect.UNBORN_WARP] = "UNBORN_WARP"
 return ____exports
  end,
 ["lua_modules.isaac-typescript-definitions.dist.enums.SortingLayer"] = function(...) 
@@ -6362,6 +6892,8 @@ ____exports.RoomType.BLUE = 28
 ____exports.RoomType[____exports.RoomType.BLUE] = "BLUE"
 ____exports.RoomType.ULTRA_SECRET = 29
 ____exports.RoomType[____exports.RoomType.ULTRA_SECRET] = "ULTRA_SECRET"
+____exports.RoomType.DEATHMATCH = 30
+____exports.RoomType[____exports.RoomType.DEATHMATCH] = "DEATHMATCH"
 return ____exports
  end,
 ["lua_modules.isaac-typescript-definitions.dist.enums.RoomTransitionAnim"] = function(...) 
@@ -6776,6 +7308,8 @@ ____exports.PickupPrice.TWO_SOUL_HEARTS = -8
 ____exports.PickupPrice[____exports.PickupPrice.TWO_SOUL_HEARTS] = "TWO_SOUL_HEARTS"
 ____exports.PickupPrice.ONE_HEART_AND_ONE_SOUL_HEART = -9
 ____exports.PickupPrice[____exports.PickupPrice.ONE_HEART_AND_ONE_SOUL_HEART] = "ONE_HEART_AND_ONE_SOUL_HEART"
+____exports.PickupPrice.DEVIL_SACRIFICE_SPIKES = -10
+____exports.PickupPrice[____exports.PickupPrice.DEVIL_SACRIFICE_SPIKES] = "DEVIL_SACRIFICE_SPIKES"
 ____exports.PickupPrice.FREE = -1000
 ____exports.PickupPrice[____exports.PickupPrice.FREE] = "FREE"
 return ____exports
@@ -8041,6 +8575,8 @@ ____exports.Music.MINESHAFT_ESCAPE = 117
 ____exports.Music[____exports.Music.MINESHAFT_ESCAPE] = "MINESHAFT_ESCAPE"
 ____exports.Music.REVERSE_GENESIS = 118
 ____exports.Music[____exports.Music.REVERSE_GENESIS] = "REVERSE_GENESIS"
+____exports.Music.MUSIC_DEATHMATCH = 119
+____exports.Music[____exports.Music.MUSIC_DEATHMATCH] = "MUSIC_DEATHMATCH"
 return ____exports
  end,
 ["lua_modules.isaac-typescript-definitions.dist.enums.Mouse"] = function(...) 
@@ -8887,6 +9423,16 @@ ____exports.Keyboard.MENU = 348
 ____exports.Keyboard[____exports.Keyboard.MENU] = "MENU"
 return ____exports
  end,
+["lua_modules.isaac-typescript-definitions.dist.enums.JacobEsauControls"] = function(...) 
+local ____exports = {}
+--- Added in Repentance+.
+____exports.JacobEsauControls = {}
+____exports.JacobEsauControls.CLASSIC = 0
+____exports.JacobEsauControls[____exports.JacobEsauControls.CLASSIC] = "CLASSIC"
+____exports.JacobEsauControls.BETTER = 1
+____exports.JacobEsauControls[____exports.JacobEsauControls.BETTER] = "BETTER"
+return ____exports
+ end,
 ["lua_modules.isaac-typescript-definitions.dist.enums.ItemType"] = function(...) 
 local ____exports = {}
 ____exports.ItemType = {}
@@ -9097,6 +9643,10 @@ ____exports.GridRoom.EXTRA_BOSS = -17
 ____exports.GridRoom[____exports.GridRoom.EXTRA_BOSS] = "EXTRA_BOSS"
 ____exports.GridRoom.ANGEL_SHOP = -18
 ____exports.GridRoom[____exports.GridRoom.ANGEL_SHOP] = "ANGEL_SHOP"
+____exports.GridRoom.DEATHMATCH = -19
+____exports.GridRoom[____exports.GridRoom.DEATHMATCH] = "DEATHMATCH"
+____exports.GridRoom.LIL_PORTAL = -20
+____exports.GridRoom[____exports.GridRoom.LIL_PORTAL] = "LIL_PORTAL"
 return ____exports
  end,
 ["lua_modules.isaac-typescript-definitions.dist.enums.GridPath"] = function(...) 
@@ -9387,6 +9937,14 @@ ____exports.GameStateFlag.BACKWARDS_PATH_INIT = 47
 ____exports.GameStateFlag[____exports.GameStateFlag.BACKWARDS_PATH_INIT] = "BACKWARDS_PATH_INIT"
 ____exports.GameStateFlag.BACKWARDS_PATH = 48
 ____exports.GameStateFlag[____exports.GameStateFlag.BACKWARDS_PATH] = "BACKWARDS_PATH"
+____exports.GameStateFlag.MEGA_SATAN_DOOR_OPENED = 49
+____exports.GameStateFlag[____exports.GameStateFlag.MEGA_SATAN_DOOR_OPENED] = "MEGA_SATAN_DOOR_OPENED"
+____exports.GameStateFlag.URIEL_KILLED = 50
+____exports.GameStateFlag[____exports.GameStateFlag.URIEL_KILLED] = "URIEL_KILLED"
+____exports.GameStateFlag.GABRIEL_KILLED = 51
+____exports.GameStateFlag[____exports.GameStateFlag.GABRIEL_KILLED] = "GABRIEL_KILLED"
+____exports.GameStateFlag.MOTHER_HEART_DOOR_OPENED = 52
+____exports.GameStateFlag[____exports.GameStateFlag.MOTHER_HEART_DOOR_OPENED] = "MOTHER_HEART_DOOR_OPENED"
 return ____exports
  end,
 ["lua_modules.isaac-typescript-definitions.dist.enums.flags.UseFlag"] = function(...) 
@@ -10786,6 +11344,30 @@ ____exports.EntityCollisionClass.ENEMIES = 3
 ____exports.EntityCollisionClass[____exports.EntityCollisionClass.ENEMIES] = "ENEMIES"
 ____exports.EntityCollisionClass.ALL = 4
 ____exports.EntityCollisionClass[____exports.EntityCollisionClass.ALL] = "ALL"
+return ____exports
+ end,
+["lua_modules.isaac-typescript-definitions.dist.enums.DrawStringAlignment"] = function(...) 
+local ____exports = {}
+--- Added in Repentance+.
+____exports.DrawStringAlignment = {}
+____exports.DrawStringAlignment.TOP_LEFT = 0
+____exports.DrawStringAlignment[____exports.DrawStringAlignment.TOP_LEFT] = "TOP_LEFT"
+____exports.DrawStringAlignment.TOP_CENTER = 1
+____exports.DrawStringAlignment[____exports.DrawStringAlignment.TOP_CENTER] = "TOP_CENTER"
+____exports.DrawStringAlignment.TOP_RIGHT = 2
+____exports.DrawStringAlignment[____exports.DrawStringAlignment.TOP_RIGHT] = "TOP_RIGHT"
+____exports.DrawStringAlignment.MIDDLE_LEFT = 3
+____exports.DrawStringAlignment[____exports.DrawStringAlignment.MIDDLE_LEFT] = "MIDDLE_LEFT"
+____exports.DrawStringAlignment.MIDDLE_CENTER = 4
+____exports.DrawStringAlignment[____exports.DrawStringAlignment.MIDDLE_CENTER] = "MIDDLE_CENTER"
+____exports.DrawStringAlignment.MIDDLE_RIGHT = 5
+____exports.DrawStringAlignment[____exports.DrawStringAlignment.MIDDLE_RIGHT] = "MIDDLE_RIGHT"
+____exports.DrawStringAlignment.BOTTOM_LEFT = 6
+____exports.DrawStringAlignment[____exports.DrawStringAlignment.BOTTOM_LEFT] = "BOTTOM_LEFT"
+____exports.DrawStringAlignment.BOTTOM_CENTER = 7
+____exports.DrawStringAlignment[____exports.DrawStringAlignment.BOTTOM_CENTER] = "BOTTOM_CENTER"
+____exports.DrawStringAlignment.BOTTOM_RIGHT = 8
+____exports.DrawStringAlignment[____exports.DrawStringAlignment.BOTTOM_RIGHT] = "BOTTOM_RIGHT"
 return ____exports
  end,
 ["lua_modules.isaac-typescript-definitions.dist.enums.Direction"] = function(...) 
@@ -13200,6 +13782,16 @@ ____exports.EffectVariant.GENERIC_TRACER = 198
 ____exports.EffectVariant[____exports.EffectVariant.GENERIC_TRACER] = "GENERIC_TRACER"
 ____exports.EffectVariant.ULTRA_DEATH_SCYTHE = 199
 ____exports.EffectVariant[____exports.EffectVariant.ULTRA_DEATH_SCYTHE] = "ULTRA_DEATH_SCYTHE"
+____exports.EffectVariant.BULLET_POOF_STATIC = 200
+____exports.EffectVariant[____exports.EffectVariant.BULLET_POOF_STATIC] = "BULLET_POOF_STATIC"
+____exports.EffectVariant.UMBILICAL_CORD_HELPER = 201
+____exports.EffectVariant[____exports.EffectVariant.UMBILICAL_CORD_HELPER] = "UMBILICAL_CORD_HELPER"
+____exports.EffectVariant.MEGA_BEAN_EXPLOSION = 202
+____exports.EffectVariant[____exports.EffectVariant.MEGA_BEAN_EXPLOSION] = "MEGA_BEAN_EXPLOSION"
+____exports.EffectVariant.SPAWN_PENTAGRAM = 203
+____exports.EffectVariant[____exports.EffectVariant.SPAWN_PENTAGRAM] = "SPAWN_PENTAGRAM"
+____exports.EffectVariant.PLAYER_CREEP_YELLOW = 204
+____exports.EffectVariant[____exports.EffectVariant.PLAYER_CREEP_YELLOW] = "PLAYER_CREEP_YELLOW"
 return ____exports
  end,
 ["lua_modules.isaac-typescript-definitions.dist.enums.collections.subTypes"] = function(...) 
@@ -17472,12 +18064,18 @@ ____exports.ButtonAction.MENU_CONFIRM = 14
 ____exports.ButtonAction[____exports.ButtonAction.MENU_CONFIRM] = "MENU_CONFIRM"
 ____exports.ButtonAction.MENU_BACK = 15
 ____exports.ButtonAction[____exports.ButtonAction.MENU_BACK] = "MENU_BACK"
-____exports.ButtonAction.RESTART = 16
-____exports.ButtonAction[____exports.ButtonAction.RESTART] = "RESTART"
-____exports.ButtonAction.FULLSCREEN = 17
-____exports.ButtonAction[____exports.ButtonAction.FULLSCREEN] = "FULLSCREEN"
-____exports.ButtonAction.MUTE = 18
-____exports.ButtonAction[____exports.ButtonAction.MUTE] = "MUTE"
+____exports.ButtonAction.RESTART_REPENTANCE = 16
+____exports.ButtonAction[____exports.ButtonAction.RESTART_REPENTANCE] = "RESTART_REPENTANCE"
+____exports.ButtonAction.FULLSCREEN_REPENTANCE_PLUS = 16
+____exports.ButtonAction[____exports.ButtonAction.FULLSCREEN_REPENTANCE_PLUS] = "FULLSCREEN_REPENTANCE_PLUS"
+____exports.ButtonAction.FULLSCREEN_REPENTANCE = 17
+____exports.ButtonAction[____exports.ButtonAction.FULLSCREEN_REPENTANCE] = "FULLSCREEN_REPENTANCE"
+____exports.ButtonAction.MUTE_REPENTANCE_PLUS = 17
+____exports.ButtonAction[____exports.ButtonAction.MUTE_REPENTANCE_PLUS] = "MUTE_REPENTANCE_PLUS"
+____exports.ButtonAction.MUTE_REPENTANCE = 18
+____exports.ButtonAction[____exports.ButtonAction.MUTE_REPENTANCE] = "MUTE_REPENTANCE"
+____exports.ButtonAction.RESTART_REPENTANCE_PLUS = 18
+____exports.ButtonAction[____exports.ButtonAction.RESTART_REPENTANCE_PLUS] = "RESTART_REPENTANCE_PLUS"
 ____exports.ButtonAction.JOIN_MULTIPLAYER = 19
 ____exports.ButtonAction[____exports.ButtonAction.JOIN_MULTIPLAYER] = "JOIN_MULTIPLAYER"
 ____exports.ButtonAction.MENU_LEFT = 20
@@ -17488,14 +18086,30 @@ ____exports.ButtonAction.MENU_UP = 22
 ____exports.ButtonAction[____exports.ButtonAction.MENU_UP] = "MENU_UP"
 ____exports.ButtonAction.MENU_DOWN = 23
 ____exports.ButtonAction[____exports.ButtonAction.MENU_DOWN] = "MENU_DOWN"
-____exports.ButtonAction.MENU_LT = 24
-____exports.ButtonAction[____exports.ButtonAction.MENU_LT] = "MENU_LT"
-____exports.ButtonAction.MENU_RT = 25
-____exports.ButtonAction[____exports.ButtonAction.MENU_RT] = "MENU_RT"
-____exports.ButtonAction.MENU_TAB = 26
-____exports.ButtonAction[____exports.ButtonAction.MENU_TAB] = "MENU_TAB"
-____exports.ButtonAction.CONSOLE = 28
-____exports.ButtonAction[____exports.ButtonAction.CONSOLE] = "CONSOLE"
+____exports.ButtonAction.MENU_LEFT_TRIGGER_REPENTANCE = 24
+____exports.ButtonAction[____exports.ButtonAction.MENU_LEFT_TRIGGER_REPENTANCE] = "MENU_LEFT_TRIGGER_REPENTANCE"
+____exports.ButtonAction.MENU_LEFT_SHOULDER = 24
+____exports.ButtonAction[____exports.ButtonAction.MENU_LEFT_SHOULDER] = "MENU_LEFT_SHOULDER"
+____exports.ButtonAction.MENU_RIGHT_TRIGGER_REPENTANCE = 25
+____exports.ButtonAction[____exports.ButtonAction.MENU_RIGHT_TRIGGER_REPENTANCE] = "MENU_RIGHT_TRIGGER_REPENTANCE"
+____exports.ButtonAction.MENU_RIGHT_SHOULDER = 25
+____exports.ButtonAction[____exports.ButtonAction.MENU_RIGHT_SHOULDER] = "MENU_RIGHT_SHOULDER"
+____exports.ButtonAction.MENU_TAB_REPENTANCE = 26
+____exports.ButtonAction[____exports.ButtonAction.MENU_TAB_REPENTANCE] = "MENU_TAB_REPENTANCE"
+____exports.ButtonAction.MENU_LEFT_TRIGGER_REPENTANCE_PLUS = 26
+____exports.ButtonAction[____exports.ButtonAction.MENU_LEFT_TRIGGER_REPENTANCE_PLUS] = "MENU_LEFT_TRIGGER_REPENTANCE_PLUS"
+____exports.ButtonAction.MENU_RIGHT_TRIGGER_REPENTANCE_PLUS = 27
+____exports.ButtonAction[____exports.ButtonAction.MENU_RIGHT_TRIGGER_REPENTANCE_PLUS] = "MENU_RIGHT_TRIGGER_REPENTANCE_PLUS"
+____exports.ButtonAction.CONSOLE_REPENTANCE = 28
+____exports.ButtonAction[____exports.ButtonAction.CONSOLE_REPENTANCE] = "CONSOLE_REPENTANCE"
+____exports.ButtonAction.MENU_TAB_REPENTANCE_PLUS = 28
+____exports.ButtonAction[____exports.ButtonAction.MENU_TAB_REPENTANCE_PLUS] = "MENU_TAB_REPENTANCE_PLUS"
+____exports.ButtonAction.MENU_EX = 29
+____exports.ButtonAction[____exports.ButtonAction.MENU_EX] = "MENU_EX"
+____exports.ButtonAction.EMOTES = 30
+____exports.ButtonAction[____exports.ButtonAction.EMOTES] = "EMOTES"
+____exports.ButtonAction.CONSOLE_REPENTANCE_PLUS = 32
+____exports.ButtonAction[____exports.ButtonAction.CONSOLE_REPENTANCE_PLUS] = "CONSOLE_REPENTANCE_PLUS"
 return ____exports
  end,
 ["lua_modules.isaac-typescript-definitions.dist.enums.BrokenWatchState"] = function(...) 
@@ -17633,6 +18247,10 @@ ____exports.BackdropType.ASHPIT_SHAFT = 59
 ____exports.BackdropType[____exports.BackdropType.ASHPIT_SHAFT] = "ASHPIT_SHAFT"
 ____exports.BackdropType.DARK_CLOSET = 60
 ____exports.BackdropType[____exports.BackdropType.DARK_CLOSET] = "DARK_CLOSET"
+____exports.BackdropType.DEATHMATCH = 61
+____exports.BackdropType[____exports.BackdropType.DEATHMATCH] = "DEATHMATCH"
+____exports.BackdropType.LIL_PORTAL = 62
+____exports.BackdropType[____exports.BackdropType.LIL_PORTAL] = "LIL_PORTAL"
 return ____exports
  end,
 ["lua_modules.isaac-typescript-definitions.dist.enums.AnnouncerVoiceMode"] = function(...) 
@@ -17915,10 +18533,10 @@ local assertDefined = ____utils.assertDefined
 -- const array = ["foo", "bar"];
 -- const searchText = "f";
 -- const match = getPartialMatch(array, searchText); // match is now equal to "foo"
--- 
--- @returns If a match was found, returns the array element. If a match was not
--- found, returns undefined.
 -- ```
+-- 
+-- @returns If a match was found, returns the array element. If a match was not found, returns
+-- undefined.
 function ____exports.getPartialMatch(self, searchText, array)
     local sortedArray = __TS__ArrayToSorted(array)
     searchText = string.lower(searchText)
@@ -20789,6 +21407,8 @@ ____exports.MAX_TAINTED_SAMSON_BERSERK_CHARGE = 100000
 ____exports.NUM_DIMENSIONS = getEnumLength(nil, Dimension) - 1
 --- An array containing every valid `Dimension`, not including `Dimension.CURRENT`. (This is derived
 -- from the `NUM_DIMENSIONS` constant.)
+-- 
+-- We cannot use the values of the `Dimension` enum because it includes -1.
 ____exports.DIMENSIONS = eRange(nil, ____exports.NUM_DIMENSIONS)
 --- The pill pool for each run is comprised of one effect for each unique pill color (minus gold and
 -- horse pills.)
@@ -28486,7 +29106,7 @@ end
 -- the prices for items in the shop would be the same as if Isaac had two Steam Sales.)
 function ____exports.getAdjustedPrice(self, basePrice)
     local numSteamSales = ____exports.getTotalPlayerCollectibles(nil, CollectibleType.STEAM_SALE)
-    return numSteamSales > 0 and math.floor(basePrice / (numSteamSales + 1)) or basePrice
+    return math.ceil(basePrice / (numSteamSales + 1))
 end
 --- Helper function to return the total amount of collectibles that a player has that match the
 -- collectible type(s) provided.
@@ -31531,7 +32151,8 @@ ____exports.ROOM_TYPE_NAMES = {
     [RoomType.TELEPORTER_EXIT] = "Teleporter Exit Room",
     [RoomType.SECRET_EXIT] = "Secret Exit",
     [RoomType.BLUE] = "Blue Room",
-    [RoomType.ULTRA_SECRET] = "Ultra Secret Room"
+    [RoomType.ULTRA_SECRET] = "Ultra Secret Room",
+    [RoomType.DEATHMATCH] = "Deathmatch"
 }
 return ____exports
  end,
@@ -32101,7 +32722,8 @@ ____exports.ROOM_TYPE_SPECIAL_GOTO_PREFIXES = {
     [RoomType.TELEPORTER_EXIT] = "teleporterexit",
     [RoomType.SECRET_EXIT] = "secretexit",
     [RoomType.BLUE] = "blue",
-    [RoomType.ULTRA_SECRET] = "ultrasecret"
+    [RoomType.ULTRA_SECRET] = "ultrasecret",
+    [RoomType.DEATHMATCH] = "deathmatch"
 }
 return ____exports
  end,
@@ -32744,6 +33366,7 @@ local DownpourRoomSubType = ____isaac_2Dtypescript_2Ddefinitions.DownpourRoomSub
 local DungeonSubType = ____isaac_2Dtypescript_2Ddefinitions.DungeonSubType
 local GridRoom = ____isaac_2Dtypescript_2Ddefinitions.GridRoom
 local HomeRoomSubType = ____isaac_2Dtypescript_2Ddefinitions.HomeRoomSubType
+local ItemPoolType = ____isaac_2Dtypescript_2Ddefinitions.ItemPoolType
 local RoomDescriptorFlag = ____isaac_2Dtypescript_2Ddefinitions.RoomDescriptorFlag
 local RoomType = ____isaac_2Dtypescript_2Ddefinitions.RoomType
 local SoundEffect = ____isaac_2Dtypescript_2Ddefinitions.SoundEffect
@@ -33058,12 +33681,21 @@ function ____exports.getRoomDataForTypeVariant(self, roomType, roomVariant, canc
 end
 --- Helper function to get the item pool type for the current room. For example, this returns
 -- `ItemPoolType.ItemPoolType.POOL_ANGEL` if you are in an Angel Room.
+-- 
+-- This function is a wrapper around the `ItemPool.GetPoolForRoom` method.
+-- 
+-- Note that `ItemPool.GetPoolForRoom` will return -1 in `RoomType.DEFAULT` (1) rooms, but this
+-- function will convert -1 to `ItemPoolType.TREASURE` (0) for convenience purposes (since the game
+-- is "supposed" to use the Treasure Room pool for collectibles spawned in normal rooms). If you
+-- need to distinguish between real Treasure Rooms and default rooms, then use the
+-- `ItemPool.GetPoolForRoom` method directly.
 function ____exports.getRoomItemPoolType(self)
     local itemPool = game:GetItemPool()
     local room = game:GetRoom()
     local roomType = room:GetType()
     local roomSeed = room:GetSpawnSeed()
-    return itemPool:GetPoolForRoom(roomType, roomSeed)
+    local itemPoolTypeOrNegativeOne = itemPool:GetPoolForRoom(roomType, roomSeed)
+    return itemPoolTypeOrNegativeOne == -1 and ItemPoolType.TREASURE or itemPoolTypeOrNegativeOne
 end
 --- Helper function to get the proper name of a room type.
 -- 
@@ -43669,7 +44301,7 @@ function ____exports.restoreDefaultForFeatureKey(self, saveDataDefaultsMap, subs
     end
     local childTableDefaults = saveDataDefaults[saveDataKey]
     if childTableDefaults == nil then
-        logError(((("Failed to find the default copy of the child table \"" .. saveDataKey) .. "\" for subscriber \"") .. subscriberName) .. "\". This error usually means that your mod-specific save data is out of date. You can try purging all of your mod-specific save data by deleting the following directory: C:\\Program Files (x86)\\Steam\\steamapps\\common\\The Binding of Isaac Rebirth\\data")
+        logError(String:raw({[1] = "Failed to find the default copy of the child table \"", [2] = "\" for subscriber \"", [3] = "\". This error usually means that your mod-specific save data is out of date. You can try purging all of your mod-specific save data by deleting the following directory: C:Program Files (x86)SteamsteamappscommonThe Binding of Isaac Rebirthdata", raw = {"Failed to find the default copy of the child table \"", "\" for subscriber \"", "\". This error usually means that your mod-specific save data is out of date. You can try purging all of your mod-specific save data by deleting the following directory: C:\\Program Files (x86)\\Steam\\steamapps\\common\\The Binding of Isaac Rebirth\\data"}}, saveDataKey, subscriberName))
         return
     end
     local childTableDefaultsCopy = deepCopy(nil, childTableDefaults, SerializationType.NONE, (subscriberName .. " --> ") .. saveDataKey)
@@ -47552,10 +48184,11 @@ function CustomPickups.prototype.____constructor(self)
         if player == nil then
             return nil
         end
-        local shouldPickup = customPickupFunctions.collisionFunc(player)
-        if not shouldPickup then
-            return nil
+        local shouldPickup = customPickupFunctions.collisionFunc(pickup, player)
+        if shouldPickup ~= nil then
+            return shouldPickup
         end
+        customPickupFunctions.collectFunc(pickup, player)
         pickup:Remove()
         local pickupSprite = pickup:GetSprite()
         local fileName = pickupSprite:GetFilename()
@@ -47563,7 +48196,6 @@ function CustomPickups.prototype.____constructor(self)
         local effectSprite = effect:GetSprite()
         effectSprite:Load(fileName, true)
         effectSprite:Play("Collect", true)
-        customPickupFunctions.collectFunc(player)
         return nil
     end
     self.postEffectRenderPickupEffect = function(____, effect)
@@ -47579,7 +48211,7 @@ function CustomPickups.prototype.____constructor(self)
 end
 function CustomPickups.prototype.registerCustomPickup(self, pickupVariantCustom, subType, collectFunc, collisionFunc)
     if collisionFunc == nil then
-        collisionFunc = function() return true end
+        collisionFunc = function() return nil end
     end
     local entityID = getEntityIDFromConstituents(nil, EntityType.PICKUP, pickupVariantCustom, subType)
     local customPickupFunctions = {collectFunc = collectFunc, collisionFunc = collisionFunc}
@@ -47676,7 +48308,9 @@ ____exports.BACKDROP_TYPE_TO_ROCK_ALT_TYPE = {
     [BackdropType.DUNGEON_BEAST] = RockAltType.URN,
     [BackdropType.MINES_SHAFT] = RockAltType.MUSHROOM,
     [BackdropType.ASHPIT_SHAFT] = RockAltType.MUSHROOM,
-    [BackdropType.DARK_CLOSET] = RockAltType.SKULL
+    [BackdropType.DARK_CLOSET] = RockAltType.SKULL,
+    [BackdropType.DEATHMATCH] = RockAltType.URN,
+    [BackdropType.LIL_PORTAL] = RockAltType.URN
 }
 return ____exports
  end,
@@ -49087,6 +49721,7 @@ local ____tstlClass = require("functions.tstlClass")
 local getTSTLClassName = ____tstlClass.getTSTLClassName
 local ____utils = require("functions.utils")
 local assertDefined = ____utils.assertDefined
+local isRepentancePlus = ____utils.isRepentancePlus
 local ____vector = require("functions.vector")
 local isVector = ____vector.isVector
 local ____ReadonlySet = require("types.ReadonlySet")
@@ -49372,7 +50007,8 @@ function CustomTrapdoors.prototype.playerTouchedCustomTrapdoor(self, gridEntity,
     self:logStateChanged()
     local tstlClassName = getTSTLClassName(nil, self)
     assertDefined(nil, tstlClassName, "Failed to find get the class name for the custom trapdoor feature.")
-    local whitelist = __TS__New(ReadonlySet, {ButtonAction.CONSOLE})
+    local buttonActionConsole = isRepentancePlus(nil) and ButtonAction.CONSOLE_REPENTANCE_PLUS or ButtonAction.CONSOLE_REPENTANCE
+    local whitelist = __TS__New(ReadonlySet, {buttonActionConsole})
     self.disableInputs:disableAllInputsExceptFor(tstlClassName, whitelist)
     setPlayerAttributes(nil, player, gridEntity.Position)
     dropTaintedForgotten(nil, player)
@@ -49588,6 +50224,9 @@ local ButtonAction = ____isaac_2Dtypescript_2Ddefinitions.ButtonAction
 local CollectibleType = ____isaac_2Dtypescript_2Ddefinitions.CollectibleType
 local InputHook = ____isaac_2Dtypescript_2Ddefinitions.InputHook
 local ModCallback = ____isaac_2Dtypescript_2Ddefinitions.ModCallback
+local SoundEffect = ____isaac_2Dtypescript_2Ddefinitions.SoundEffect
+local ____cachedClasses = require("core.cachedClasses")
+local sfxManager = ____cachedClasses.sfxManager
 local ____constants = require("core.constants")
 local VectorZero = ____constants.VectorZero
 local ____decorators = require("decorators")
@@ -49609,6 +50248,7 @@ local ____tstlClass = require("functions.tstlClass")
 local getTSTLClassName = ____tstlClass.getTSTLClassName
 local ____utils = require("functions.utils")
 local assertDefined = ____utils.assertDefined
+local isRepentancePlus = ____utils.isRepentancePlus
 local ____ReadonlySet = require("types.ReadonlySet")
 local ReadonlySet = ____ReadonlySet.ReadonlySet
 local ____Feature = require("classes.private.Feature")
@@ -49631,6 +50271,9 @@ function Pause.prototype.____constructor(self, disableInputs)
         end
         local firstPlayer = Isaac.GetPlayer()
         useActiveItemTemp(nil, firstPlayer, CollectibleType.PAUSE)
+        if isRepentancePlus(nil) then
+            sfxManager:Stop(SoundEffect.PAUSE_FREEZE)
+        end
         self:stopTearsAndProjectilesFromMoving()
     end
     self.inputActionGetActionValue = function(____, _entity, _inputHook, buttonAction)
@@ -49658,7 +50301,7 @@ function Pause.prototype.stopTearsAndProjectilesFromMoving(self)
             local ptrHash = GetPtrHash(tearOrProjectile)
             local initialDescription = v.run.initialDescriptions:get(ptrHash)
             if initialDescription == nil then
-                goto __continue9
+                goto __continue10
             end
             tearOrProjectile.Position = initialDescription.position
             tearOrProjectile.PositionOffset = initialDescription.positionOffset
@@ -49671,7 +50314,7 @@ function Pause.prototype.stopTearsAndProjectilesFromMoving(self)
                 tearOrProjectile.FallingAccel = initialDescription.fallingAcceleration
             end
         end
-        ::__continue9::
+        ::__continue10::
     end
 end
 function Pause.prototype.isPaused(self)
@@ -49705,9 +50348,13 @@ function Pause.prototype.pause(self)
     end
     local firstPlayer = Isaac.GetPlayer()
     useActiveItemTemp(nil, firstPlayer, CollectibleType.PAUSE)
+    if isRepentancePlus(nil) then
+        sfxManager:Stop(SoundEffect.PAUSE_FREEZE)
+    end
     local tstlClassName = getTSTLClassName(nil, self)
     assertDefined(nil, tstlClassName, "Failed to get the class name for the pause feature.")
-    local whitelist = __TS__New(ReadonlySet, {ButtonAction.MENU_CONFIRM, ButtonAction.CONSOLE})
+    local buttonActionConsole = isRepentancePlus(nil) and ButtonAction.CONSOLE_REPENTANCE_PLUS or ButtonAction.CONSOLE_REPENTANCE
+    local whitelist = __TS__New(ReadonlySet, {ButtonAction.MENU_CONFIRM, buttonActionConsole})
     self.disableInputs:disableAllInputsExceptFor(tstlClassName, whitelist)
     for ____, player in ipairs(getAllPlayers(nil)) do
         player.ControlsEnabled = false
@@ -55670,8 +56317,7 @@ end
 function copiedMapIsMap(self)
     local keyToLookFor = "abc"
     local valueToLookFor = "def"
-    local oldMap = __TS__New(Map)
-    oldMap:set(keyToLookFor, valueToLookFor)
+    local oldMap = __TS__New(Map, {{keyToLookFor, valueToLookFor}})
     local newMap = deepCopy(nil, oldMap, SerializationType.NONE, "copiedMapIsMap")
     if not isTSTLMap(nil, newMap) then
         error("The copied Map was not a Map and has a type of: " .. __TS__TypeOf(newMap))
@@ -55680,8 +56326,7 @@ end
 function copiedMapHasValue(self)
     local keyToLookFor = "abc"
     local valueToLookFor = "def"
-    local oldMap = __TS__New(Map)
-    oldMap:set(keyToLookFor, valueToLookFor)
+    local oldMap = __TS__New(Map, {{keyToLookFor, valueToLookFor}})
     local newMap = deepCopy(nil, oldMap, SerializationType.NONE, "copiedMapHasValue")
     if not isTSTLMap(nil, newMap) then
         error("The copied Map was not a Map and has a type of: " .. __TS__TypeOf(newMap))
@@ -55696,8 +56341,7 @@ function copiedMapHasValue(self)
 end
 function copiedSetIsSet(self)
     local valueToLookFor = "abc"
-    local oldSet = __TS__New(Set)
-    oldSet:add(valueToLookFor)
+    local oldSet = __TS__New(Set, {valueToLookFor})
     local newSet = deepCopy(nil, oldSet, SerializationType.NONE, "copiedSetIsSet")
     if not isTSTLSet(nil, newSet) then
         error("The copied Set was not a Set and has a type of: " .. __TS__TypeOf(newSet))
@@ -55705,8 +56349,7 @@ function copiedSetIsSet(self)
 end
 function copiedSetHasValue(self)
     local valueToLookFor = "abc"
-    local oldSet = __TS__New(Set)
-    oldSet:add(valueToLookFor)
+    local oldSet = __TS__New(Set, {valueToLookFor})
     local newSet = deepCopy(nil, oldSet, SerializationType.NONE, "copiedSetHasValue")
     if not isTSTLSet(nil, newSet) then
         error("The copied Set was not a Set and has a type of: " .. __TS__TypeOf(newSet))
@@ -55719,11 +56362,9 @@ end
 function copiedMapHasChildMap(self)
     local childMapKey = 123
     local childMapValue = 456
-    local oldChildMap = __TS__New(Map)
-    oldChildMap:set(childMapKey, childMapValue)
+    local oldChildMap = __TS__New(Map, {{childMapKey, childMapValue}})
     local keyToLookFor = "childMap"
-    local oldMap = __TS__New(Map)
-    oldMap:set(keyToLookFor, oldChildMap)
+    local oldMap = __TS__New(Map, {{keyToLookFor, oldChildMap}})
     local newMap = deepCopy(nil, oldMap, SerializationType.NONE, "copiedMapHasChildMap")
     if not isTSTLMap(nil, newMap) then
         error("The copied Map was not a Map and had a type of: " .. __TS__TypeOf(newMap))
@@ -55796,8 +56437,7 @@ end
 function copiedSerializedMapHasStringKey(self)
     local mapKey = "123"
     local mapValue = 456
-    local oldMap = __TS__New(Map)
-    oldMap:set(mapKey, mapValue)
+    local oldMap = __TS__New(Map, {{mapKey, mapValue}})
     local serializedOldMap = deepCopy(nil, oldMap, SerializationType.SERIALIZE, "copiedSerializedMapHasStringKey-serialize")
     local newTable = deepCopy(nil, serializedOldMap, SerializationType.DESERIALIZE, "copiedSerializedMapHasStringKey-deserialize")
     local newMap = newTable
@@ -55809,8 +56449,7 @@ end
 function copiedSerializedMapHasNumberKey(self)
     local mapKey = 123
     local mapValue = 456
-    local oldMap = __TS__New(Map)
-    oldMap:set(mapKey, mapValue)
+    local oldMap = __TS__New(Map, {{mapKey, mapValue}})
     local serializedOldMap = deepCopy(nil, oldMap, SerializationType.SERIALIZE, "copiedSerializedMapHasNumberKey-serialize")
     local newTable = deepCopy(nil, serializedOldMap, SerializationType.DESERIALIZE, "copiedSerializedMapHasNumberKey-deserialize")
     local newMap = newTable
@@ -62284,6 +62923,8 @@ local isActionTriggeredOnAnyInput = ____input.isActionTriggeredOnAnyInput
 local isModifierKeyPressed = ____input.isModifierKeyPressed
 local ____run = require("functions.run")
 local restart = ____run.restart
+local ____utils = require("functions.utils")
+local isRepentancePlus = ____utils.isRepentancePlus
 local ____Feature = require("classes.private.Feature")
 local Feature = ____Feature.Feature
 function checkResetInput(self)
@@ -62297,7 +62938,8 @@ function checkResetInput(self)
     if isModifierKeyPressed(nil) then
         return
     end
-    if isActionTriggeredOnAnyInput(nil, ButtonAction.RESTART) then
+    local buttonActionRestart = isRepentancePlus(nil) and ButtonAction.RESTART_REPENTANCE_PLUS or ButtonAction.RESTART_REPENTANCE
+    if isActionTriggeredOnAnyInput(nil, buttonActionRestart) then
         restart(nil)
     end
 end
@@ -70242,4 +70884,5 @@ end
 return ____exports
  end,
 }
-return require("indexLua", ...)
+local ____entry = require("indexLua", ...)
+return ____entry
