@@ -1,4 +1,4 @@
-local Mod = SELExample
+--local Mod = SELExample
 
 local VERSION = 1.13 --1.1.3
 local game = Game()
@@ -45,7 +45,8 @@ local function InitMod()
 
 	---@alias StatusFlag integer
 
-	local StatusEffectLibrary = RegisterMod(("[%s] Status Effect Library"):format(Mod.Name), 1)
+	-- local StatusEffectLibrary = RegisterMod(("[%s] Status Effect Library"):format(Mod.Name), 1)
+	local StatusEffectLibrary = RegisterMod(("[%s] Status Effect Library"):format("The Saint"), 1)
 	StatusEffectLibrary.Version = VERSION
 
 	StatusEffectLibrary.BOSS_STATUS_EFFECT_COOLDOWN = 240
@@ -805,6 +806,7 @@ local function InitFunctions()
 				end
 			end
 		end
+		--- @cast vanillaEffects EntityFlag
 		return ent:HasEntityFlags(vanillaEffects)
 	end
 
