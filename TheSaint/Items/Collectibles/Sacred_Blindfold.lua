@@ -34,13 +34,9 @@ local function postUpdate()
 	end
 end
 
---- add 7 "Golden Horseshoe" before going to the next level, to guarantee a Double Treasure Room
 --- @param player EntityPlayer
-local function preNewLevel(_, player)
-	if (not isc:anyPlayerHasCollectible(Sacred_Blindfold.Target.Type)) then return end
-
-	triggerPlayerIndex = isc:getPlayerIndex(player)
-
+--- @param addOrRemove boolean	@ true for add; false for remove
+local function horseShoeHandler(player, addOrRemove)
 	-- first save the players Trinkets (if any)
 	--- @type TrinketType, TrinketType?
 	local t1, t2
@@ -56,10 +52,17 @@ local function preNewLevel(_, player)
 		player:TryRemoveTrinket(t1)
 	end
 
-	-- then add 7x "Golden Horseshoe" (15% * 7 = 105%)
-	for _ = 1, 7 do
-		player:AddTrinket(TrinketType.TRINKET_GOLDEN_HORSE_SHOE)
-		player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, UseFlag.USE_NOANIM)
+	if (addOrRemove) then
+		-- add 7x "Golden Horseshoe" (15% * 7 = 105%)
+		for _ = 1, 7 do
+			player:AddTrinket(TrinketType.TRINKET_GOLDEN_HORSE_SHOE)
+			player:UseActiveItem(CollectibleType.COLLECTIBLE_SMELTER, UseFlag.USE_NOANIM)
+		end
+	else
+		-- remove 7x "Golden Horseshoe"
+		for _ = 1, 7 do
+			player:TryRemoveTrinket(TrinketType.TRINKET_GOLDEN_HORSE_SHOE)
+		end
 	end
 
 	-- finally re-add the saved Trinkets (if any), starting with the 2nd one to preserve the order they were in before
@@ -69,6 +72,16 @@ local function preNewLevel(_, player)
 		end
 		player:AddTrinket(t1, false)
 	end
+end
+
+--- add 7 "Golden Horseshoe" before going to the next level, to guarantee a Double Treasure Room
+--- @param player EntityPlayer
+local function preNewLevel(_, player)
+	if (not isc:anyPlayerHasCollectible(Sacred_Blindfold.Target.Type)) then return end
+
+	triggerPlayerIndex = isc:getPlayerIndex(player)
+
+	horseShoeHandler(player, true)
 end
 
 --- remove the 7 "Golden Horseshoe" given before going to the next level
@@ -86,10 +99,7 @@ local function postNewLevelReordered(_, stage, stageType)
 	-- shouldn't happen but just in case
 	if (not player) then return end
 
-	-- first remove 7x "Golden Horseshoe"
-	for _ = 1, 7 do
-		player:TryRemoveTrinket(TrinketType.TRINKET_GOLDEN_HORSE_SHOE)
-	end
+	horseShoeHandler(player, false)
 
 	triggerPlayerIndex = nil
 end
